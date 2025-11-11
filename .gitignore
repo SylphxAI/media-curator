@@ -19,3 +19,4 @@ coverage
 # OS generated files
 Thumbs.db
 ._*
+.vercel
