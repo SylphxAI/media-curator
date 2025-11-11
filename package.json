@@ -1,5 +1,5 @@
 {
-  "name": "@sylphlab/media-curator",
+  "name": "@sylphx/media-curator",
   "version": "1.3.0",
   "description": "MediaCurator: An intelligent CLI tool to curate, organize, and deduplicate your digital photo and video collection.",
   "publishConfig": {
@@ -29,7 +29,7 @@
     "asbuild": "asc assembly/index.ts --target debug --outFile build/index.wasm",
     "asbuild:release": "asc assembly/index.ts --target release --outFile build/index.wasm"
   },
-  "author": "shtse8",
+  "author": "Sylphx <hi@sylphx.com> (https://sylphx.com)",
   "license": "MIT",
   "dependencies": {
     "@msgpack/msgpack": "^3.0.0-beta2",
@@ -79,13 +79,13 @@
     "node": ">=18.0.0",
     "bun": ">=0.5.0"
   },
-  "homepage": "https://github.com/sylphlab/media-curator#readme",
+  "homepage": "https://github.com/SylphxAI/media-curator#readme",
   "bugs": {
-    "url": "https://github.com/sylphlab/media-curator/issues"
+    "url": "https://github.com/SylphxAI/media-curator/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sylphlab/media-curator.git"
+    "url": "https://github.com/SylphxAI/media-curator.git"
   },
   "keywords": [
     "media-curator",
