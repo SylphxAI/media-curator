@@ -111,5 +111,6 @@
       "import": "./dist/index.js"
     },
     "./package.json": "./package.json"
-  }
+  },
+  "packageManager": "bun@1.3.1"
 }
