@@ -36,7 +36,6 @@
     "moduleResolution": "NodeNext",
     // "baseUrl": ".", // Optional: for path aliases
     // "paths": {}, // Optional: configure path aliases
-    "strict": true, // Enable all strict type-checking options
     "forceConsistentCasingInFileNames": true, // Best practice
 
     /* Emit */

@@ -27,7 +27,10 @@
     "validate": "bun run check-format && bun run lint && bun run typecheck && bun run test",
     "typecheck": "tsc --noEmit",
     "asbuild": "asc assembly/index.ts --target debug --outFile build/index.wasm",
-    "asbuild:release": "asc assembly/index.ts --target release --outFile build/index.wasm"
+    "asbuild:release": "asc assembly/index.ts --target release --outFile build/index.wasm",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "bun run build && changeset publish"
   },
   "author": "Sylphx <hi@sylphx.com> (https://sylphx.com)",
   "license": "MIT",
@@ -48,6 +51,10 @@
     "commander": "^9.5.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@changesets/cli": "^2.29.7",
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
     "@datastructures-js/heap": "^4.3.3",
     "@eslint/js": "^9.9.0",
     "@topcli/spinner": "^2.1.2",
@@ -68,9 +75,7 @@
     "prettier": "^3.3.3",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.1.0",
-    "vitest": "^3.1.1",
-    "@commitlint/cli": "^19.3.0",
-    "@commitlint/config-conventional": "^19.2.2"
+    "vitest": "^3.1.1"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
