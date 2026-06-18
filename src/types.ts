@@ -127,10 +127,13 @@ export interface FrameInfo {
 export interface Metadata {
   width: number;
   height: number;
-  gpsLatitude?: number;
-  gpsLongitude?: number;
-  cameraModel?: string;
-  imageDate?: Date;
+  // These derive from optional EXIF tags that may be absent, so the field
+  // value is genuinely `number | undefined` (not merely an absent key) under
+  // exactOptionalPropertyTypes.
+  gpsLatitude?: number | undefined;
+  gpsLongitude?: number | undefined;
+  cameraModel?: string | undefined;
+  imageDate?: Date | undefined;
 }
 
 export interface FileStats {

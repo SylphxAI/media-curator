@@ -128,17 +128,18 @@ export async function filterAsync<T>(
   filter: (item: T) => Promise<AppResult<boolean>>,
 ): Promise<AppResult<T[]>> {
   const results = await Promise.all(
-    arr.map((item) => safeTryAsync(filter(item))),
+    arr.map(
+      async (item) => [item, await safeTryAsync(filter(item))] as const,
+    ),
   );
   const filtered: T[] = [];
-  for (let i = 0; i < results.length; i++) {
-    const result = results[i];
+  for (const [item, result] of results) {
     if (result.isErr()) {
       return err(result.error); // Propagate the first error encountered
     }
     if (result.value.isOk() && result.value.value) {
       // Check inner result is Ok and true
-      filtered.push(arr[i]);
+      filtered.push(item);
     } else if (result.value.isErr()) {
       // If the filter function itself returned an error, propagate it
       return err(result.value.error);
@@ -167,8 +168,8 @@ export function sharedArrayBufferToHex(buffer: SharedArrayBuffer): string {
   const uint8Array = new Uint8Array(buffer);
   let hexString = '';
 
-  for (let i = 0; i < uint8Array.length; i++) {
-    hexString += uint8Array[i].toString(16).padStart(2, '0');
+  for (const byte of uint8Array) {
+    hexString += byte.toString(16).padStart(2, '0');
   }
 
   return hexString;
@@ -244,7 +245,7 @@ export async function calculateFileHash(
         start,
         end: size ? start + size - 1 : undefined,
       });
-      stream.on('data', (chunk: Buffer) => hash.update(chunk));
+      stream.on('data', (chunk: string | Buffer) => hash.update(chunk));
       stream.on('end', () => {
         resolve(ok(undefined));
       }); // Resolve with ok result
@@ -387,21 +388,28 @@ export function quickSelect(
   }
 
   // Base case for recursion
-  if (arr.length === 1) {
-    return ok(arr[0]);
+  const first = arr[0];
+  if (arr.length === 1 && first !== undefined) {
+    return ok(first);
   }
 
   // Choose a pivot (simple middle element strategy)
   const pivotIndex = Math.floor(arr.length / 2);
   const pivot = arr[pivotIndex];
+  if (pivot === undefined) {
+    return err(
+      new ValidationError(`Pivot index ${pivotIndex} is out of bounds`, {
+        context: { validationDetails: { pivotIndex, length: arr.length } },
+      }),
+    );
+  }
 
   // Partition the array (excluding the pivot itself initially)
   const left: number[] = [];
   const right: number[] = [];
   const pivots: number[] = []; // To handle duplicate pivot values
 
-  for (let i = 0; i < arr.length; i++) {
-    const element = arr[i];
+  for (const element of arr) {
     if (element < pivot) {
       left.push(element);
     } else if (element > pivot) {
@@ -482,14 +490,17 @@ export function computeFastDCT(
       let sum = 0;
       const coeffOffset = u * size;
       for (let x = 0; x < size; x++) {
-        sum += input[y * size + x] * dctCoefficients[coeffOffset + x];
+        // Indices are mathematically in-bounds; `?? 0` only narrows the
+        // typed-array element type for noUncheckedIndexedAccess (the fallback
+        // is never taken and 0 is the additive identity).
+        sum += (input[y * size + x] ?? 0) * (dctCoefficients[coeffOffset + x] ?? 0);
       }
-      temp[u] = normFactors[u] * sum; // Apply row normalization factor
+      temp[u] = (normFactors[u] ?? 0) * sum; // Apply row normalization factor
     }
 
     // DCT column transform and normalization
     for (let v = 0; v < hashSize; v++) {
-      const normFactor = normFactors[v];
+      const normFactor = normFactors[v] ?? 0;
       // Ensure vCoeff index is within bounds of dctCoefficients
       const vCoeffIndex = v * size + y;
       if (vCoeffIndex >= dctCoefficients.length) {
@@ -511,10 +522,11 @@ export function computeFastDCT(
           ),
         );
       }
-      const vCoeff = dctCoefficients[vCoeffIndex];
+      const vCoeff = dctCoefficients[vCoeffIndex] ?? 0;
       const outputOffset = v * hashSize;
       for (let u = 0; u < hashSize; u++) {
-        output[outputOffset + u] += normFactor * temp[u] * vCoeff;
+        const outIdx = outputOffset + u;
+        output[outIdx] = (output[outIdx] ?? 0) + normFactor * (temp[u] ?? 0) * vCoeff;
       }
     }
   }
@@ -562,7 +574,7 @@ export function computeHashFromDCT(
   // Compute median of AC components (excluding DC component at index 0)
   const acValues = new Float32Array(Math.max(0, dct.length - 1)); // Ensure non-negative length
   for (let i = 1; i < dct.length; i++) {
-    acValues[i - 1] = Math.abs(dct[i]);
+    acValues[i - 1] = Math.abs(dct[i] ?? 0);
   }
 
   if (acValues.length === 0) {
@@ -599,10 +611,10 @@ export function computeHashFromDCT(
     const byteIndex = Math.floor(i / 8);
     const bitIndex = i % 8;
 
-    if (dct[i] > medianAC) {
+    if ((dct[i] ?? 0) > medianAC) {
       if (byteIndex < hash.length) {
         // Ensure byteIndex is within bounds
-        hash[byteIndex] |= 1 << bitIndex;
+        hash[byteIndex] = (hash[byteIndex] ?? 0) | (1 << bitIndex);
       }
     }
   }
