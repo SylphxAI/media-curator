@@ -3,7 +3,6 @@ import { writeFile } from 'fs/promises';
 import { join, relative } from 'path';
 import type { FileInfo, DuplicateSet, FileProcessorConfig } from '../types.js'; // Added FileProcessorConfig
 // import { MediaProcessor } from "../MediaProcessor"; // Removed old import
-import type { MediaComparator } from '../../MediaComparator.js';
 import type { LmdbCache } from '../caching/LmdbCache.js'; // Added cache import
 import type { ExifTool } from 'exiftool-vendored'; // Added exiftool import
 import type { WorkerPool } from '../contexts/types.js'; // Removed unused Types import
@@ -15,7 +14,6 @@ import { calculateEntryScore } from '../comparatorUtils.js'; // Import the utili
 export class DebugReporter {
   constructor(
     // Manually injected dependencies
-    private readonly comparator: MediaComparator,
     private readonly cache: LmdbCache,
     private readonly fileProcessorConfig: FileProcessorConfig,
     private readonly exifTool: ExifTool,
@@ -147,7 +145,7 @@ export class DebugReporter {
         );
         // TODO: Handle potential error from infoResult using Result type
         const info = infoResult.unwrapOr(null); // Temporary unwrap, needs proper error handling
-        const score = calculateEntryScore(info); // Use imported function
+        const score = info ? calculateEntryScore(info) : 0; // Use imported function
         const relativePath = this.convertToRelativePath(sourcePath, debugDir);
         return { isRepresentative: true, relativePath, info, score };
       }),
@@ -162,7 +160,7 @@ export class DebugReporter {
         );
         // TODO: Handle potential error from infoResult using Result type
         const info = infoResult.unwrapOr(null); // Temporary unwrap, needs proper error handling
-        const score = calculateEntryScore(info); // Use imported function
+        const score = info ? calculateEntryScore(info) : 0; // Use imported function
         const relativePath = this.convertToRelativePath(sourcePath, debugDir);
         return { isRepresentative: false, relativePath, info, score };
       }),

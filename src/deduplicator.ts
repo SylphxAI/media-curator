@@ -76,7 +76,7 @@ export async function deduplicateFilesFn(
     if (fileList.length > 1) {
       // Found exact duplicates based on pHash
       exactDuplicateClusters.push(new Set(fileList));
-    } else if (fileList.length === 1) {
+    } else if (fileList[0] !== undefined) {
       // Single file with this pHash, add to potentially similar list
       potentiallySimilarFiles.add(fileList[0]);
     }

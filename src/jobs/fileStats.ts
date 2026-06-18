@@ -45,7 +45,10 @@ export async function processFileStats(
         `Cache get failed for ${filePath}, proceeding with calculation:`,
         cacheGetResult.error,
       );
-    } else if (cacheGetResult.value.hit) {
+    } else if (
+      cacheGetResult.value.hit &&
+      cacheGetResult.value.data !== undefined
+    ) {
       // Cache hit and data is valid
       return ok(cacheGetResult.value.data); // Return cached data wrapped in ok
     }

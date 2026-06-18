@@ -201,57 +201,6 @@ export class LmdbCache {
         );
       },
     )._unsafeUnwrap(); // Unwrap here, errors during get/check will handle AppResult propagation
-    // Note: Rethinking this - throwing here might be okay if get/check handle it. Let's keep throwing for now.
-    // Let's revert the unwrap and throw the CacheError directly if safeTry fails.
-    // Reverting the unwrap:
-    // }, (error) => new CacheError(`Failed to deserialize data: ${error instanceof Error ? error.message : String(error)}`, { operation: 'deserialize', originalError: error instanceof Error ? error : undefined })).match(
-    //     (value) => value, // Return the value if ok
-    //     (cacheError) => { throw cacheError; } // Throw the CacheError if err
-    // );
-    // Simpler: just let safeTry throw the error if it occurs.
-    // Reverting safeTry usage here, keep original try/catch but throw CacheError
-    // --- Reverting to original try/catch with CacheError ---
-    try {
-      const typeMarker = buffer[0];
-      const dataBuffer = buffer.slice(1);
-
-      if (typeMarker === 1) {
-        // SharedArrayBuffer
-        return bufferToSharedArrayBuffer(dataBuffer);
-      }
-      if (typeMarker === 2) {
-        // Date
-        const date = new Date(dataBuffer.toString('utf8'));
-        return isNaN(date.getTime()) ? undefined : date; // Validate date parsing
-      }
-      // Add handling for other types based on markers if needed
-
-      // Default: MessagePack (Marker: 0)
-      if (typeMarker === 0) {
-        return msgpack.decode(dataBuffer);
-      }
-
-      // Fallback for potentially old data without markers (treat as msgpack)
-      console.warn(
-        'Cache data missing type marker, attempting msgpack decode.',
-      );
-      return msgpack.decode(buffer);
-    } catch (error) {
-      console.error(
-        'Deserialization error:',
-        error,
-        'Buffer:',
-        buffer.toString('hex'),
-      );
-      // Throw specific CacheError
-      throw new DatabaseError(
-        `Failed to deserialize data: ${error instanceof Error ? error.message : String(error)}`,
-        {
-          cause: error instanceof Error ? error : undefined,
-          context: { operation: 'deserialize' },
-        },
-      );
-    }
   }
   // --- End Serialization Helpers ---
 

@@ -57,7 +57,10 @@ export async function processMetadata(
         `Cache get failed for metadata ${filePath} (key: ${cacheKey}), proceeding with calculation:`,
         cacheGetResult.error,
       );
-    } else if (cacheGetResult.value.hit) {
+    } else if (
+      cacheGetResult.value.hit &&
+      cacheGetResult.value.data !== undefined
+    ) {
       // Cache hit and data is valid
       return ok(cacheGetResult.value.data); // Return cached data wrapped in ok
     }

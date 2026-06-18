@@ -341,7 +341,7 @@ export class FileTransferService {
 
     const originalExt = parse(sourcePath).ext; // Get original extension with dot (e.g., ".jpg")
 
-    let formattedPath = format.replace(formatRegex, (match, key) => {
+    let formattedPath = format.replace(formatRegex, (_match, key) => {
       let replacement = '';
       if (key === 'EXT') {
         // Use the original extension *with* the dot if the key is EXT

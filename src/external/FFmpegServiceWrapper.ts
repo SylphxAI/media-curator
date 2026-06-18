@@ -22,7 +22,7 @@ export function probeFile(filePath: string): Promise<AppResult<FfprobeData>> {
           err(
             new ExternalToolError(
               `Failed to probe file ${filePath}: ${probeErr.message}`,
-              { tool: 'ffprobe', originalError: probeErr },
+              { cause: probeErr, context: { tool: 'ffprobe' } },
             ),
           ),
         );

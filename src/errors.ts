@@ -7,8 +7,8 @@ export const err = importedErr;
 
 // Base application error class
 export class AppError extends Error {
-  public readonly context?: Record<string, unknown>; // Context for additional details, excluding 'cause'
-  public readonly cause?: unknown; // Standard error cause property
+  public readonly context?: Record<string, unknown> | undefined; // Context for additional details, excluding 'cause'
+  public override readonly cause?: unknown; // Standard error cause property
 
   constructor(
     message: string,
@@ -33,7 +33,7 @@ export class FileSystemError extends AppError {
     message: string,
     options?: {
       cause?: unknown;
-      context?: { path?: string; operation?: string };
+      context?: { path?: string | undefined; operation?: string | undefined };
     },
   ) {
     super(message, options);

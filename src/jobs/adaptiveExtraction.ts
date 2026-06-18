@@ -44,7 +44,8 @@ function reduceFrames(frames: FrameInfo[], targetCount: number): FrameInfo[] {
   const step = frames.length / targetCount;
   const reducedFrames: FrameInfo[] = [];
   for (let i = 0; i < frames.length; i += step) {
-    reducedFrames.push(frames[Math.floor(i)]);
+    const frame = frames[Math.floor(i)];
+    if (frame !== undefined) reducedFrames.push(frame);
   }
   return reducedFrames;
 }
@@ -180,7 +181,7 @@ function extractFramesWithFilter(
         })
         .on('stderr', (stderrLine: string) => {
           const timeMatch = /pts_time:([0-9.]+)/.exec(stderrLine);
-          if (timeMatch) {
+          if (timeMatch?.[1] !== undefined) {
             const timestamp = parseFloat(timeMatch[1]);
             pendingTimestamps.push(timestamp);
             processFrames();
@@ -299,7 +300,10 @@ export async function processAdaptiveExtraction( // Added export keyword
           `Cache get failed for ${filePath} (key: ${cacheKey}), proceeding with calculation:`,
           cacheGetResult.error,
         );
-      } else if (cacheGetResult.value.hit) {
+      } else if (
+        cacheGetResult.value.hit &&
+        cacheGetResult.value.data !== undefined
+      ) {
         // Cache hit and data is valid
         return ok(cacheGetResult.value.data); // Return cached data wrapped in ok
       }

@@ -1,11 +1,4 @@
-import type {
-  FileInfo,
-  FileProcessorConfig} from './types.js';
-import {
-  FileStats,
-  Metadata,
-  MediaInfo,
-} from './types.js'; // Removed unused FileStatsConfig, AdaptiveExtractionConfig
+import type { FileInfo, FileProcessorConfig } from './types.js'; // Removed unused FileStatsConfig, AdaptiveExtractionConfig
 import type { LmdbCache } from './caching/LmdbCache.js';
 import type { ExifTool } from 'exiftool-vendored';
 import type { WorkerPool } from './contexts/types.js';

@@ -22,7 +22,7 @@ export abstract class FileHashBaseJob<
     this.fileStatsConfig = fileStatsConfig;
   }
 
-  protected async getHashKey(filePath: string): Promise<string> {
+  protected override async getHashKey(filePath: string): Promise<string> {
     // Keep return type as string for now
     // Call the imported function, passing required dependencies
     const hashKeyResult = await getFileStatsHashKey(

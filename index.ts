@@ -246,7 +246,6 @@ async function main() {
     );
     // Instantiate DebugReporter with dependencies
     const debugReporter = new DebugReporter(
-      comparator,
       cache,
       fileProcessorConfig,
       exifTool,

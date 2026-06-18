@@ -14,7 +14,10 @@ export abstract class BaseFileInfoJob<TResult, TConfig = void> {
 
   protected abstract readonly jobName: string;
 
-  protected readonly config: TConfig = null;
+  // Base jobs default to no config (TConfig = void); subclasses that need a
+  // real config assign it in their constructor. Cast is unavoidable: a generic
+  // default cannot be expressed without knowing the concrete TConfig.
+  protected readonly config: TConfig = undefined as TConfig;
 
   // Removed @postConstruct init method
 
@@ -51,7 +54,10 @@ export abstract class BaseFileInfoJob<TResult, TConfig = void> {
           `Cache get failed for ${this.jobName}:${cacheKey}, proceeding with calculation:`,
           cacheGetResult.error,
         );
-      } else if (cacheGetResult.value.hit) {
+      } else if (
+        cacheGetResult.value.hit &&
+        cacheGetResult.value.data !== undefined
+      ) {
         // Cache hit and data is valid
         return ok(cacheGetResult.value.data); // Return cached data wrapped in ok
       }
