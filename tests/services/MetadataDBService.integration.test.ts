@@ -1,6 +1,6 @@
-import { MetadataDBService } from '../../src/services/MetadataDBService';
-import { FileInfo } from '../../src/types'; // Added import
-import { bufferToSharedArrayBuffer } from '../../src/utils'; // Added import
+import { MetadataDBService } from '../../src/services/MetadataDBService.js';
+import type { FileInfo } from '../../src/types.js'; // Added import
+import { bufferToSharedArrayBuffer } from '../../src/utils.js'; // Added import
 // Removed unused imports: ok, err
 import { rmSync, existsSync } from 'fs';
 // import { join } from 'path'; // Removed unused import
@@ -40,7 +40,7 @@ describeIf(!process.isBun)(
     it('should initialize the database schema correctly', () => {
       // Check if the table exists (basic check)
       // Cast the result type
-      const result = dbService['db']
+      const result = dbService.db
         .prepare(
           "SELECT name FROM sqlite_master WHERE type='table' AND name='files'",
         )

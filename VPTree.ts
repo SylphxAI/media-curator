@@ -1,4 +1,4 @@
-import { MaybePromise } from './src/types.js';
+import type { MaybePromise } from './src/types.js';
 
 export interface VPNode<T> {
   point: T;
@@ -20,8 +20,8 @@ export interface SearchResult<T> {
 
 export class VPTree<T> {
   constructor(
-    private root: VPNode<T> | null,
-    private distance: (a: T, b: T) => MaybePromise<number>,
+    private readonly root: VPNode<T> | null,
+    private readonly distance: (a: T, b: T) => MaybePromise<number>,
   ) {}
 
   static async build<T>(

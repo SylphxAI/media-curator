@@ -1,21 +1,22 @@
-import { deduplicateFilesFn } from '../src/deduplicator';
-import { MediaComparator } from '../MediaComparator';
+import { deduplicateFilesFn } from '../src/deduplicator.js';
+import { MediaComparator } from '../MediaComparator.js';
+import type {
+  FileInfoRow} from '../src/services/MetadataDBService.js';
 import {
-  MetadataDBService,
-  FileInfoRow,
-} from '../src/services/MetadataDBService';
-import { CliReporter } from '../src/reporting/CliReporter';
+  MetadataDBService
+} from '../src/services/MetadataDBService.js';
+import { CliReporter } from '../src/reporting/CliReporter.js';
 // Consolidate imports from ../src/types
-import {
+import type {
   // Removed unused DeduplicationResult, FileType
   ProgramOptions,
   FileProcessorConfig,
   FileInfo,
   SimilarityConfig,
-} from '../src/types';
-import { LmdbCache } from '../src/caching/LmdbCache';
-import { ExifTool } from 'exiftool-vendored';
-import { WorkerPool } from '../src/contexts/types';
+} from '../src/types.js';
+import type { LmdbCache } from '../src/caching/LmdbCache.js';
+import type { ExifTool } from 'exiftool-vendored';
+import type { WorkerPool } from '../src/contexts/types.js';
 
 import {
   describe,
@@ -28,10 +29,10 @@ import {
   vi, // Import vi from vitest instead of jest
 } from 'vitest'; // Use vitest imports
 
-import { err, DatabaseError } from '../src/errors'; // Removed unused AppResult, ok
+import { err, DatabaseError } from '../src/errors.js'; // Removed unused AppResult, ok
 import { rmSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import { bufferToSharedArrayBuffer } from '../src/utils'; // Import buffer utility
+import { bufferToSharedArrayBuffer } from '../src/utils.js'; // Import buffer utility
 
 // --- Mocking Dependencies ---
 // Mock CliReporter
@@ -57,10 +58,10 @@ const TEST_DEDUP_SQLITE_PATH = join(TEST_DEDUP_DB_DIR, 'dedup-meta.sqlite');
 function createSampleRow(
   filePath: string,
   pHashHex: string | null,
-  size: number = 1024,
+  size = 1024,
   duration: number | null = null, // null for images
-  width: number = 800,
-  height: number = 600,
+  width = 800,
+  height = 600,
 ): FileInfoRow {
   const lshKeys = generateLshKeysHelper(pHashHex); // Use helper defined below
   return {

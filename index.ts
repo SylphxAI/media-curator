@@ -1,32 +1,34 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import chalk from 'chalk';
+import type {
+  FileProcessorConfig, // Added FileProcessorConfig
+  SimilarityConfig} from './src/types.js';
 import {
   type ProgramOptions,
   type DeduplicationResult,
-  type GatherFileInfoResult,
-  FileProcessorConfig, // Added FileProcessorConfig
-  SimilarityConfig, // Added SimilarityConfig
-} from './src/types';
+  type GatherFileInfoResult // Added SimilarityConfig
+} from './src/types.js';
 // import { MediaOrganizer } from "./MediaOrganizer"; // Removed old class import
 import os from 'os';
 // Removed import { Context } from "./src/contexts/Context";
 // Removed duplicate import for discoverFilesFn
-import { gatherFileInfoFn } from './src/gatherer';
-import { deduplicateFilesFn } from './src/deduplicator'; // Import the new function
-import { LmdbCache } from './src/caching/LmdbCache'; // Import dependencies
+import { gatherFileInfoFn } from './src/gatherer.js';
+import { deduplicateFilesFn } from './src/deduplicator.js'; // Import the new function
+import { LmdbCache } from './src/caching/LmdbCache.js'; // Import dependencies
 import { ExifTool } from 'exiftool-vendored';
-import { WorkerPool } from './src/contexts/types'; // Removed unused Types import
-import workerpool, { Pool } from 'workerpool'; // Import the Pool type
+import type { WorkerPool } from './src/contexts/types.js'; // Removed unused Types import
+import type { Pool } from 'workerpool';
+import workerpool from 'workerpool'; // Import the Pool type
 import sharp from 'sharp'; // Add sharp import
-import type { CustomWorker } from './src/worker/worker'; // Import worker type for pool proxy
-import { MediaComparator } from './MediaComparator';
-import { transferFilesFn } from './src/transfer'; // Import the new function
-import { DebugReporter } from './src/reporting/DebugReporter'; // Import dependencies
-import { FileTransferService } from './src/services/FileTransferService';
-import { discoverFilesFn } from './src/discovery';
-import { MetadataDBService } from './src/services/MetadataDBService'; // Import DB service
-import { CliReporter } from './src/reporting/CliReporter'; // Import the new reporter
+import type { CustomWorker } from './src/worker/worker.js'; // Import worker type for pool proxy
+import { MediaComparator } from './MediaComparator.js';
+import { transferFilesFn } from './src/transfer.js'; // Import the new function
+import { DebugReporter } from './src/reporting/DebugReporter.js'; // Import dependencies
+import { FileTransferService } from './src/services/FileTransferService.js';
+import { discoverFilesFn } from './src/discovery.js';
+import { MetadataDBService } from './src/services/MetadataDBService.js'; // Import DB service
+import { CliReporter } from './src/reporting/CliReporter.js'; // Import the new reporter
 
 function exitHandler() {
   console.log(chalk.red('\nmedia-curator was interrupted'));

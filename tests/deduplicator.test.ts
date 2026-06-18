@@ -1,20 +1,22 @@
-import { deduplicateFilesFn } from '../src/deduplicator';
-import { MediaComparator } from '../MediaComparator';
-import { MetadataDBService } from '../src/services/MetadataDBService';
-import { CliReporter } from '../src/reporting/CliReporter';
-import * as comparatorUtils from '../src/comparatorUtils';
-import { FileInfoRow } from '../src/services/MetadataDBService'; // Import FileInfoRow
-import * as utils from '../src/utils';
-import {
-  DeduplicationResult,
+import { deduplicateFilesFn } from '../src/deduplicator.js';
+import { MediaComparator } from '../MediaComparator.js';
+import { MetadataDBService } from '../src/services/MetadataDBService.js';
+import { CliReporter } from '../src/reporting/CliReporter.js';
+import type * as comparatorUtils from '../src/comparatorUtils.js';
+import type { FileInfoRow } from '../src/services/MetadataDBService.js'; // Import FileInfoRow
+import type * as utils from '../src/utils.js';
+import type {
   FileInfo,
   SimilarityConfig,
   MediaInfo,
   DuplicateSet,
   FileStats,
-  Metadata,
-} from '../src/types';
-import { ok, err, AppError, DatabaseError, AppResult } from '../src/errors';
+  Metadata} from '../src/types.js';
+import {
+  DeduplicationResult
+} from '../src/types.js';
+import type { AppResult } from '../src/errors.js';
+import { ok, err, AppError, DatabaseError } from '../src/errors.js';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 // Mock dependencies
@@ -209,8 +211,8 @@ describe('deduplicateFilesFn', () => {
   beforeEach(async () => {
     // Import actual functions here to use with vi.mocked
     // Need to cast the imported module because vi.mock factory returns a different type
-    const actualComparatorUtils = await import('../src/comparatorUtils');
-    const actualUtils = await import('../src/utils');
+    const actualComparatorUtils = await import('../src/comparatorUtils.js');
+    const actualUtils = await import('../src/utils.js');
 
     // Assign mocked variables
     mockedCalculateSimilarity = vi.mocked(mockComparator.calculateSimilarity);

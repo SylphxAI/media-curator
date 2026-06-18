@@ -1,13 +1,13 @@
-import { gatherFileInfoFn } from '../src/gatherer';
-import { LmdbCache } from '../src/caching/LmdbCache';
-import { MetadataDBService } from '../src/services/MetadataDBService';
-import { CliReporter } from '../src/reporting/CliReporter';
-import { processSingleFile } from '../src/fileProcessor'; // Import to mock
-import { ExifTool } from 'exiftool-vendored';
-import { WorkerPool } from '../src/contexts/types';
-import { FileProcessorConfig, FileInfo } from '../src/types'; // Removed unused FileType
-import { ok, err, FileSystemError, DatabaseError } from '../src/errors'; // Removed unused AppResult, AppError
-import { bufferToSharedArrayBuffer } from '../src/utils'; // Import buffer utility
+import { gatherFileInfoFn } from '../src/gatherer.js';
+import { LmdbCache } from '../src/caching/LmdbCache.js';
+import { MetadataDBService } from '../src/services/MetadataDBService.js';
+import { CliReporter } from '../src/reporting/CliReporter.js';
+import { processSingleFile } from '../src/fileProcessor.js'; // Import to mock
+import type { ExifTool } from 'exiftool-vendored';
+import type { WorkerPool } from '../src/contexts/types.js';
+import type { FileProcessorConfig, FileInfo } from '../src/types.js'; // Removed unused FileType
+import { ok, err, FileSystemError, DatabaseError } from '../src/errors.js'; // Removed unused AppResult, AppError
+import { bufferToSharedArrayBuffer } from '../src/utils.js'; // Import buffer utility
 
 import { rmSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';

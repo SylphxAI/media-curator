@@ -1,23 +1,25 @@
-import { gatherFileInfoFn } from '../src/gatherer';
-import { processSingleFile } from '../src/fileProcessor';
-import { MetadataDBService } from '../src/services/MetadataDBService';
-import { CliReporter } from '../src/reporting/CliReporter';
-import * as utils from '../src/utils'; // Import all utils for mocking getFileTypeByExt
-import {
-  GatherFileInfoResult,
+import { gatherFileInfoFn } from '../src/gatherer.js';
+import type { processSingleFile } from '../src/fileProcessor.js';
+import { MetadataDBService } from '../src/services/MetadataDBService.js';
+import { CliReporter } from '../src/reporting/CliReporter.js';
+import * as utils from '../src/utils.js'; // Import all utils for mocking getFileTypeByExt
+import type {
   FileProcessorConfig,
   FileInfo,
   FileStatsConfig,
-  AdaptiveExtractionConfig,
+  AdaptiveExtractionConfig} from '../src/types.js';
+import {
+  GatherFileInfoResult,
   FileType,
   MediaInfo,
   Metadata,
   FileStats,
-} from '../src/types';
-import { LmdbCache } from '../src/caching/LmdbCache';
-import { ExifTool } from 'exiftool-vendored';
-import { WorkerPool } from '../src/contexts/types';
-import { ok, err, AppError, AppResult } from '../src/errors'; // Add AppResult import
+} from '../src/types.js';
+import type { LmdbCache } from '../src/caching/LmdbCache.js';
+import type { ExifTool } from 'exiftool-vendored';
+import type { WorkerPool } from '../src/contexts/types.js';
+import type { AppResult } from '../src/errors.js';
+import { ok, err, AppError } from '../src/errors.js'; // Add AppResult import
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 // Mocks will be defined inside vi.mock factories below
@@ -103,9 +105,9 @@ const mockDbError = new AppError('DB Error');
 
 describe('gatherFileInfoFn', () => {
   // Variables to hold imported mocks
-  let fileProcessorMock: typeof import('../src/fileProcessor');
-  let dbServiceMockModule: typeof import('../src/services/MetadataDBService'); // Rename to avoid conflict
-  let reporterMockModule: typeof import('../src/reporting/CliReporter'); // Rename to avoid conflict
+  let fileProcessorMock: typeof import('../src/fileProcessor.js');
+  let dbServiceMockModule: typeof import('../src/services/MetadataDBService.js'); // Rename to avoid conflict
+  let reporterMockModule: typeof import('../src/reporting/CliReporter.js'); // Rename to avoid conflict
   // No need for utilsMock variable
   let reporterInstance: CliReporter; // Instance of the mocked reporter
   let dbInstance: MetadataDBService; // Instance of the mocked DB service

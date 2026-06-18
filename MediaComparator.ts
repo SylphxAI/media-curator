@@ -1,4 +1,4 @@
-import {
+import type {
   MediaInfo,
   DeduplicationResult,
   FileInfo,
@@ -12,12 +12,14 @@ import {
   FileProcessorConfig, // Added config type
 } from './src/types.js';
 // import { MediaProcessor } from "./src/MediaProcessor"; // Removed old import
-import { LmdbCache } from './src/caching/LmdbCache.js'; // Added cache import
-import { ExifTool } from 'exiftool-vendored'; // Added exiftool import
+import type { LmdbCache } from './src/caching/LmdbCache.js'; // Added cache import
+import type { ExifTool } from 'exiftool-vendored'; // Added exiftool import
 import { processSingleFile } from './src/fileProcessor.js'; // Added file processor function import
-import { VPNode, VPTree } from './VPTree.js';
+import type { VPNode} from './VPTree.js';
+import { VPTree } from './VPTree.js';
 import { filterAsync, mapAsync } from './src/utils.js';
-import { ok, err, AppResult, AppError } from './src/errors.js'; // Removed unused AnyAppError, UnknownError
+import type { AppResult} from './src/errors.js';
+import { ok, err, AppError } from './src/errors.js'; // Removed unused AnyAppError, UnknownError
 import {
   calculateImageSimilarity,
   calculateImageVideoSimilarity, // Keep this import
@@ -42,16 +44,16 @@ import { join } from 'path';
 export class MediaComparator {
   private readonly minThreshold: number;
   private wasmExports: WasmExports | null = null;
-  private wasmInitializationPromise: Promise<void> | null = null;
+  private readonly wasmInitializationPromise: Promise<void> | null = null;
 
   constructor(
     // private mediaProcessor: MediaProcessor, // Removed injection
-    private cache: LmdbCache, // Removed @inject()
-    private fileProcessorConfig: FileProcessorConfig, // Removed @inject()
-    private exifTool: ExifTool, // Removed @inject()
-    private similarityConfig: SimilarityConfig,
-    private options: ProgramOptions,
-    private workerPool: WorkerPool, // Removed @inject() - WorkerPool might still be needed for pHash
+    private readonly cache: LmdbCache, // Removed @inject()
+    private readonly fileProcessorConfig: FileProcessorConfig, // Removed @inject()
+    private readonly exifTool: ExifTool, // Removed @inject()
+    private readonly similarityConfig: SimilarityConfig,
+    private readonly options: ProgramOptions,
+    private readonly workerPool: WorkerPool, // Removed @inject() - WorkerPool might still be needed for pHash
   ) {
     this.minThreshold = Math.min(
       this.similarityConfig.imageSimilarityThreshold,
@@ -306,11 +308,11 @@ export class MediaComparator {
   ): Promise<AppResult<DeduplicationResult>> {
     // Update return type
     const uniqueFiles = new Set<string>();
-    const duplicateSets: Array<{
+    const duplicateSets: {
       bestFile: string;
       representatives: Set<string>;
       duplicates: Set<string>;
-    }> = [];
+    }[] = [];
 
     for (const cluster of clusters) {
       if (cluster.size === 1) {

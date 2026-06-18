@@ -1,5 +1,5 @@
-import { discoverFilesFn } from '../src/discovery';
-import { CliReporter } from '../src/reporting/CliReporter'; // Assuming CliReporter exists
+import { discoverFilesFn } from '../src/discovery.js';
+import { CliReporter } from '../src/reporting/CliReporter.js'; // Assuming CliReporter exists
 import { mkdirSync, writeFileSync, rmSync, existsSync } from 'fs';
 import { join } from 'path';
 // Removed unused ok from '../src/errors'

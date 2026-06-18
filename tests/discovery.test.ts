@@ -1,12 +1,12 @@
-import { discoverFilesFn } from '../src/discovery';
-import { CliReporter } from '../src/reporting/CliReporter';
-import * as fsPromises from 'fs/promises';
+import { discoverFilesFn } from '../src/discovery.js';
+import { CliReporter } from '../src/reporting/CliReporter.js';
+import type * as fsPromises from 'fs/promises';
 import * as path from 'path';
-import * as utils from '../src/utils';
-import { FileType } from '../src/types';
-import { ok, err, FileSystemError } from '../src/errors';
+import * as utils from '../src/utils.js';
+import { FileType } from '../src/types.js';
+import { ok, err, FileSystemError } from '../src/errors.js';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'; // Import vi from vitest
-import { Dirent } from 'fs';
+import type { Dirent } from 'fs';
 
 // Mock dependencies
 // Mock fs/promises using vi.mock and expose the mock function
@@ -31,7 +31,7 @@ vi.mock('../src/reporting/CliReporter', () => {
 });
 
 // We will spy on utils.getFileTypeByExt in beforeEach instead of using vi.mock
-import { ALL_SUPPORTED_EXTENSIONS as originalAllSupportedExtensions } from '../src/utils';
+import { ALL_SUPPORTED_EXTENSIONS as originalAllSupportedExtensions } from '../src/utils.js';
 
 // Mock instances
 const mockReporter = new CliReporter(false);
@@ -70,7 +70,7 @@ describe('discoverFilesFn', () => {
     const fsPromisesMocked =
       await vi.importMock<typeof import('fs/promises')>('fs/promises');
     const { CliReporter: MockedCliReporter } = await vi.importMock<
-      typeof import('../src/reporting/CliReporter')
+      typeof import('../src/reporting/CliReporter.js')
     >('../src/reporting/CliReporter');
     // Assign to variables accessible in tests
     fsPromisesMock = fsPromisesMocked; // Assign to the variable declared outside

@@ -1,8 +1,8 @@
-import { LmdbCache } from '../../src/caching/LmdbCache'; // Removed unused CacheResult, ConfigCheckResult
+import { LmdbCache } from '../../src/caching/LmdbCache.js'; // Removed unused CacheResult, ConfigCheckResult
 import {
   bufferToSharedArrayBuffer,
   sharedArrayBufferToBuffer,
-} from '../../src/utils';
+} from '../../src/utils.js';
 import { rmSync, existsSync } from 'fs';
 import { join } from 'path';
 // Removed unused ok, err from '../../src/errors'

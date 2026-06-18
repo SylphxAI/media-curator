@@ -1,20 +1,22 @@
-import { processSingleFile } from '../src/fileProcessor';
-import { processFileStats } from '../src/jobs/fileStats';
-import { processMetadata } from '../src/jobs/metadataExtraction';
-import { processAdaptiveExtraction } from '../src/jobs/adaptiveExtraction';
-import {
-  FileInfo,
+import { processSingleFile } from '../src/fileProcessor.js';
+import { processFileStats } from '../src/jobs/fileStats.js';
+import { processMetadata } from '../src/jobs/metadataExtraction.js';
+import { processAdaptiveExtraction } from '../src/jobs/adaptiveExtraction.js';
+import type {
   FileProcessorConfig,
   FileStats,
   Metadata,
   MediaInfo,
   FileStatsConfig,
-  AdaptiveExtractionConfig,
-} from '../src/types';
-import { LmdbCache } from '../src/caching/LmdbCache';
-import { ExifTool } from 'exiftool-vendored';
-import { WorkerPool } from '../src/contexts/types';
-import { ok, err, AppError, AppResult } from '../src/errors';
+  AdaptiveExtractionConfig} from '../src/types.js';
+import {
+  FileInfo
+} from '../src/types.js';
+import type { LmdbCache } from '../src/caching/LmdbCache.js';
+import type { ExifTool } from 'exiftool-vendored';
+import type { WorkerPool } from '../src/contexts/types.js';
+import type { AppResult } from '../src/errors.js';
+import { ok, err, AppError } from '../src/errors.js';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'; // Import from vitest
 
 // Use vi.mock() for module mocking

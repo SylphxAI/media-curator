@@ -1,17 +1,18 @@
-import { transferFilesFn } from '../src/transfer';
-import { DebugReporter } from '../src/reporting/DebugReporter';
-import { FileTransferService } from '../src/services/FileTransferService';
-import { CliReporter } from '../src/reporting/CliReporter';
+import { transferFilesFn } from '../src/transfer.js';
+import type { DebugReporter } from '../src/reporting/DebugReporter.js';
+import type { FileTransferService } from '../src/services/FileTransferService.js';
+import type { CliReporter } from '../src/reporting/CliReporter.js';
 import * as fsPromises from 'fs/promises';
 import { join } from 'path'; // Import join
-import {
+import type {
   GatherFileInfoResult,
-  DeduplicationResult,
+  DeduplicationResult} from '../src/types.js';
+import {
   DuplicateSet,
-} from '../src/types';
-import { ok, err, AppError, FileSystemError, AppResult } from '../src/errors'; // Add AppResult import
+} from '../src/types.js';
+import { ok, err, AppError, FileSystemError, AppResult } from '../src/errors.js'; // Add AppResult import
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'; // Import from vitest
-import { Dirent } from 'fs'; // Import Dirent for readdir mock
+import type { Dirent } from 'fs'; // Import Dirent for readdir mock
 
 // Mocks will be defined inside vi.mock factories below
 
@@ -96,7 +97,7 @@ describe('transferFilesFn', () => {
     // Import mocked modules
     const fsPromises = await import('fs/promises'); // Import mocked fs/promises
     const { CliReporter: MockedCliReporter } = await vi.importMock<
-      typeof import('../src/reporting/CliReporter')
+      typeof import('../src/reporting/CliReporter.js')
     >('../src/reporting/CliReporter');
 
     // Instantiate reporter instance for assertions

@@ -17,8 +17,8 @@ import {
   mergeAndDeduplicateClusters, // Added import
   expandCluster, // Added import
   runDbscanCore, // Added import
-} from '../src/comparatorUtils'; // Keep these imports as they are used in the tests below
-import {
+} from '../src/comparatorUtils.js'; // Keep these imports as they are used in the tests below
+import type {
   FileInfo,
   FrameInfo,
   MediaInfo,
@@ -26,18 +26,19 @@ import {
   FileStats,
   Metadata,
   WasmExports, // Added WasmExports import
-} from '../src/types'; // Removed unused FileType
-import { hexToSharedArrayBuffer } from '../src/utils';
-import { AppResult, ok, err, AppError, ValidationError } from '../src/errors';
-import * as comparatorUtils from '../src/comparatorUtils';
+} from '../src/types.js'; // Removed unused FileType
+import { hexToSharedArrayBuffer } from '../src/utils.js';
+import { AppResult, ok, err, AppError, ValidationError } from '../src/errors.js';
+import * as comparatorUtils from '../src/comparatorUtils.js';
+import type {
+  SpyInstance} from 'vitest';
 import {
   vi,
   describe,
   it,
   expect,
   beforeEach,
-  afterEach,
-  SpyInstance,
+  afterEach
 } from 'vitest';
 import { Buffer } from 'buffer'; // Ensure Buffer is imported
 import { Tags } from 'exiftool-vendored'; // Import Tags type
