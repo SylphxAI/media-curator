@@ -69,7 +69,9 @@ export function hammingDistance(
     const view1_ts = new BigUint64Array(hash1, 0, commonChunks);
     const view2_ts = new BigUint64Array(hash2, 0, commonChunks);
     for (let i = 0; i < commonChunks; i++) {
-      distance_ts += popcount64(view1_ts[i] ^ view2_ts[i]);
+      // Indices are in-bounds by construction; `?? 0n` only narrows the
+      // BigUint64Array element type (fallback never taken, 0n is XOR identity).
+      distance_ts += popcount64((view1_ts[i] ?? 0n) ^ (view2_ts[i] ?? 0n));
     }
   }
 
@@ -80,17 +82,19 @@ export function hammingDistance(
 
   // Compare remaining common bytes
   for (let i = startByteIndex; i < minLen; i++) {
-    distance_ts += BigInt(popcount8(uint8View1_ts[i] ^ uint8View2_ts[i]));
+    distance_ts += BigInt(
+      popcount8((uint8View1_ts[i] ?? 0) ^ (uint8View2_ts[i] ?? 0)),
+    );
   }
 
   // Add bits from the longer hash's remaining bytes (compared against 0)
   if (len1 > len2) {
     for (let i = minLen; i < len1; i++) {
-      distance_ts += BigInt(popcount8(uint8View1_ts[i]));
+      distance_ts += BigInt(popcount8(uint8View1_ts[i] ?? 0));
     }
   } else if (len2 > len1) {
     for (let i = minLen; i < len2; i++) {
-      distance_ts += BigInt(popcount8(uint8View2_ts[i]));
+      distance_ts += BigInt(popcount8(uint8View2_ts[i] ?? 0));
     }
   }
 
@@ -128,7 +132,7 @@ export function calculateImageSimilarity(
 export function calculateImageVideoSimilarity(
   image: MediaInfo,
   video: MediaInfo,
-  similarityConfig: Pick<SimilarityConfig, 'imageVideoSimilarityThreshold'>, // Only need the relevant threshold
+  _similarityConfig: Pick<SimilarityConfig, 'imageVideoSimilarityThreshold'>, // Accepted for API symmetry; threshold filtering happens at the call site
   wasmExports: WasmExports | null,
 ): number {
   if (
@@ -185,15 +189,20 @@ export function calculateSequenceSimilarityDTW(
   dtw[0] = 0;
 
   for (let i = 1; i <= m; i++) {
-    let prev = dtw[0]; // Store value from top-left (dtw[i-1][j-1])
+    // DTW indices are in-bounds by loop construction; `?? Infinity` narrows the
+    // number[] element type with no semantic change (Infinity is the identity
+    // for the Math.min accumulation and the dtw array is initialised to it).
+    let prev = dtw[0] ?? Infinity; // Store value from top-left (dtw[i-1][j-1])
     dtw[0] = Infinity; // Start of new row calculation
 
     for (let j = 1; j <= n; j++) {
-      const temp = dtw[j]; // Store value from top (dtw[i-1][j]) before overwriting
+      const temp = dtw[j] ?? Infinity; // Store value from top (dtw[i-1][j]) before overwriting
+      const frame1 = seq1[i - 1];
+      const frame2 = seq2[j - 1];
+      if (frame1 === undefined || frame2 === undefined) continue;
 
       // Cost is 1 - similarity (distance) between current frames
-      const cost =
-        1 - calculateImageSimilarity(seq1[i - 1], seq2[j - 1], wasmExports);
+      const cost = 1 - calculateImageSimilarity(frame1, frame2, wasmExports);
       // Ensure cost is non-negative
       const nonNegativeCost = Math.max(0, cost);
 
@@ -202,8 +211,8 @@ export function calculateSequenceSimilarityDTW(
         nonNegativeCost +
         Math.min(
           prev, // Cost from diagonal (dtw[i-1][j-1])
-          dtw[j], // Cost from top (dtw[i-1][j])
-          dtw[j - 1], // Cost from left (dtw[i][j-1])
+          temp, // Cost from top (dtw[i-1][j])
+          dtw[j - 1] ?? Infinity, // Cost from left (dtw[i][j-1])
         );
 
       prev = temp; // Update prev for the next iteration (becomes dtw[i-1][j])
@@ -215,7 +224,7 @@ export function calculateSequenceSimilarityDTW(
 
   // Normalized distance: DTW cost / max path length (heuristic, assumes path length is approx maxLen)
   // A better normalization might be needed depending on the exact DTW path constraints used.
-  const normalizedDistance = dtw[n] / maxLen;
+  const normalizedDistance = (dtw[n] ?? Infinity) / maxLen;
 
   // Return similarity: 1 - normalized distance
   return Math.max(0, 1 - normalizedDistance); // Ensure similarity is not negative
@@ -399,11 +408,10 @@ export function selectRepresentativesFromScored(
   similarityConfig: Pick<SimilarityConfig, 'imageSimilarityThreshold'>,
   wasmExports: WasmExports | null,
 ): string[] {
-  if (!sortedEntriesWithInfo || sortedEntriesWithInfo.length === 0) return [];
-  if (sortedEntriesWithInfo.length === 1)
-    return [sortedEntriesWithInfo[0].entry];
-
   const bestEntryData = sortedEntriesWithInfo[0];
+  if (bestEntryData === undefined) return []; // empty cluster
+  if (sortedEntriesWithInfo.length === 1) return [bestEntryData.entry];
+
   const bestEntry = bestEntryData.entry;
   const bestFileInfo = bestEntryData.fileInfo;
 
@@ -497,6 +505,7 @@ export async function expandCluster( // Add export back
   let queueIndex = 0;
   while (queueIndex < queue.length) {
     const currentPoint = queue[queueIndex++]; // Process queue iteratively
+    if (currentPoint === undefined) continue; // bounded by queue.length, but narrow for the type checker
 
     if (!visited.has(currentPoint)) {
       // visited.add(currentPoint); // Move this after successful neighbor fetch
@@ -557,9 +566,9 @@ export async function expandCluster( // Add export back
  */
 export async function runDbscanCore(
   chunk: string[],
-  eps: number,
+  _eps: number,
   minPts: number,
-  getNeighborsFn: (p: string) => Promise<AppResult<string[]>>,
+  getNeighborsFn: (p: string) => Promise<AppResult<string[]>>, // neighbourhood radius (eps) is bound into getNeighborsFn by the caller
 ): Promise<Set<string>[]> {
   // Return raw clusters, error handling done within getNeighborsFn/expandCluster calls
   const clusters: Set<string>[] = [];
