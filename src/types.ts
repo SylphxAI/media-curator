@@ -14,7 +14,7 @@ export interface ProcessingConfig {
   maxFrames: number;
 }
 
-export class FileStatsConfig {
+export interface FileStatsConfig {
   maxChunkSize: number;
 }
 
@@ -53,7 +53,7 @@ export interface Stats {
   errorCount: number;
 }
 
-export class ProgramOptions {
+export interface ProgramOptions {
   error?: string;
   duplicate?: string;
   debug?: string;
@@ -78,7 +78,7 @@ export class ProgramOptions {
   verbose?: boolean;
 }
 
-export class AdaptiveExtractionConfig {
+export interface AdaptiveExtractionConfig {
   resolution: number;
   sceneChangeThreshold: number;
   minFrames: number;
@@ -86,12 +86,12 @@ export class AdaptiveExtractionConfig {
   targetFps: number;
 }
 
-export class FeatureExtractionConfig {
+export interface FeatureExtractionConfig {
   colorHistogramBins: number;
   edgeDetectionThreshold: number;
 }
 
-export class SimilarityConfig {
+export interface SimilarityConfig {
   windowSize: number;
   stepSize: number;
   imageSimilarityThreshold: number;
@@ -99,7 +99,7 @@ export class SimilarityConfig {
   videoSimilarityThreshold: number;
 }
 
-export class JobConfig {
+export interface JobConfig {
   adaptiveExtraction: AdaptiveExtractionConfig;
   featureExtraction: FeatureExtractionConfig;
   similarity: SimilarityConfig;
@@ -112,19 +112,19 @@ export interface FileProcessorConfig {
   // Metadata has no specific config other than FileStatsConfig for hash key
 }
 
-export class MediaInfo {
+export interface MediaInfo {
   frames: FrameInfo[];
   duration: number;
 }
 
-export class FrameInfo {
+export interface FrameInfo {
   hash: SharedArrayBuffer;
   // data: Buffer;
   // features: Buffer;
   timestamp: number;
 }
 
-export class Metadata {
+export interface Metadata {
   width: number;
   height: number;
   gpsLatitude?: number;
@@ -133,7 +133,7 @@ export class Metadata {
   imageDate?: Date;
 }
 
-export class FileStats {
+export interface FileStats {
   hash: SharedArrayBuffer;
   size: number;
   createdAt: Date;
