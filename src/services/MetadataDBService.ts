@@ -43,9 +43,11 @@ export class MetadataDBService {
       mkdirSync(dbDirectory, { recursive: true });
     } catch (e) {
       // Ignore error if directory already exists, throw otherwise
-      if (e.code !== 'EEXIST') {
+      const code =
+        e instanceof Error && 'code' in e ? (e as { code?: string }).code : undefined;
+      if (code !== 'EEXIST') {
         throw new DatabaseError(
-          `Failed to create database directory: ${e.message}`,
+          `Failed to create database directory: ${e instanceof Error ? e.message : String(e)}`,
           { cause: e },
         );
       }
@@ -62,7 +64,7 @@ export class MetadataDBService {
         error,
       );
       throw new DatabaseError(
-        `Failed to initialize SQLite metadata DB: ${error.message}`,
+        `Failed to initialize SQLite metadata DB: ${error instanceof Error ? error.message : String(error)}`,
         { cause: error },
       );
     }
@@ -119,8 +121,15 @@ export class MetadataDBService {
   }
 
   // Helper to generate LSH keys from pHash hex string
-  private generateLshKeys(pHashHex: string | null): (string | null)[] {
-    const keys: (string | null)[] = [null, null, null, null];
+  private generateLshKeys(
+    pHashHex: string | null,
+  ): [string | null, string | null, string | null, string | null] {
+    const keys: [
+      string | null,
+      string | null,
+      string | null,
+      string | null,
+    ] = [null, null, null, null];
     if (pHashHex && pHashHex.length === 16) {
       // Expect 64-bit hash (16 hex chars)
       keys[0] = pHashHex.substring(0, 4);
@@ -173,12 +182,11 @@ export class MetadataDBService {
     // Basic reconstruction - MediaInfo is simplified
     const partialFileInfo: Partial<FileInfo> = {
       fileStats: {
-        // Use optional chaining and nullish coalescing for hash reconstruction
+        // FileStats.hash is required; an absent contentHash row reconstructs as
+        // an empty buffer (callers guard on byteLength === 0).
         hash: row.contentHash
-          ? bufferToSharedArrayBuffer(
-              Buffer.from(row.contentHash, 'hex'),
-            )._unsafeUnwrap()
-          : undefined, // Unwrap AppResult
+          ? bufferToSharedArrayBuffer(Buffer.from(row.contentHash, 'hex'))
+          : new SharedArrayBuffer(0),
         size: row.size ?? 0,
         createdAt: row.createdAt ? new Date(row.createdAt) : new Date(0),
         modifiedAt: row.modifiedAt ? new Date(row.modifiedAt) : new Date(0),
@@ -197,10 +205,10 @@ export class MetadataDBService {
         frames: pHashBuffer
           ? [
               {
-                hash: bufferToSharedArrayBuffer(pHashBuffer)._unsafeUnwrap(),
+                hash: bufferToSharedArrayBuffer(pHashBuffer),
                 timestamp: 0,
               },
-            ] // Unwrap AppResult
+            ]
           : [],
       },
     };
