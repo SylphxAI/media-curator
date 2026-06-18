@@ -1,7 +1,7 @@
 import globals from 'globals';
 import pluginJs from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'; // Includes config and plugin
+import eslintConfigPrettier from 'eslint-config-prettier'; // Disables ESLint rules that conflict with Prettier (formatting is gated separately by `check-format`)
 
 export default tseslint.config(
   {
@@ -28,7 +28,7 @@ export default tseslint.config(
     },
   },
   // Base ESLint recommended rules for all non-ignored files
-  eslint.configs.recommended, // Use eslint.configs.recommended
+  pluginJs.configs.recommended,
 
   // Apply recommended type-checked rules ONLY to .ts files (excluding ignored and config files)
   ...tseslint.configs.recommendedTypeChecked.map((config) => ({
@@ -118,9 +118,8 @@ export default tseslint.config(
     },
   },
 
-  // Prettier config must be last to override other formatting rules
-  // Prettier plugin/config must be last to override other style rules
-  eslintPluginPrettierRecommended,
+  // Prettier-conflicting rules disabled last so Prettier owns formatting
+  eslintConfigPrettier,
   {
     // Ignore config files from some rules
     files: ['*.config.js', '*.config.ts', '.*rc.js'],
