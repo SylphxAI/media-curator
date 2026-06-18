@@ -6,11 +6,16 @@ import * as fsPromises from 'fs/promises';
 import { join } from 'path'; // Import join
 import type {
   GatherFileInfoResult,
-  DeduplicationResult} from '../src/types.js';
-import {
-  DuplicateSet,
+  DeduplicationResult,
 } from '../src/types.js';
-import { ok, err, AppError, FileSystemError, AppResult } from '../src/errors.js'; // Add AppResult import
+import { DuplicateSet } from '../src/types.js';
+import {
+  ok,
+  err,
+  AppError,
+  FileSystemError,
+  AppResult,
+} from '../src/errors.js'; // Add AppResult import
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'; // Import from vitest
 import type { Dirent } from 'fs'; // Import Dirent for readdir mock
 

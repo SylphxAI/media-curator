@@ -1,6 +1,6 @@
 import type { FfprobeData } from 'fluent-ffmpeg';
 import ffmpeg from 'fluent-ffmpeg';
-import type { AppResult} from '../errors.js';
+import type { AppResult } from '../errors.js';
 import { ok, err, ExternalToolError } from '../errors.js'; // Added AppResult imports
 
 // Optional: Set FFmpeg path if not in system PATH

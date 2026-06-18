@@ -4,7 +4,7 @@ import type {
   Stats as SharpStats,
 } from 'sharp';
 import sharp from 'sharp';
-import type { AppResult} from '../errors.js';
+import type { AppResult } from '../errors.js';
 import { ExternalToolError, safeTryAsync } from '../errors.js'; // Removed unused ok, err
 
 /**

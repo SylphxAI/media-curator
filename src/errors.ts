@@ -1,4 +1,4 @@
-import type { Result} from 'neverthrow';
+import type { Result } from 'neverthrow';
 import { ok as importedOk, err as importedErr } from 'neverthrow';
 
 // Re-export ok and err for consistent usage within the project

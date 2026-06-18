@@ -1,7 +1,7 @@
 import type { Database as DB } from 'better-sqlite3';
 import Database from 'better-sqlite3';
 import type { FileInfo } from '../types.js'; // Removed unused FileStats, Metadata, MediaInfo
-import type { AppResult} from '../errors.js';
+import type { AppResult } from '../errors.js';
 import { ok, DatabaseError, safeTry } from '../errors.js'; // Removed unused err
 import { bufferToSharedArrayBuffer } from '../utils.js'; // Import buffer utility
 import { join } from 'path';
@@ -34,17 +34,16 @@ export class MetadataDBService {
   private readonly db: DB;
   private readonly dbPath: string;
 
-  constructor(
-    dbDirectory = '.mediadb',
-    dbFilename = 'metadata.sqlite',
-  ) {
+  constructor(dbDirectory = '.mediadb', dbFilename = 'metadata.sqlite') {
     // Ensure the directory exists
     try {
       mkdirSync(dbDirectory, { recursive: true });
     } catch (e) {
       // Ignore error if directory already exists, throw otherwise
       const code =
-        e instanceof Error && 'code' in e ? (e as { code?: string }).code : undefined;
+        e instanceof Error && 'code' in e
+          ? (e as { code?: string }).code
+          : undefined;
       if (code !== 'EEXIST') {
         throw new DatabaseError(
           `Failed to create database directory: ${e instanceof Error ? e.message : String(e)}`,
@@ -124,12 +123,12 @@ export class MetadataDBService {
   private generateLshKeys(
     pHashHex: string | null,
   ): [string | null, string | null, string | null, string | null] {
-    const keys: [
-      string | null,
-      string | null,
-      string | null,
-      string | null,
-    ] = [null, null, null, null];
+    const keys: [string | null, string | null, string | null, string | null] = [
+      null,
+      null,
+      null,
+      null,
+    ];
     if (pHashHex && pHashHex.length === 16) {
       // Expect 64-bit hash (16 hex chars)
       keys[0] = pHashHex.substring(0, 4);

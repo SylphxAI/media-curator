@@ -1,15 +1,14 @@
 import { CliReporter } from '../../src/reporting/CliReporter.js';
 // Removed unused chalk, cliProgress, Spinner imports
 
-import type {
-  SpyInstance} from 'vitest';
+import type { SpyInstance } from 'vitest';
 import {
   vi, // Import vi
   describe,
   it,
   expect,
   beforeEach,
-  afterEach // Import SpyInstance type
+  afterEach, // Import SpyInstance type
 } from 'vitest'; // Import from vitest
 
 // --- Mocking Dependencies ---

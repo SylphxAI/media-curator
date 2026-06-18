@@ -3,7 +3,7 @@ import type { MediaComparator } from '../MediaComparator.js';
 // Removed Spinner import
 import type { CliReporter } from './reporting/CliReporter.js'; // Import reporter
 import type { MetadataDBService } from './services/MetadataDBService.js'; // Removed unused FileInfoRow import
-import type { AppResult} from './errors.js';
+import type { AppResult } from './errors.js';
 import { err, ok, DatabaseError } from './errors.js'; // Import error types
 import {
   mergeAndDeduplicateClusters,

@@ -7,7 +7,8 @@ import type {
   FileProcessorConfig,
   FileInfo,
   FileStatsConfig,
-  AdaptiveExtractionConfig} from '../src/types.js';
+  AdaptiveExtractionConfig,
+} from '../src/types.js';
 import {
   GatherFileInfoResult,
   FileType,

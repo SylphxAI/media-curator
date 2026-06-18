@@ -3,16 +3,12 @@ import type { RootDatabase, Database } from 'lmdb';
 import { Mutex } from 'async-mutex';
 import * as msgpack from '@msgpack/msgpack';
 import { deepEqual } from 'fast-equals'; // Using fast-equals for deep comparison
-import { bufferToSharedArrayBuffer, sharedArrayBufferToBuffer } from '../utils.js'; // Assuming these exist in utils
-import type {
-  AppResult} from '../errors.js';
 import {
-  ok,
-  err,
-  DatabaseError,
-  safeTry,
-  safeTryAsync,
-} from '../errors.js'; // Removed unused UnknownError
+  bufferToSharedArrayBuffer,
+  sharedArrayBufferToBuffer,
+} from '../utils.js'; // Assuming these exist in utils
+import type { AppResult } from '../errors.js';
+import { ok, err, DatabaseError, safeTry, safeTryAsync } from '../errors.js'; // Removed unused UnknownError
 
 // Define interfaces for cache results
 export interface CacheResult<T> {
@@ -41,9 +37,7 @@ export class LmdbCache {
   }
 
   // Static factory method for asynchronous initialization
-  static async create(
-    dbPath = '.mediadb',
-  ): Promise<AppResult<LmdbCache>> {
+  static async create(dbPath = '.mediadb'): Promise<AppResult<LmdbCache>> {
     try {
       const rootDb = lmdb.open({ path: dbPath, compression: true });
       console.log(`LMDB root database opened at: ${dbPath}`);

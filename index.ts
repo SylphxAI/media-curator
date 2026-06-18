@@ -3,11 +3,12 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import type {
   FileProcessorConfig, // Added FileProcessorConfig
-  SimilarityConfig} from './src/types.js';
+  SimilarityConfig,
+} from './src/types.js';
 import {
   type ProgramOptions,
   type DeduplicationResult,
-  type GatherFileInfoResult // Added SimilarityConfig
+  type GatherFileInfoResult, // Added SimilarityConfig
 } from './src/types.js';
 // import { MediaOrganizer } from "./MediaOrganizer"; // Removed old class import
 import os from 'os';

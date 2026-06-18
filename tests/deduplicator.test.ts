@@ -11,10 +11,9 @@ import type {
   MediaInfo,
   DuplicateSet,
   FileStats,
-  Metadata} from '../src/types.js';
-import {
-  DeduplicationResult
+  Metadata,
 } from '../src/types.js';
+import { DeduplicationResult } from '../src/types.js';
 import type { AppResult } from '../src/errors.js';
 import { ok, err, AppError, DatabaseError } from '../src/errors.js';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';

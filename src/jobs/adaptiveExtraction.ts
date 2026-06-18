@@ -2,10 +2,9 @@ import type {
   AdaptiveExtractionConfig,
   MediaInfo,
   FrameInfo,
-  FileStatsConfig} from '../types.js';
-import {
-  FileType
+  FileStatsConfig,
 } from '../types.js';
+import { FileType } from '../types.js';
 import type { LmdbCache } from '../caching/LmdbCache.js';
 import { getFileType } from '../utils.js'; // getFileType needs AppResult handling
 import { getFileStatsHashKey } from './fileStats.js';
@@ -22,8 +21,7 @@ import {
   addOutputOptions,
 } from '../external/FFmpegServiceWrapper.js'; // TODO: Refactor these
 import type { WorkerPool } from '../contexts/types.js';
-import type {
-  AppResult} from '../errors.js';
+import type { AppResult } from '../errors.js';
 import {
   ok,
   err,

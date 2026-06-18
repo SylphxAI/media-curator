@@ -14,10 +14,10 @@ import type {
 import type { LmdbCache } from './src/caching/LmdbCache.js'; // Added cache import
 import type { ExifTool } from 'exiftool-vendored'; // Added exiftool import
 import { processSingleFile } from './src/fileProcessor.js'; // Added file processor function import
-import type { VPNode} from './VPTree.js';
+import type { VPNode } from './VPTree.js';
 import { VPTree } from './VPTree.js';
 import { filterAsync, mapAsync } from './src/utils.js';
-import type { AppResult} from './src/errors.js';
+import type { AppResult } from './src/errors.js';
 import { ok, err, AppError } from './src/errors.js'; // Removed unused AnyAppError, UnknownError
 import {
   calculateImageSimilarity,
@@ -481,7 +481,6 @@ export class MediaComparator {
   // getQuality moved to comparatorUtils.ts
 
   // handleMultiFrameBest logic moved into selectRepresentativesFromScored in comparatorUtils.ts
-
 
   // Public for potential use in DebugReporter
   // calculateEntryScore moved to comparatorUtils.ts

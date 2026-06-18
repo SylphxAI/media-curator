@@ -9,20 +9,16 @@ import {
 import { join } from 'path'; // Import join
 // import * as fsPromises from "fs/promises"; // Don't import directly when mocking
 
-import type {
-  Dirent} from 'fs';
-import {
-  mkdirSync,
-  readdirSync,
-  rmSync,
-  existsSync,
-  writeFileSync
-} from 'fs'; // Use sync fs methods, keep only one Dirent import
+import type { Dirent } from 'fs';
+import { mkdirSync, readdirSync, rmSync, existsSync, writeFileSync } from 'fs'; // Use sync fs methods, keep only one Dirent import
 
 // --- Now import the module that uses the mocked fs/promises ---
 import { transferFilesFn } from '../src/transfer.js'; // Import AFTER mock
 // Import other necessary types/classes
-import type { GatherFileInfoResult, DeduplicationResult } from '../src/types.js';
+import type {
+  GatherFileInfoResult,
+  DeduplicationResult,
+} from '../src/types.js';
 import type { DebugReporter } from '../src/reporting/DebugReporter.js';
 import type { FileTransferService } from '../src/services/FileTransferService.js'; // Import FileTransferService
 import { CliReporter } from '../src/reporting/CliReporter.js';

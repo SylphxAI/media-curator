@@ -1,10 +1,7 @@
 import { deduplicateFilesFn } from '../src/deduplicator.js';
 import { MediaComparator } from '../MediaComparator.js';
-import type {
-  FileInfoRow} from '../src/services/MetadataDBService.js';
-import {
-  MetadataDBService
-} from '../src/services/MetadataDBService.js';
+import type { FileInfoRow } from '../src/services/MetadataDBService.js';
+import { MetadataDBService } from '../src/services/MetadataDBService.js';
 import { CliReporter } from '../src/reporting/CliReporter.js';
 // Consolidate imports from ../src/types
 import type {

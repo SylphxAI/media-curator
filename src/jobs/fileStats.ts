@@ -5,7 +5,7 @@ import {
   calculateFileHash,
   sharedArrayBufferToHex,
 } from '../utils.js';
-import type { AppResult} from '../errors.js';
+import type { AppResult } from '../errors.js';
 import { ok, err, DatabaseError } from '../errors.js'; // Removed unused AnyAppError
 
 const JOB_NAME = 'fileStats'; // Define job name constant

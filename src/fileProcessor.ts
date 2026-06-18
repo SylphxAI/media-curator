@@ -5,7 +5,7 @@ import type { WorkerPool } from './contexts/types.js';
 import { processFileStats } from './jobs/fileStats.js'; // Returns AppResult<FileStats>
 import { processMetadata } from './jobs/metadataExtraction.js'; // Returns AppResult<Metadata>
 import { processAdaptiveExtraction } from './jobs/adaptiveExtraction.js'; // Returns AppResult<MediaInfo>
-import type { AppResult} from './errors.js';
+import type { AppResult } from './errors.js';
 import { ok, err } from './errors.js'; // Removed unused AnyAppError
 
 // FileProcessorConfig interface moved to src/types.ts

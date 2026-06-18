@@ -5,7 +5,7 @@ import type {
   SimilarityConfig,
   WasmExports,
 } from './types.js';
-import type { AppResult} from './errors.js';
+import type { AppResult } from './errors.js';
 import { ok, err, AppError } from './errors.js'; // Added AppResult imports
 
 // Popcount for 8-bit numbers

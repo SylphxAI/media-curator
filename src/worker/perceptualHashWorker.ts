@@ -3,7 +3,7 @@ import {
   computeFastDCT,
   computeHashFromDCT,
 } from '../utils.js'; // Removed unused quickSelect
-import type { AppResult} from '../errors.js';
+import type { AppResult } from '../errors.js';
 import { ok, err } from '../errors.js'; // Import AppResult types
 
 // Removed duplicate import

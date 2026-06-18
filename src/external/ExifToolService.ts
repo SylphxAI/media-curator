@@ -1,6 +1,6 @@
 import type { Tags } from 'exiftool-vendored';
 import { ExifTool } from 'exiftool-vendored';
-import type { AppResult} from '../errors.js';
+import type { AppResult } from '../errors.js';
 import { ExternalToolError, safeTryAsync } from '../errors.js'; // Removed unused ok, err
 
 /**

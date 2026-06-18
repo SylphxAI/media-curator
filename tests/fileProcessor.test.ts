@@ -8,10 +8,9 @@ import type {
   Metadata,
   MediaInfo,
   FileStatsConfig,
-  AdaptiveExtractionConfig} from '../src/types.js';
-import {
-  FileInfo
+  AdaptiveExtractionConfig,
 } from '../src/types.js';
+import { FileInfo } from '../src/types.js';
 import type { LmdbCache } from '../src/caching/LmdbCache.js';
 import type { ExifTool } from 'exiftool-vendored';
 import type { WorkerPool } from '../src/contexts/types.js';

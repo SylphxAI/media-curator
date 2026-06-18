@@ -15,7 +15,7 @@ import {
   // Removed unused SUPPORTED_EXTENSIONS
 } from '../src/utils.js';
 import { FileType } from '../src/types.js';
-import type { AppResult} from '../src/errors.js';
+import type { AppResult } from '../src/errors.js';
 import { ok, err, ValidationError } from '../src/errors.js'; // Add err back
 import type { Tags } from 'exiftool-vendored'; // Import Tags type
 import { Buffer } from 'buffer'; // Ensure Buffer is imported

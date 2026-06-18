@@ -28,18 +28,16 @@ import type {
   WasmExports, // Added WasmExports import
 } from '../src/types.js'; // Removed unused FileType
 import { hexToSharedArrayBuffer } from '../src/utils.js';
-import { AppResult, ok, err, AppError, ValidationError } from '../src/errors.js';
-import * as comparatorUtils from '../src/comparatorUtils.js';
-import type {
-  SpyInstance} from 'vitest';
 import {
-  vi,
-  describe,
-  it,
-  expect,
-  beforeEach,
-  afterEach
-} from 'vitest';
+  AppResult,
+  ok,
+  err,
+  AppError,
+  ValidationError,
+} from '../src/errors.js';
+import * as comparatorUtils from '../src/comparatorUtils.js';
+import type { SpyInstance } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { Buffer } from 'buffer'; // Ensure Buffer is imported
 import { Tags } from 'exiftool-vendored'; // Import Tags type
 

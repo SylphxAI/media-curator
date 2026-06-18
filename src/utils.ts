@@ -6,8 +6,7 @@ import { createHash } from 'crypto';
 import type { Stats } from 'fs';
 import { createReadStream } from 'fs';
 import { stat } from 'fs/promises';
-import type {
-  AppResult} from './errors.js';
+import type { AppResult } from './errors.js';
 import {
   ok,
   err,
@@ -128,9 +127,7 @@ export async function filterAsync<T>(
   filter: (item: T) => Promise<AppResult<boolean>>,
 ): Promise<AppResult<T[]>> {
   const results = await Promise.all(
-    arr.map(
-      async (item) => [item, await safeTryAsync(filter(item))] as const,
-    ),
+    arr.map(async (item) => [item, await safeTryAsync(filter(item))] as const),
   );
   const filtered: T[] = [];
   for (const [item, result] of results) {
@@ -234,10 +231,7 @@ export async function calculateFileHash(
 ): Promise<AppResult<SharedArrayBuffer>> {
   const hash = createHash('md5');
 
-  const hashPart = (
-    start = 0,
-    size?: number,
-  ): Promise<AppResult<void>> => {
+  const hashPart = (start = 0, size?: number): Promise<AppResult<void>> => {
     // Correct return type annotation
     return new Promise<AppResult<void>>((resolve) => {
       // Resolve with AppResult
@@ -493,7 +487,8 @@ export function computeFastDCT(
         // Indices are mathematically in-bounds; `?? 0` only narrows the
         // typed-array element type for noUncheckedIndexedAccess (the fallback
         // is never taken and 0 is the additive identity).
-        sum += (input[y * size + x] ?? 0) * (dctCoefficients[coeffOffset + x] ?? 0);
+        sum +=
+          (input[y * size + x] ?? 0) * (dctCoefficients[coeffOffset + x] ?? 0);
       }
       temp[u] = (normFactors[u] ?? 0) * sum; // Apply row normalization factor
     }
@@ -526,7 +521,8 @@ export function computeFastDCT(
       const outputOffset = v * hashSize;
       for (let u = 0; u < hashSize; u++) {
         const outIdx = outputOffset + u;
-        output[outIdx] = (output[outIdx] ?? 0) + normFactor * (temp[u] ?? 0) * vCoeff;
+        output[outIdx] =
+          (output[outIdx] ?? 0) + normFactor * (temp[u] ?? 0) * vCoeff;
       }
     }
   }
