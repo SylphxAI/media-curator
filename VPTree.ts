@@ -40,7 +40,10 @@ export class VPTree<T> {
 
     const vantagePointIndex = Math.floor(Math.random() * points.length);
     const vantagePoint = points[vantagePointIndex];
-    points[vantagePointIndex] = points[points.length - 1];
+    const lastPoint = points[points.length - 1];
+    // points.length > 0 here, so both indices are in bounds.
+    if (vantagePoint === undefined || lastPoint === undefined) return null;
+    points[vantagePointIndex] = lastPoint;
     points.pop();
 
     if (points.length === 0) {
@@ -48,19 +51,22 @@ export class VPTree<T> {
     }
 
     const distances = await Promise.all(
-      points.map((p) => distance(vantagePoint, p)),
+      points.map(async (p) => [p, await distance(vantagePoint, p)] as const),
     );
     const medianIndex = Math.floor(points.length / 2);
-    const threshold = this.quickSelect(distances, medianIndex);
+    const threshold = this.quickSelect(
+      distances.map(([, d]) => d),
+      medianIndex,
+    );
 
     const leftPoints: T[] = [];
     const rightPoints: T[] = [];
 
-    for (let i = 0; i < points.length; i++) {
-      if (distances[i] < threshold) {
-        leftPoints.push(points[i]);
+    for (const [point, d] of distances) {
+      if (d < threshold) {
+        leftPoints.push(point);
       } else {
-        rightPoints.push(points[i]);
+        rightPoints.push(point);
       }
     }
 
@@ -73,9 +79,10 @@ export class VPTree<T> {
   }
 
   private static quickSelect(arr: number[], k: number): number {
-    if (arr.length === 1) return arr[0];
+    const first = arr[0];
+    if (arr.length === 1 && first !== undefined) return first;
 
-    const pivot = arr[Math.floor(Math.random() * arr.length)];
+    const pivot = arr[Math.floor(Math.random() * arr.length)] ?? 0;
     const left = arr.filter((x) => x < pivot);
     const equal = arr.filter((x) => x === pivot);
     const right = arr.filter((x) => x > pivot);
