@@ -102,8 +102,7 @@ const mockComparator = new MediaComparator(
   {} as any,
   {} as any,
   {} as any,
-  {} as any,
-); // Provide 6 args
+); // Provide 5 args
 const mockDbService = new MetadataDBService(':memory:');
 const mockReporter = new CliReporter(false);
 

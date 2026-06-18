@@ -4,7 +4,6 @@ import type {
   FileInfo,
   // FrameInfo, // Removed unused import
   SimilarityConfig,
-  ProgramOptions,
   FileProcessor,
   // WorkerData, // Removed unused import
   // MaybePromise, // Removed unused import
@@ -52,7 +51,6 @@ export class MediaComparator {
     private readonly fileProcessorConfig: FileProcessorConfig, // Removed @inject()
     private readonly exifTool: ExifTool, // Removed @inject()
     private readonly similarityConfig: SimilarityConfig,
-    private readonly options: ProgramOptions,
     private readonly workerPool: WorkerPool, // Removed @inject() - WorkerPool might still be needed for pHash
   ) {
     this.minThreshold = Math.min(
@@ -338,7 +336,8 @@ export class MediaComparator {
         }
         const representatives = representativesResult.value;
         // Ensure representatives is not empty before proceeding
-        if (representatives.length > 0) {
+        const bestFile = representatives[0];
+        if (bestFile !== undefined) {
           const representativeSet = new Set(representatives);
           const duplicateSet = new Set(
             clusterArray.filter((f) => !representativeSet.has(f)),
@@ -347,13 +346,13 @@ export class MediaComparator {
           // Only add if there are actual duplicates
           if (duplicateSet.size > 0 || representativeSet.size > 1) {
             duplicateSets.push({
-              bestFile: representatives[0], // Assume first representative is 'best' for folder naming
+              bestFile, // Assume first representative is 'best' for folder naming
               representatives: representativeSet,
               duplicates: duplicateSet,
             });
           } else {
             // If only one representative and no duplicates, treat as unique
-            uniqueFiles.add(representatives[0]);
+            uniqueFiles.add(bestFile);
           }
         } else {
           // Handle cases where no representative could be selected (should not happen ideally)
@@ -483,43 +482,6 @@ export class MediaComparator {
 
   // handleMultiFrameBest logic moved into selectRepresentativesFromScored in comparatorUtils.ts
 
-  private async scoreEntries(
-    entries: string[],
-    selector: FileProcessor,
-  ): Promise<AppResult<string[]>> {
-    // Update return type
-    // Fetch FileInfo for all entries concurrently
-    const entriesWithInfoResult = await mapAsync(
-      entries,
-      async (
-        entry,
-      ): Promise<AppResult<{ entry: string; fileInfo: FileInfo }>> => {
-        const fileInfoResult = await selector(entry); // selector returns AppResult<FileInfo>
-        if (fileInfoResult.isErr()) {
-          // Propagate error if file processing fails
-          return err(
-            new AppError(`Failed processing ${entry} in scoreEntries`, {
-              cause: fileInfoResult.error, // Use cause
-            }),
-          );
-        }
-        return ok({ entry, fileInfo: fileInfoResult.value }); // Return Ok result
-      },
-    );
-
-    if (entriesWithInfoResult.isErr()) {
-      return err(entriesWithInfoResult.error); // Propagate error
-    }
-    const entriesWithInfo: { entry: string; fileInfo: FileInfo }[] =
-      entriesWithInfoResult.value; // Unwrap with explicit type
-
-    // Score and sort using the utility function
-    const sortedScoredEntries = sortEntriesByScore(entriesWithInfo); // Use imported function
-
-    // Return just the sorted entry paths
-    // Assuming sortEntriesByScore doesn't throw and returns the expected type
-    return ok(sortedScoredEntries.map((scored) => scored.entry));
-  }
 
   // Public for potential use in DebugReporter
   // calculateEntryScore moved to comparatorUtils.ts
@@ -529,11 +491,11 @@ export class MediaComparator {
     const isImage2 = media2.duration === 0;
 
     if (isImage1 && isImage2) {
-      return calculateImageSimilarity(
-        media1.frames[0],
-        media2.frames[0],
-        this.wasmExports,
-      ); // Use imported function
+      const frame1 = media1.frames[0];
+      const frame2 = media2.frames[0];
+      // An image with no extracted frame cannot be compared; treat as dissimilar.
+      if (frame1 === undefined || frame2 === undefined) return 0;
+      return calculateImageSimilarity(frame1, frame2, this.wasmExports); // Use imported function
     } else if (isImage1 || isImage2) {
       return calculateImageVideoSimilarity(
         // Use imported function
@@ -561,15 +523,5 @@ export class MediaComparator {
   // getFramesInTimeRange moved to comparatorUtils.ts
 
   // calculateSequenceSimilarityDTW moved to comparatorUtils.ts
-
-  private getAdaptiveThreshold(media1: MediaInfo, media2: MediaInfo): number {
-    const isImage1 = media1.duration === 0;
-    const isImage2 = media2.duration === 0;
-
-    if (isImage1 && isImage2)
-      return this.similarityConfig.imageSimilarityThreshold;
-    if (isImage1 || isImage2)
-      return this.similarityConfig.imageVideoSimilarityThreshold;
-    return this.similarityConfig.videoSimilarityThreshold;
-  }
+  // getAdaptiveThreshold moved to comparatorUtils.ts
 }

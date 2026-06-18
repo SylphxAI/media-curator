@@ -216,7 +216,6 @@ describe.skip('deduplicateFilesFn Integration Tests (Skipped in Bun)', () => {
       mockFileProcessorConfig, // Use mock config
       mockExifToolInstance, // Use mock exiftool
       similarityConfig, // Use the test's similarity config
-      programOptions, // Use the mock program options
       mockWorkerPoolInstance, // Use mock worker pool
     );
 

@@ -242,7 +242,6 @@ async function main() {
       fileProcessorConfig,
       exifTool,
       similarityConfig,
-      options,
       workerPool,
     );
     // Instantiate DebugReporter with dependencies
