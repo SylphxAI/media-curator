@@ -1,0 +1,17 @@
+# Git hooks managed by lefthook (migrated from husky).
+# Faithful translation of the previous .husky/pre-commit hook:
+#   bunx vitest run --exclude <5 integration/heavy tests>
+#   bunx prettier --check .
+# The previously commented-out `bunx eslint .` line was disabled in husky and
+# is intentionally left disabled here.
+
+pre-commit:
+  # Preserve the original ordering of the husky script (vitest, then prettier).
+  parallel: false
+  commands:
+    vitest:
+      priority: 1
+      run: bunx vitest run --exclude tests/comparatorUtils.test.ts --exclude tests/discovery.test.ts --exclude tests/services/MetadataDBService.integration.test.ts --exclude tests/deduplicator.integration.test.ts --exclude tests/gatherer.integration.test.ts
+    prettier-check:
+      priority: 2
+      run: bunx prettier --check .
