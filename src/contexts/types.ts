@@ -1,5 +1,5 @@
 import type workerpool from 'workerpool';
-import type { CustomWorker } from '../worker/worker';
+import type { CustomWorker } from '../worker/worker.js';
 
 export const Types = {
   WorkerPool: Symbol.for('WorkerPool'),

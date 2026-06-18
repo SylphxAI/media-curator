@@ -1,19 +1,19 @@
 import type {
   FileInfo,
-  FileProcessorConfig} from './types';
+  FileProcessorConfig} from './types.js';
 import {
   FileStats,
   Metadata,
   MediaInfo,
-} from './types'; // Removed unused FileStatsConfig, AdaptiveExtractionConfig
-import type { LmdbCache } from './caching/LmdbCache';
+} from './types.js'; // Removed unused FileStatsConfig, AdaptiveExtractionConfig
+import type { LmdbCache } from './caching/LmdbCache.js';
 import type { ExifTool } from 'exiftool-vendored';
-import type { WorkerPool } from './contexts/types';
-import { processFileStats } from './jobs/fileStats'; // Returns AppResult<FileStats>
-import { processMetadata } from './jobs/metadataExtraction'; // Returns AppResult<Metadata>
-import { processAdaptiveExtraction } from './jobs/adaptiveExtraction'; // Returns AppResult<MediaInfo>
-import type { AppResult} from './errors';
-import { ok, err } from './errors'; // Removed unused AnyAppError
+import type { WorkerPool } from './contexts/types.js';
+import { processFileStats } from './jobs/fileStats.js'; // Returns AppResult<FileStats>
+import { processMetadata } from './jobs/metadataExtraction.js'; // Returns AppResult<Metadata>
+import { processAdaptiveExtraction } from './jobs/adaptiveExtraction.js'; // Returns AppResult<MediaInfo>
+import type { AppResult} from './errors.js';
+import { ok, err } from './errors.js'; // Removed unused AnyAppError
 
 // FileProcessorConfig interface moved to src/types.ts
 

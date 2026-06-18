@@ -1,11 +1,11 @@
-import type { Metadata, FileStatsConfig } from '../types'; // Combined imports
-import type { LmdbCache } from '../caching/LmdbCache';
+import type { Metadata, FileStatsConfig } from '../types.js'; // Combined imports
+import type { LmdbCache } from '../caching/LmdbCache.js';
 import type { ExifTool } from 'exiftool-vendored'; // Removed unused Tags
-import { readExifTags } from '../external/ExifToolService'; // TODO: Refactor this to return AppResult
-import { parseExifTagsToMetadata } from '../utils'; // TODO: Refactor this to return AppResult
-import { getFileStatsHashKey } from './fileStats';
-import type { AppResult} from '../errors';
-import { ok, err } from '../errors'; // Removed unused DatabaseError, ExternalToolError, AnyAppError
+import { readExifTags } from '../external/ExifToolService.js'; // TODO: Refactor this to return AppResult
+import { parseExifTagsToMetadata } from '../utils.js'; // TODO: Refactor this to return AppResult
+import { getFileStatsHashKey } from './fileStats.js';
+import type { AppResult} from '../errors.js';
+import { ok, err } from '../errors.js'; // Removed unused DatabaseError, ExternalToolError, AnyAppError
 
 const JOB_NAME = 'metadataExtraction'; // Define job name constant
 

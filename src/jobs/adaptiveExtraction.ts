@@ -2,28 +2,28 @@ import type {
   AdaptiveExtractionConfig,
   MediaInfo,
   FrameInfo,
-  FileStatsConfig} from '../types';
+  FileStatsConfig} from '../types.js';
 import {
   FileType
-} from '../types';
-import type { LmdbCache } from '../caching/LmdbCache';
-import { getFileType } from '../utils'; // getFileType needs AppResult handling
-import { getFileStatsHashKey } from './fileStats';
+} from '../types.js';
+import type { LmdbCache } from '../caching/LmdbCache.js';
+import { getFileType } from '../utils.js'; // getFileType needs AppResult handling
+import { getFileStatsHashKey } from './fileStats.js';
 import {
   createSharpInstance,
   resizeImage,
   grayscaleImage,
   imageToBuffer,
-} from '../external/SharpServiceWrapper'; // TODO: Refactor these
+} from '../external/SharpServiceWrapper.js'; // TODO: Refactor these
 import {
   createFFmpegCommand,
   probeFile,
   applyVideoFilters,
   addOutputOptions,
-} from '../external/FFmpegServiceWrapper'; // TODO: Refactor these
-import type { WorkerPool } from '../contexts/types';
+} from '../external/FFmpegServiceWrapper.js'; // TODO: Refactor these
+import type { WorkerPool } from '../contexts/types.js';
 import type {
-  AppResult} from '../errors';
+  AppResult} from '../errors.js';
 import {
   ok,
   err,
@@ -34,7 +34,7 @@ import {
   AppError,
   safeTry,
   safeTryAsync,
-} from '../errors'; // Added AppError
+} from '../errors.js'; // Added AppError
 
 const JOB_NAME = 'adaptiveExtraction'; // Define job name constant
 

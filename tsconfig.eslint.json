@@ -1,0 +1,21 @@
+{
+  // Type-aware linting needs every linted file to belong to a TS project.
+  // The main tsconfig.json intentionally compiles only `src/**` (the shipped
+  // build), so the root entrypoints and the test suite fall outside it and
+  // type-aware ESLint rules error with "file was not found in any project".
+  // This config extends the strict base and widens `include` to the full set
+  // of files ESLint targets. It is lint-only (noEmit) and is never built.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts",
+    "index.ts",
+    "MediaComparator.ts",
+    "MediaOrganizer.ts",
+    "VPTree.ts"
+  ],
+  "exclude": ["node_modules", "dist", "build", "assembly"]
+}

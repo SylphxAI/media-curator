@@ -1,5 +1,5 @@
-import type { VPNode } from '../VPTree';
-import type { AppResult } from './errors'; // Import AppResult
+import type { VPNode } from '../VPTree.js';
+import type { AppResult } from './errors.js'; // Import AppResult
 
 // Removed redundant error interface definitions (using classes from src/errors.ts instead)
 

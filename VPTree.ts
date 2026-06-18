@@ -1,4 +1,4 @@
-import { MaybePromise } from './src/types';
+import { MaybePromise } from './src/types.js';
 
 export interface VPNode<T> {
   point: T;

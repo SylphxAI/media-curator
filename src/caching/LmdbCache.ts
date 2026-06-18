@@ -3,16 +3,16 @@ import type { RootDatabase, Database } from 'lmdb';
 import { Mutex } from 'async-mutex';
 import * as msgpack from '@msgpack/msgpack';
 import { deepEqual } from 'fast-equals'; // Using fast-equals for deep comparison
-import { bufferToSharedArrayBuffer, sharedArrayBufferToBuffer } from '../utils'; // Assuming these exist in utils
+import { bufferToSharedArrayBuffer, sharedArrayBufferToBuffer } from '../utils.js'; // Assuming these exist in utils
 import type {
-  AppResult} from '../errors';
+  AppResult} from '../errors.js';
 import {
   ok,
   err,
   DatabaseError,
   safeTry,
   safeTryAsync,
-} from '../errors'; // Removed unused UnknownError
+} from '../errors.js'; // Removed unused UnknownError
 
 // Define interfaces for cache results
 export interface CacheResult<T> {

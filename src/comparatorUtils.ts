@@ -4,9 +4,9 @@ import type {
   MediaInfo,
   SimilarityConfig,
   WasmExports,
-} from './types';
-import type { AppResult} from './errors';
-import { ok, err, AppError } from './errors'; // Added AppResult imports
+} from './types.js';
+import type { AppResult} from './errors.js';
+import { ok, err, AppError } from './errors.js'; // Added AppResult imports
 
 // Popcount for 8-bit numbers
 export function popcount8(n: number): number {

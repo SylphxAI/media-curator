@@ -2,9 +2,9 @@ import {
   createDCTConstants,
   computeFastDCT,
   computeHashFromDCT,
-} from '../utils'; // Removed unused quickSelect
-import type { AppResult} from '../errors';
-import { ok, err } from '../errors'; // Import AppResult types
+} from '../utils.js'; // Removed unused quickSelect
+import type { AppResult} from '../errors.js';
+import { ok, err } from '../errors.js'; // Import AppResult types
 
 // Removed duplicate import
 export class PerceptualHashWorker {

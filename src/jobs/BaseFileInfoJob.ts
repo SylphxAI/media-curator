@@ -1,7 +1,7 @@
 // Removed Mutex, DatabaseContext, Database, eql, buffer/sharedBuffer utils, MemoryCache, postConstruct
-import type { LmdbCache } from '../caching/LmdbCache'; // Removed unused CacheResult, ConfigCheckResult
-import type { AppResult} from '../errors';
-import { ok, err } from '../errors'; // Removed unused AnyAppError
+import type { LmdbCache } from '../caching/LmdbCache.js'; // Removed unused CacheResult, ConfigCheckResult
+import type { AppResult} from '../errors.js';
+import { ok, err } from '../errors.js'; // Removed unused AnyAppError
 // import { inject, injectable } from "inversify"; // REMOVED INVERSIFY
 // import { LmdbCache } from "../caching/LmdbCache"; // Ensure LmdbCache is imported for constructor - REMOVED DUPLICATE
 

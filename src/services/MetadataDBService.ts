@@ -1,9 +1,9 @@
 import type { Database as DB } from 'better-sqlite3';
 import Database from 'better-sqlite3';
-import type { FileInfo } from '../types'; // Removed unused FileStats, Metadata, MediaInfo
-import type { AppResult} from '../errors';
-import { ok, DatabaseError, safeTry } from '../errors'; // Removed unused err
-import { bufferToSharedArrayBuffer } from '../utils'; // Import buffer utility
+import type { FileInfo } from '../types.js'; // Removed unused FileStats, Metadata, MediaInfo
+import type { AppResult} from '../errors.js';
+import { ok, DatabaseError, safeTry } from '../errors.js'; // Removed unused err
+import { bufferToSharedArrayBuffer } from '../utils.js'; // Import buffer utility
 import { join } from 'path';
 import { mkdirSync } from 'fs';
 

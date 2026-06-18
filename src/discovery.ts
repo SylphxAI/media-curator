@@ -4,9 +4,9 @@ import { Semaphore } from 'async-mutex';
 import chalk from 'chalk'; // Re-add chalk for specific formatting
 // Removed Spinner import
 // Removed chalk import
-import { ALL_SUPPORTED_EXTENSIONS, getFileTypeByExt } from './utils'; // Assuming utils is in parent dir
-import type { CliReporter } from './reporting/CliReporter'; // Import reporter
-import { FileSystemError, safeTryAsync } from './errors'; // Removed unused AppResult, ok, err
+import { ALL_SUPPORTED_EXTENSIONS, getFileTypeByExt } from './utils.js'; // Assuming utils is in parent dir
+import type { CliReporter } from './reporting/CliReporter.js'; // Import reporter
+import { FileSystemError, safeTryAsync } from './errors.js'; // Removed unused AppResult, ok, err
 
 /**
  * Discovers supported media files recursively within source directories.

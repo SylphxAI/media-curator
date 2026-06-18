@@ -7,7 +7,7 @@
 // Option B: Pass relevant FileInfo subset via workerData (memory intensive?)
 // Option C: Refactor distance to not need full FileInfo (ideal?)
 import workerpool from 'workerpool';
-import { PerceptualHashWorker } from './perceptualHashWorker';
+import { PerceptualHashWorker } from './perceptualHashWorker.js';
 // DBSCANWorkerData interface is now imported from types.ts
 
 // Removed performDBSCAN function as DBSCAN now runs on main thread

@@ -11,12 +11,12 @@ import type {
   DeduplicationResult,
   GatherFileInfoResult,
   FileProcessorConfig,
-} from '../types';
+} from '../types.js';
 // import { MediaProcessor } from "../MediaProcessor"; // REMOVED - Replaced by processSingleFile function
-import { processSingleFile } from '../fileProcessor';
-import type { AppResult } from '../errors'; // Import AppResult for return type handling
-import type { LmdbCache } from '../caching/LmdbCache';
-import type { WorkerPool } from '../contexts/types';
+import { processSingleFile } from '../fileProcessor.js';
+import type { AppResult } from '../errors.js'; // Import AppResult for return type handling
+import type { LmdbCache } from '../caching/LmdbCache.js';
+import type { WorkerPool } from '../contexts/types.js';
 
 // @injectable() // REMOVED INVERSIFY
 export class FileTransferService {

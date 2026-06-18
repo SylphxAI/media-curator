@@ -10,14 +10,14 @@ import {
   // MaybePromise, // Removed unused import
   WasmExports,
   FileProcessorConfig, // Added config type
-} from './src/types';
+} from './src/types.js';
 // import { MediaProcessor } from "./src/MediaProcessor"; // Removed old import
-import { LmdbCache } from './src/caching/LmdbCache'; // Added cache import
+import { LmdbCache } from './src/caching/LmdbCache.js'; // Added cache import
 import { ExifTool } from 'exiftool-vendored'; // Added exiftool import
-import { processSingleFile } from './src/fileProcessor'; // Added file processor function import
-import { VPNode, VPTree } from './VPTree';
-import { filterAsync, mapAsync } from './src/utils';
-import { ok, err, AppResult, AppError } from './src/errors'; // Removed unused AnyAppError, UnknownError
+import { processSingleFile } from './src/fileProcessor.js'; // Added file processor function import
+import { VPNode, VPTree } from './VPTree.js';
+import { filterAsync, mapAsync } from './src/utils.js';
+import { ok, err, AppResult, AppError } from './src/errors.js'; // Removed unused AnyAppError, UnknownError
 import {
   calculateImageSimilarity,
   calculateImageVideoSimilarity, // Keep this import
@@ -30,9 +30,9 @@ import {
   // Import the newly moved functions
   calculateVideoSimilarity, // Keep this import
   // getFramesInTimeRange, // Removed unused import
-} from './src/comparatorUtils'; // Import runDbscanCore, Removed expandCluster
+} from './src/comparatorUtils.js'; // Import runDbscanCore, Removed expandCluster
 // Removed inversify imports
-import { type WorkerPool } from './src/contexts/types'; // Removed unused Types import
+import { type WorkerPool } from './src/contexts/types.js'; // Removed unused Types import
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 

@@ -1,5 +1,5 @@
-import type { Metadata } from './types';
-import { FileType } from './types';
+import type { Metadata } from './types.js';
+import { FileType } from './types.js';
 import { extname } from 'path';
 import type { ExifDate, ExifDateTime, Tags } from 'exiftool-vendored';
 import { createHash } from 'crypto';
@@ -7,7 +7,7 @@ import type { Stats } from 'fs';
 import { createReadStream } from 'fs';
 import { stat } from 'fs/promises';
 import type {
-  AppResult} from './errors';
+  AppResult} from './errors.js';
 import {
   ok,
   err,
@@ -18,7 +18,7 @@ import {
   safeTryAsync,
   safeTry,
   AppError,
-} from './errors'; // Removed unused AnyAppError
+} from './errors.js'; // Removed unused AnyAppError
 
 export function getFileType(filePath: string): AppResult<FileType> {
   const ext = extname(filePath).slice(1).toLowerCase();

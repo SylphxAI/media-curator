@@ -1,15 +1,15 @@
 // import { injectable } from "inversify"; // Removed unused 'inject' - REMOVED INVERSIFY
 import { writeFile } from 'fs/promises';
 import { join, relative } from 'path';
-import type { FileInfo, DuplicateSet, FileProcessorConfig } from '../types'; // Added FileProcessorConfig
+import type { FileInfo, DuplicateSet, FileProcessorConfig } from '../types.js'; // Added FileProcessorConfig
 // import { MediaProcessor } from "../MediaProcessor"; // Removed old import
-import type { MediaComparator } from '../../MediaComparator';
-import type { LmdbCache } from '../caching/LmdbCache'; // Added cache import
+import type { MediaComparator } from '../../MediaComparator.js';
+import type { LmdbCache } from '../caching/LmdbCache.js'; // Added cache import
 import type { ExifTool } from 'exiftool-vendored'; // Added exiftool import
-import type { WorkerPool } from '../contexts/types'; // Removed unused Types import
-import { processSingleFile } from '../fileProcessor'; // Added file processor function import
+import type { WorkerPool } from '../contexts/types.js'; // Removed unused Types import
+import { processSingleFile } from '../fileProcessor.js'; // Added file processor function import
 // import { inject } from "inversify"; // Added inject - REMOVED INVERSIFY
-import { calculateEntryScore } from '../comparatorUtils'; // Import the utility function
+import { calculateEntryScore } from '../comparatorUtils.js'; // Import the utility function
 
 // @injectable() // REMOVED INVERSIFY
 export class DebugReporter {

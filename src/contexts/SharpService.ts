@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import type { ProgramOptions } from '../types';
+import type { ProgramOptions } from '../types.js';
 // import { injectable } from "inversify"; // REMOVED INVERSIFY
 
 // @injectable() // REMOVED INVERSIFY

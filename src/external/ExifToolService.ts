@@ -1,7 +1,7 @@
 import type { Tags } from 'exiftool-vendored';
 import { ExifTool } from 'exiftool-vendored';
-import type { AppResult} from '../errors';
-import { ExternalToolError, safeTryAsync } from '../errors'; // Removed unused ok, err
+import type { AppResult} from '../errors.js';
+import { ExternalToolError, safeTryAsync } from '../errors.js'; // Removed unused ok, err
 
 /**
  * Reads Exif tags from a file using the provided ExifTool instance.

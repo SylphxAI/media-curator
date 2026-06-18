@@ -1,12 +1,12 @@
-import type { FileStats, FileStatsConfig } from '../types';
-import type { LmdbCache } from '../caching/LmdbCache';
+import type { FileStats, FileStatsConfig } from '../types.js';
+import type { LmdbCache } from '../caching/LmdbCache.js';
 import {
   getFileStats,
   calculateFileHash,
   sharedArrayBufferToHex,
-} from '../utils';
-import type { AppResult} from '../errors';
-import { ok, err, DatabaseError } from '../errors'; // Removed unused AnyAppError
+} from '../utils.js';
+import type { AppResult} from '../errors.js';
+import { ok, err, DatabaseError } from '../errors.js'; // Removed unused AnyAppError
 
 const JOB_NAME = 'fileStats'; // Define job name constant
 
