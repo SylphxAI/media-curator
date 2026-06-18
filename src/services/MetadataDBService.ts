@@ -1,6 +1,8 @@
-import Database, { Database as DB } from 'better-sqlite3';
-import { FileInfo } from '../types'; // Removed unused FileStats, Metadata, MediaInfo
-import { AppResult, ok, DatabaseError, safeTry } from '../errors'; // Removed unused err
+import type { Database as DB } from 'better-sqlite3';
+import Database from 'better-sqlite3';
+import type { FileInfo } from '../types'; // Removed unused FileStats, Metadata, MediaInfo
+import type { AppResult} from '../errors';
+import { ok, DatabaseError, safeTry } from '../errors'; // Removed unused err
 import { bufferToSharedArrayBuffer } from '../utils'; // Import buffer utility
 import { join } from 'path';
 import { mkdirSync } from 'fs';
@@ -29,12 +31,12 @@ export interface FileInfoRow {
 }
 
 export class MetadataDBService {
-  private db: DB;
-  private dbPath: string;
+  private readonly db: DB;
+  private readonly dbPath: string;
 
   constructor(
-    dbDirectory: string = '.mediadb',
-    dbFilename: string = 'metadata.sqlite',
+    dbDirectory = '.mediadb',
+    dbFilename = 'metadata.sqlite',
   ) {
     // Ensure the directory exists
     try {

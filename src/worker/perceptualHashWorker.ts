@@ -3,7 +3,8 @@ import {
   computeFastDCT,
   computeHashFromDCT,
 } from '../utils'; // Removed unused quickSelect
-import { AppResult, ok, err } from '../errors'; // Import AppResult types
+import type { AppResult} from '../errors';
+import { ok, err } from '../errors'; // Import AppResult types
 
 // Removed duplicate import
 export class PerceptualHashWorker {

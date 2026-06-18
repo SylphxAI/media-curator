@@ -12,7 +12,7 @@ import { PerceptualHashWorker } from './perceptualHashWorker';
 
 // Removed performDBSCAN function as DBSCAN now runs on main thread
 
-const perceptualHashWorkerMapper: Map<number, PerceptualHashWorker> = new Map();
+const perceptualHashWorkerMapper = new Map<number, PerceptualHashWorker>();
 function computePerceptualHash(
   imageBuffer: Uint8Array,
   resolution: number,

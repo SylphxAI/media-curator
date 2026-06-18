@@ -1,11 +1,14 @@
-import { FileType, Metadata } from './types';
+import type { Metadata } from './types';
+import { FileType } from './types';
 import { extname } from 'path';
-import { ExifDate, ExifDateTime, Tags } from 'exiftool-vendored';
+import type { ExifDate, ExifDateTime, Tags } from 'exiftool-vendored';
 import { createHash } from 'crypto';
-import { createReadStream, Stats } from 'fs';
+import type { Stats } from 'fs';
+import { createReadStream } from 'fs';
 import { stat } from 'fs/promises';
+import type {
+  AppResult} from './errors';
 import {
-  AppResult,
   ok,
   err,
   FileSystemError,
@@ -231,7 +234,7 @@ export async function calculateFileHash(
   const hash = createHash('md5');
 
   const hashPart = (
-    start: number = 0,
+    start = 0,
     size?: number,
   ): Promise<AppResult<void>> => {
     // Correct return type annotation
@@ -430,7 +433,7 @@ export function quickSelect(
  */
 export function createDCTConstants(
   resolution: number,
-  hashSize: number = 8,
+  hashSize = 8,
 ): { dctCoefficients: Float32Array; normFactors: Float32Array } {
   const size = resolution;
   const scale = Math.sqrt(2 / size);

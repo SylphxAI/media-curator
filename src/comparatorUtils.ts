@@ -1,11 +1,12 @@
-import {
+import type {
   FileInfo,
   FrameInfo,
   MediaInfo,
   SimilarityConfig,
   WasmExports,
 } from './types';
-import { AppResult, ok, err, AppError } from './errors'; // Added AppResult imports
+import type { AppResult} from './errors';
+import { ok, err, AppError } from './errors'; // Added AppResult imports
 
 // Popcount for 8-bit numbers
 export function popcount8(n: number): number {

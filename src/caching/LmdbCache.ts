@@ -1,11 +1,12 @@
 import * as lmdb from 'lmdb';
-import { RootDatabase, Database } from 'lmdb';
+import type { RootDatabase, Database } from 'lmdb';
 import { Mutex } from 'async-mutex';
 import * as msgpack from '@msgpack/msgpack';
 import { deepEqual } from 'fast-equals'; // Using fast-equals for deep comparison
 import { bufferToSharedArrayBuffer, sharedArrayBufferToBuffer } from '../utils'; // Assuming these exist in utils
+import type {
+  AppResult} from '../errors';
 import {
-  AppResult,
   ok,
   err,
   DatabaseError,
@@ -26,13 +27,13 @@ export interface ConfigCheckResult {
 
 // TODO: Make injectable or provide singleton instance via Context
 export class LmdbCache {
-  private rootDb: RootDatabase;
+  private readonly rootDb: RootDatabase;
   // Store databases with specific types using generics later in getJobDbs
-  private jobDbs: Map<
+  private readonly jobDbs = new Map<
     string,
     { resultsDb: Database<Buffer, string>; configDb: Database<Buffer, string> }
-  > = new Map(); // Store raw Buffers
-  private mutexes: Map<string, Mutex> = new Map(); // Mutex per cache key (jobName + hashKey)
+  >(); // Store raw Buffers
+  private readonly mutexes = new Map<string, Mutex>(); // Mutex per cache key (jobName + hashKey)
 
   // Private constructor to enforce singleton or controlled instantiation if needed later
   private constructor(rootDb: RootDatabase) {
@@ -41,7 +42,7 @@ export class LmdbCache {
 
   // Static factory method for asynchronous initialization
   static async create(
-    dbPath: string = '.mediadb',
+    dbPath = '.mediadb',
   ): Promise<AppResult<LmdbCache>> {
     try {
       const rootDb = lmdb.open({ path: dbPath, compression: true });

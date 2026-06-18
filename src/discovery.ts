@@ -5,7 +5,7 @@ import chalk from 'chalk'; // Re-add chalk for specific formatting
 // Removed Spinner import
 // Removed chalk import
 import { ALL_SUPPORTED_EXTENSIONS, getFileTypeByExt } from './utils'; // Assuming utils is in parent dir
-import { CliReporter } from './reporting/CliReporter'; // Import reporter
+import type { CliReporter } from './reporting/CliReporter'; // Import reporter
 import { FileSystemError, safeTryAsync } from './errors'; // Removed unused AppResult, ok, err
 
 /**
@@ -16,7 +16,7 @@ import { FileSystemError, safeTryAsync } from './errors'; // Removed unused AppR
  */
 export async function discoverFilesFn(
   sourceDirs: string[],
-  concurrency: number = 10,
+  concurrency = 10,
   reporter: CliReporter, // Add reporter parameter
 ): Promise<Map<string, string[]>> {
   const allFiles: string[] = [];

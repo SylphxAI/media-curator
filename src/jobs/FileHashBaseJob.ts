@@ -1,11 +1,11 @@
 // import { injectable, inject } from "inversify"; // REMOVED INVERSIFY
-import { LmdbCache } from '../caching/LmdbCache'; // Import LmdbCache for constructor
+import type { LmdbCache } from '../caching/LmdbCache'; // Import LmdbCache for constructor
 // Removed unused import: sharedArrayBufferToHex
 import { BaseFileInfoJob } from './BaseFileInfoJob';
 // import { FileStatsJob } from "./FileStatsJob"; // Removed old class import
 import { getFileStatsHashKey } from './fileStats'; // Import new function (returns AppResult)
 // Removed unused import: AppResult
-import { FileStatsConfig } from '../types'; // Need config type
+import type { FileStatsConfig } from '../types'; // Need config type
 // Removed unused import: LmdbCache
 
 // @injectable() // REMOVED INVERSIFY

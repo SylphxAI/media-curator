@@ -1,14 +1,14 @@
-import { GatherFileInfoResult, FileProcessorConfig } from './types'; // Removed unused FileInfo, Stats
-import { LmdbCache } from './caching/LmdbCache';
-import { ExifTool } from 'exiftool-vendored';
-import { WorkerPool } from './contexts/types';
+import type { GatherFileInfoResult, FileProcessorConfig } from './types'; // Removed unused FileInfo, Stats
+import type { LmdbCache } from './caching/LmdbCache';
+import type { ExifTool } from 'exiftool-vendored';
+import type { WorkerPool } from './contexts/types';
 import { processSingleFile } from './fileProcessor'; // Returns AppResult<FileInfo>
-import { MetadataDBService } from './services/MetadataDBService'; // Import DB service
+import type { MetadataDBService } from './services/MetadataDBService'; // Import DB service
 import { Semaphore } from 'async-mutex';
 // Removed cliProgress import
 // Removed chalk import
 import { getFileTypeByExt } from './utils';
-import { CliReporter } from './reporting/CliReporter'; // Import reporter
+import type { CliReporter } from './reporting/CliReporter'; // Import reporter
 import { FileType } from './types'; // Import FileType enum
 
 // Removed progress bar helper functions (moved to CliReporter)

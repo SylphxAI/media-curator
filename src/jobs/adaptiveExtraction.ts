@@ -1,11 +1,12 @@
-import {
+import type {
   AdaptiveExtractionConfig,
   MediaInfo,
-  FileType,
   FrameInfo,
-  FileStatsConfig,
+  FileStatsConfig} from '../types';
+import {
+  FileType
 } from '../types';
-import { LmdbCache } from '../caching/LmdbCache';
+import type { LmdbCache } from '../caching/LmdbCache';
 import { getFileType } from '../utils'; // getFileType needs AppResult handling
 import { getFileStatsHashKey } from './fileStats';
 import {
@@ -20,9 +21,10 @@ import {
   applyVideoFilters,
   addOutputOptions,
 } from '../external/FFmpegServiceWrapper'; // TODO: Refactor these
-import { WorkerPool } from '../contexts/types';
+import type { WorkerPool } from '../contexts/types';
+import type {
+  AppResult} from '../errors';
 import {
-  AppResult,
   ok,
   err,
   ExternalToolError,
@@ -158,7 +160,7 @@ function extractFramesWithFilter(
 
             // Check if any frame processing resulted in an error
             const firstError = frameResults.find((r) => r.isErr());
-            if (firstError && firstError.isErr()) {
+            if (firstError?.isErr()) {
               // Check isErr() again for type safety
               // Reject the main promise if any frame failed
               reject(firstError.error);
@@ -177,7 +179,7 @@ function extractFramesWithFilter(
           }
         })
         .on('stderr', (stderrLine: string) => {
-          const timeMatch = stderrLine.match(/pts_time:([0-9.]+)/);
+          const timeMatch = /pts_time:([0-9.]+)/.exec(stderrLine);
           if (timeMatch) {
             const timestamp = parseFloat(timeMatch[1]);
             pendingTimestamps.push(timestamp);
@@ -299,7 +301,7 @@ export async function processAdaptiveExtraction( // Added export keyword
         );
       } else if (cacheGetResult.value.hit) {
         // Cache hit and data is valid
-        return ok(cacheGetResult.value.data!); // Return cached data wrapped in ok
+        return ok(cacheGetResult.value.data); // Return cached data wrapped in ok
       }
     }
   }

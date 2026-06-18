@@ -1,9 +1,11 @@
-import sharp, {
+import type {
   Sharp,
   Metadata as SharpMetadata,
   Stats as SharpStats,
 } from 'sharp';
-import { AppResult, ExternalToolError, safeTryAsync } from '../errors'; // Removed unused ok, err
+import sharp from 'sharp';
+import type { AppResult} from '../errors';
+import { ExternalToolError, safeTryAsync } from '../errors'; // Removed unused ok, err
 
 /**
  * Sets the concurrency for sharp.

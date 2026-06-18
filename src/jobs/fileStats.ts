@@ -1,11 +1,12 @@
-import { FileStats, FileStatsConfig } from '../types';
-import { LmdbCache } from '../caching/LmdbCache';
+import type { FileStats, FileStatsConfig } from '../types';
+import type { LmdbCache } from '../caching/LmdbCache';
 import {
   getFileStats,
   calculateFileHash,
   sharedArrayBufferToHex,
 } from '../utils';
-import { AppResult, ok, err, DatabaseError } from '../errors'; // Removed unused AnyAppError
+import type { AppResult} from '../errors';
+import { ok, err, DatabaseError } from '../errors'; // Removed unused AnyAppError
 
 const JOB_NAME = 'fileStats'; // Define job name constant
 
@@ -46,7 +47,7 @@ export async function processFileStats(
       );
     } else if (cacheGetResult.value.hit) {
       // Cache hit and data is valid
-      return ok(cacheGetResult.value.data!); // Return cached data wrapped in ok
+      return ok(cacheGetResult.value.data); // Return cached data wrapped in ok
     }
   }
 

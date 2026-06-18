@@ -1,5 +1,7 @@
-import { ExifTool, Tags } from 'exiftool-vendored';
-import { AppResult, ExternalToolError, safeTryAsync } from '../errors'; // Removed unused ok, err
+import type { Tags } from 'exiftool-vendored';
+import { ExifTool } from 'exiftool-vendored';
+import type { AppResult} from '../errors';
+import { ExternalToolError, safeTryAsync } from '../errors'; // Removed unused ok, err
 
 /**
  * Reads Exif tags from a file using the provided ExifTool instance.

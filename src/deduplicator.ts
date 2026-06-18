@@ -1,15 +1,16 @@
-import { DeduplicationResult, FileInfo } from './types';
-import { MediaComparator } from '../MediaComparator';
+import type { DeduplicationResult, FileInfo } from './types';
+import type { MediaComparator } from '../MediaComparator';
 // Removed Spinner import
-import { CliReporter } from './reporting/CliReporter'; // Import reporter
-import { MetadataDBService } from './services/MetadataDBService'; // Removed unused FileInfoRow import
-import { AppResult, err, ok, DatabaseError } from './errors'; // Import error types
+import type { CliReporter } from './reporting/CliReporter'; // Import reporter
+import type { MetadataDBService } from './services/MetadataDBService'; // Removed unused FileInfoRow import
+import type { AppResult} from './errors';
+import { err, ok, DatabaseError } from './errors'; // Import error types
 import {
   mergeAndDeduplicateClusters,
   getAdaptiveThreshold,
 } from './comparatorUtils'; // Import merge function and threshold helper
 import { bufferToSharedArrayBuffer } from './utils'; // Need this for reconstructing MediaInfo
-import { MediaInfo, SimilarityConfig } from './types'; // Import MediaInfo and SimilarityConfig
+import type { MediaInfo, SimilarityConfig } from './types'; // Import MediaInfo and SimilarityConfig
 
 /**
  * Performs deduplication on a list of valid files.

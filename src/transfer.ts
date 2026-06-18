@@ -1,12 +1,12 @@
-import { GatherFileInfoResult, DeduplicationResult } from './types';
-import { DebugReporter } from './reporting/DebugReporter';
-import { FileTransferService } from './services/FileTransferService';
+import type { GatherFileInfoResult, DeduplicationResult } from './types';
+import type { DebugReporter } from './reporting/DebugReporter';
+import type { FileTransferService } from './services/FileTransferService';
 import { mkdir, readdir, unlink } from 'fs/promises'; // Keep fs/promises for now
 import { join } from 'path';
 // Removed chalk import
 // Removed Spinner import
 import { FileSystemError, safeTryAsync } from './errors'; // Removed unused AppResult, ok, err
-import { CliReporter } from './reporting/CliReporter'; // Import reporter
+import type { CliReporter } from './reporting/CliReporter'; // Import reporter
 
 /**
  * Orchestrates the final file transfer stage, including debug report generation.

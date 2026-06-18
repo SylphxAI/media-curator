@@ -1,4 +1,5 @@
-import { Result, ok as importedOk, err as importedErr } from 'neverthrow';
+import type { Result} from 'neverthrow';
+import { ok as importedOk, err as importedErr } from 'neverthrow';
 
 // Re-export ok and err for consistent usage within the project
 export const ok = importedOk;

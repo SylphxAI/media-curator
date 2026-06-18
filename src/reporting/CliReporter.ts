@@ -14,16 +14,16 @@ interface ProgressBarPayload {
 
 export class CliReporter {
   // Store bar instance and its payload together
-  private bars = new Map<
+  private readonly bars = new Map<
     string,
     { bar: cliProgress.Bar; payload: ProgressBarPayload }
   >();
   private multibar: cliProgress.MultiBar | null = null;
   // Removed the duplicate/old bars map definition below
   private spinner: Spinner | null = null;
-  private verbose: boolean;
+  private readonly verbose: boolean;
 
-  constructor(verbose: boolean = false) {
+  constructor(verbose = false) {
     this.verbose = verbose;
   }
 

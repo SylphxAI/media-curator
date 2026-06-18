@@ -1,4 +1,4 @@
-import { ExifTool } from 'exiftool-vendored';
+import type { ExifTool } from 'exiftool-vendored';
 // import { injectable } from "inversify"; // Removed unused 'inject' - REMOVED INVERSIFY
 import { mkdir, copyFile, rename, unlink } from 'fs/promises';
 import { join, basename, dirname, extname, parse, normalize } from 'path'; // Added normalize
@@ -6,7 +6,7 @@ import { existsSync } from 'fs';
 import crypto from 'crypto';
 import chalk from 'chalk';
 import { MultiBar, Presets } from 'cli-progress';
-import {
+import type {
   FileInfo,
   DeduplicationResult,
   GatherFileInfoResult,
@@ -14,9 +14,9 @@ import {
 } from '../types';
 // import { MediaProcessor } from "../MediaProcessor"; // REMOVED - Replaced by processSingleFile function
 import { processSingleFile } from '../fileProcessor';
-import { AppResult } from '../errors'; // Import AppResult for return type handling
-import { LmdbCache } from '../caching/LmdbCache';
-import { WorkerPool } from '../contexts/types';
+import type { AppResult } from '../errors'; // Import AppResult for return type handling
+import type { LmdbCache } from '../caching/LmdbCache';
+import type { WorkerPool } from '../contexts/types';
 
 // @injectable() // REMOVED INVERSIFY
 export class FileTransferService {
@@ -240,7 +240,7 @@ export class FileTransferService {
 
     // Moved generateRandomId to be a private method of the class
 
-    const data: { [key: string]: string } = {
+    const data: Record<string, string> = {
       'I.YYYY': this.formatDate(fileInfo.metadata.imageDate, 'YYYY'),
       'I.YY': this.formatDate(fileInfo.metadata.imageDate, 'YY'),
       'I.MMMM': this.formatDate(fileInfo.metadata.imageDate, 'MMMM'),
@@ -371,7 +371,7 @@ export class FileTransferService {
 
     // Determine if the format string likely intended to specify a filename
     const formatSpecifiesFilename =
-      /\{NAME/.test(format) || /\{EXT\}/.test(format); // Simple check
+      format.includes('{NAME') || format.includes('{EXT}'); // Simple check
 
     let directory: string;
     let finalFilenameBase: string;
@@ -439,7 +439,7 @@ export class FileTransferService {
 
     const pad = (num: number) => num.toString().padStart(2, '0');
 
-    const formatters: { [key: string]: () => string } = {
+    const formatters: Record<string, () => string> = {
       YYYY: () => date.getFullYear().toString(),
       YY: () => date.getFullYear().toString().slice(-2),
       MMMM: () => date.toLocaleString('default', { month: 'long' }),

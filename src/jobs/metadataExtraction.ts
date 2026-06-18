@@ -1,10 +1,11 @@
-import { Metadata, FileStatsConfig } from '../types'; // Combined imports
-import { LmdbCache } from '../caching/LmdbCache';
-import { ExifTool } from 'exiftool-vendored'; // Removed unused Tags
+import type { Metadata, FileStatsConfig } from '../types'; // Combined imports
+import type { LmdbCache } from '../caching/LmdbCache';
+import type { ExifTool } from 'exiftool-vendored'; // Removed unused Tags
 import { readExifTags } from '../external/ExifToolService'; // TODO: Refactor this to return AppResult
 import { parseExifTagsToMetadata } from '../utils'; // TODO: Refactor this to return AppResult
 import { getFileStatsHashKey } from './fileStats';
-import { AppResult, ok, err } from '../errors'; // Removed unused DatabaseError, ExternalToolError, AnyAppError
+import type { AppResult} from '../errors';
+import { ok, err } from '../errors'; // Removed unused DatabaseError, ExternalToolError, AnyAppError
 
 const JOB_NAME = 'metadataExtraction'; // Define job name constant
 
@@ -58,7 +59,7 @@ export async function processMetadata(
       );
     } else if (cacheGetResult.value.hit) {
       // Cache hit and data is valid
-      return ok(cacheGetResult.value.data!); // Return cached data wrapped in ok
+      return ok(cacheGetResult.value.data); // Return cached data wrapped in ok
     }
   }
 

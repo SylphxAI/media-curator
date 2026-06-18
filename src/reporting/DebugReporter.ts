@@ -1,12 +1,12 @@
 // import { injectable } from "inversify"; // Removed unused 'inject' - REMOVED INVERSIFY
 import { writeFile } from 'fs/promises';
 import { join, relative } from 'path';
-import { FileInfo, DuplicateSet, FileProcessorConfig } from '../types'; // Added FileProcessorConfig
+import type { FileInfo, DuplicateSet, FileProcessorConfig } from '../types'; // Added FileProcessorConfig
 // import { MediaProcessor } from "../MediaProcessor"; // Removed old import
-import { MediaComparator } from '../../MediaComparator';
-import { LmdbCache } from '../caching/LmdbCache'; // Added cache import
-import { ExifTool } from 'exiftool-vendored'; // Added exiftool import
-import { WorkerPool } from '../contexts/types'; // Removed unused Types import
+import type { MediaComparator } from '../../MediaComparator';
+import type { LmdbCache } from '../caching/LmdbCache'; // Added cache import
+import type { ExifTool } from 'exiftool-vendored'; // Added exiftool import
+import type { WorkerPool } from '../contexts/types'; // Removed unused Types import
 import { processSingleFile } from '../fileProcessor'; // Added file processor function import
 // import { inject } from "inversify"; // Added inject - REMOVED INVERSIFY
 import { calculateEntryScore } from '../comparatorUtils'; // Import the utility function
@@ -147,7 +147,7 @@ export class DebugReporter {
         );
         // TODO: Handle potential error from infoResult using Result type
         const info = infoResult.unwrapOr(null); // Temporary unwrap, needs proper error handling
-        const score = calculateEntryScore(info!); // Use imported function
+        const score = calculateEntryScore(info); // Use imported function
         const relativePath = this.convertToRelativePath(sourcePath, debugDir);
         return { isRepresentative: true, relativePath, info, score };
       }),
@@ -162,7 +162,7 @@ export class DebugReporter {
         );
         // TODO: Handle potential error from infoResult using Result type
         const info = infoResult.unwrapOr(null); // Temporary unwrap, needs proper error handling
-        const score = calculateEntryScore(info!); // Use imported function
+        const score = calculateEntryScore(info); // Use imported function
         const relativePath = this.convertToRelativePath(sourcePath, debugDir);
         return { isRepresentative: false, relativePath, info, score };
       }),

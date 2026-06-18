@@ -1,6 +1,7 @@
 // Removed Mutex, DatabaseContext, Database, eql, buffer/sharedBuffer utils, MemoryCache, postConstruct
-import { LmdbCache } from '../caching/LmdbCache'; // Removed unused CacheResult, ConfigCheckResult
-import { AppResult, ok, err } from '../errors'; // Removed unused AnyAppError
+import type { LmdbCache } from '../caching/LmdbCache'; // Removed unused CacheResult, ConfigCheckResult
+import type { AppResult} from '../errors';
+import { ok, err } from '../errors'; // Removed unused AnyAppError
 // import { inject, injectable } from "inversify"; // REMOVED INVERSIFY
 // import { LmdbCache } from "../caching/LmdbCache"; // Ensure LmdbCache is imported for constructor - REMOVED DUPLICATE
 
@@ -52,7 +53,7 @@ export abstract class BaseFileInfoJob<TResult, TConfig = void> {
         );
       } else if (cacheGetResult.value.hit) {
         // Cache hit and data is valid
-        return ok(cacheGetResult.value.data!); // Return cached data wrapped in ok
+        return ok(cacheGetResult.value.data); // Return cached data wrapped in ok
       }
       // console.log(`Cache config valid but data MISS for ${this.jobName}:${cacheKey}`);
     }
