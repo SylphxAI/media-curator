@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "repo": "SylphxAI/media-curator",
+    "name": "Media Curator",
+    "lifecycle": "active",
+    "layer": "tooling",
+    "summary": "Media Curator is a local CLI package for organizing and deduplicating user-selected photo and video libraries with metadata extraction, perceptual hashing, LSH similarity, SQLite/LMDB state, workerpool concurrency, and WASM-assisted comparison.",
+    "goals": [
+      "Own the local CLI for organizing and deduplicating large media libraries.",
+      "Own discovery, metadata extraction, perceptual hashing, LSH similarity, cache/database state, worker/WASM performance, and transfer behavior.",
+      "Keep destructive filesystem actions explicit, documented, and validated with fixtures before production release."
+    ],
+    "nonGoals": [
+      "Become a hosted media library, cloud storage product, telemetry collector, or background sync service.",
+      "Own user media outside CLI-selected roots, destination directories, duplicate directories, or error directories.",
+      "Encode product-specific or customer-specific organization policies into shared core logic."
+    ]
+  },
+  "boundaries": {
+    "owns": [
+      {
+        "name": "media-curation-cli",
+        "description": "The user-facing CLI contract, arguments, install surface, command behavior, and local execution model."
+      },
+      {
+        "name": "media-processing-pipeline",
+        "description": "Discovery, metadata extraction, perceptual hashing, LSH/VP-tree-style similarity, deduplication decisions, transfer behavior, cache/database state, workerpool concurrency, and WASM comparison code."
+      }
+    ],
+    "doesNotOwn": [
+      "Cloud storage, hosted media libraries, background sync, or remote media retention.",
+      "User media outside explicit CLI-selected source, destination, duplicate, and error paths.",
+      "Operating-system photo library policy, external provider control planes, or product-specific organization semantics."
+    ],
+    "publicSurfaces": [
+      {
+        "type": "cli",
+        "name": "media-curator CLI",
+        "location": "package.json"
+      },
+      {
+        "type": "documentation",
+        "name": "User-facing README",
+        "location": "README.md"
+      },
+      {
+        "type": "documentation",
+        "name": "Architecture overview",
+        "location": "ARCHITECTURE.md"
+      },
+      {
+        "type": "workflow",
+        "name": "CI workflow",
+        "location": ".github/workflows/ci.yml"
+      },
+      {
+        "type": "workflow",
+        "name": "Central release workflow",
+        "location": ".github/workflows/release.yml"
+      },
+      {
+        "type": "status-context",
+        "name": "Required branch context",
+        "location": "Validate Code & Run Tests"
+      }
+    ],
+    "allowedDependencies": [
+      {
+        "repo": "SylphxAI/doctrine",
+        "surface": "enterprise engineering doctrine",
+        "direction": "downward"
+      },
+      {
+        "repo": "SylphxAI/.github",
+        "surface": "reusable release workflow",
+        "direction": "downward"
+      }
+    ],
+    "forbiddenCouplings": [
+      "Do not upload, index, retain, or inspect user media outside explicit local CLI behavior.",
+      "Do not delete or mutate files outside user-supplied media roots, destination, duplicate, or error directories.",
+      "Do not hard-code customer-specific organization policies into shared media processing logic.",
+      "Do not publish packages from a human shell or personal token."
+    ]
+  },
+  "documentation": {
+    "adr": {
+      "path": "memory-bank/",
+      "status": "planned"
+    },
+    "specs": {
+      "path": "README.md",
+      "status": "present"
+    },
+    "catalog": {
+      "path": "PROJECT.md",
+      "status": "present"
+    },
+    "runbooks": {
+      "path": "AGENTS.md",
+      "status": "present"
+    },
+    "generatedReferences": {
+      "path": "dist/",
+      "status": "generated"
+    }
+  },
+  "delivery": {
+    "ciModel": "legacy-ci",
+    "requiredContexts": ["Validate Code & Run Tests"],
+    "deployPath": "No hosted deploy path is declared. Package release intent is present through Changesets and the central reusable release workflow; an older tag-driven npm publish workflow remains a release-control adoption gap.",
+    "productionProof": "Required CI context, build/test evidence, fixture-backed CLI smoke proof for filesystem behavior changes, Changesets intent for package changes, and npm readback after publication.",
+    "recoveryClass": "forward-fix-only",
+    "packageRelease": {
+      "publishesPackages": true,
+      "ecosystems": ["npm", "changesets"],
+      "releaseIntent": "Changesets capture package release intent; package publishing should be bot/workflow-owned before production release claims.",
+      "versionPr": "Version PRs should be produced by the reusable release workflow.",
+      "publisher": "SylphxAI/.github reusable release workflow with inherited repository secrets; legacy tag-driven publish remains an adoption gap.",
+      "requiredContexts": ["Validate Code & Run Tests"],
+      "publishProof": "npm package readback for @sylphx/media-curator or @sylphlab/media-curator, plus build output and release notes."
+    }
+  },
+  "commercial": {
+    "status": "researching",
+    "decisionHome": "PROJECT.md",
+    "pricingSourceOfTruth": "not-applicable",
+    "metricsSourceOfTruth": "not-applicable",
+    "requiredRecords": ["market-positioning", "packaging", "roadmap"],
+    "guardrails": [
+      "Hosted media processing, enterprise packaging, or paid roadmap changes require a decision record backed by competitor and customer analysis.",
+      "Commercial decisions must not weaken local-first privacy or filesystem safety."
+    ]
+  },
+  "adoption": {
+    "status": "baseline",
+    "gaps": [
+      {
+        "id": "ci-repair",
+        "description": "Open CI repair PRs show the legacy validation workflow is being rehabilitated before it can be treated as stable autonomous admission.",
+        "owner": "SylphxAI/media-curator",
+        "target": "before full doctrine adoption"
+      },
+      {
+        "id": "package-release-consolidation",
+        "description": "The repository has Changesets and a central reusable release workflow, but also retains a tag-driven npm publish path; consolidate package publishing under a bot-owned release control plane.",
+        "owner": "SylphxAI/media-curator",
+        "target": "before production package publication"
+      }
+    ]
+  }
+}
