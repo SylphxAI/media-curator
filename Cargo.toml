@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = ["crates/media-curator-cli"]
+
+[workspace.package]
+edition = "2021"
+license = "MIT"
+publish = false
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+unwrap_used = "deny"
+expect_used = "warn"

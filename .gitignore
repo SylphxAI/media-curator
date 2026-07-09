@@ -20,3 +20,4 @@ coverage
 Thumbs.db
 ._*
 .vercel
+/target/
