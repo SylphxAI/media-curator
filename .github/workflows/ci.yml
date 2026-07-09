@@ -11,6 +11,24 @@ on:
   workflow_dispatch: # Allow manual trigger
 
 jobs:
+  rust:
+    name: Rust CLI (ADR-168 S0)
+    runs-on: [self-hosted, sylphx-linux-standard]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Run Rust tests
+        run: cargo test --workspace
+
+      - name: Run Rust clippy
+        run: cargo clippy --workspace -- -D warnings
+
   changed-files:
     name: Detect affected surface
     runs-on: [self-hosted, sylphx-linux-standard]
@@ -73,7 +91,7 @@ jobs:
 
   validate:
     name: Validate Code & Run Tests
-    needs: changed-files
+    needs: [changed-files, rust]
     runs-on: [self-hosted, sylphx-linux-standard]
 
     steps:
@@ -91,6 +109,14 @@ jobs:
       - name: Setup Bun
         if: needs.changed-files.outputs.product_changed == 'true'
         uses: oven-sh/setup-bun@v2 # Use official setup-bun action
+
+      - name: Set up Rust
+        if: needs.changed-files.outputs.product_changed == 'true'
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Rust CLI for npm bridge tests
+        if: needs.changed-files.outputs.product_changed == 'true'
+        run: cargo build -p media-curator-cli
 
       - name: Install dependencies
         if: needs.changed-files.outputs.product_changed == 'true'
