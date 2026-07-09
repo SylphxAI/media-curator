@@ -65,7 +65,7 @@ jobs:
           changed_files="$(mktemp)"
           git diff --name-only "$base" "$head" > "$changed_files"
 
-          if grep -Ev '^(\.doctrine/project\.json|AGENTS\.md|PROJECT\.md|\.github/workflows/ci\.yml)$' "$changed_files"; then
+          if grep -Ev '^(\.doctrine/project\.json|AGENTS\.md|PROJECT\.md|\.github/workflows/ci\.yml|Cargo\.toml|Cargo\.lock|crates/|docs/adr/ADR-168-.*|rust-toolchain\.toml|\.gitignore)$' "$changed_files"; then
             echo "product_changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "product_changed=false" >> "$GITHUB_OUTPUT"
