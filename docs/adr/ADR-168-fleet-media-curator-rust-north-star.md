@@ -20,20 +20,20 @@ for distribution; Rust owns the engine.
 
 ### 1. North Star production stack (Media Curator repo)
 
-| Layer | North Star | Transitional (until sunset slice) |
-| --- | --- | --- |
-| Cross-boundary contract | Protobuf + Buf (`proto/media_curator/v1/`) for plugin/MCP surfaces | CLI flags as implicit contract |
-| CLI engine | Rust `crates/media-curator-cli` | TypeScript CLI engine |
-| Distribution wrapper | Thin npm package invoking Rust binary | existing npm entry |
-| WASM acceleration | Rust-native SIMD where applicable | TS/WASM worker during cutover |
-| Persistence | SQLite/LMDB via Rust (`media-curator-store`) | TS-backed cache format during cutover |
+| Layer                   | North Star                                                         | Transitional (until sunset slice)     |
+| ----------------------- | ------------------------------------------------------------------ | ------------------------------------- |
+| Cross-boundary contract | Protobuf + Buf (`proto/media_curator/v1/`) for plugin/MCP surfaces | CLI flags as implicit contract        |
+| CLI engine              | Rust `crates/media-curator-cli`                                    | TypeScript CLI engine                 |
+| Distribution wrapper    | Thin npm package invoking Rust binary                              | existing npm entry                    |
+| WASM acceleration       | Rust-native SIMD where applicable                                  | TS/WASM worker during cutover         |
+| Persistence             | SQLite/LMDB via Rust (`media-curator-store`)                       | TS-backed cache format during cutover |
 
 ### 2. Ownership matrix
 
-| Concern | Owner | Media Curator may | Media Curator must not |
-| --- | --- | --- | --- |
-| Local dedup/organize CLI, hash/LSH pipeline | **SylphxAI/media-curator** | Own cache format and algorithms | Become hosted cloud product |
-| User filesystem | End user | Operate only on CLI-selected roots | Sync or upload media remotely |
+| Concern                                     | Owner                      | Media Curator may                  | Media Curator must not        |
+| ------------------------------------------- | -------------------------- | ---------------------------------- | ----------------------------- |
+| Local dedup/organize CLI, hash/LSH pipeline | **SylphxAI/media-curator** | Own cache format and algorithms    | Become hosted cloud product   |
+| User filesystem                             | End user                   | Operate only on CLI-selected roots | Sync or upload media remotely |
 
 ### 3. Strangler-fig cutover posture
 
@@ -51,10 +51,10 @@ for distribution; Rust owns the engine.
 
 ## Alternatives considered
 
-| Alternative | Why rejected |
-| --- | --- |
-| Permanent TS CLI engine | Contradicts ADR-167 for tooling authority |
-| Hosted SaaS pivot | Violates PROJECT.md non-goals |
+| Alternative               | Why rejected                                     |
+| ------------------------- | ------------------------------------------------ |
+| Permanent TS CLI engine   | Contradicts ADR-167 for tooling authority        |
+| Hosted SaaS pivot         | Violates PROJECT.md non-goals                    |
 | Skip Rust for "small CLI" | Tooling layer is in fleet cutover registry scope |
 
 ## Consequences
