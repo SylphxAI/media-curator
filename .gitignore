@@ -20,3 +20,6 @@ coverage
 Thumbs.db
 ._*
 .vercel
+
+# ESLint cache
+.eslintcache
