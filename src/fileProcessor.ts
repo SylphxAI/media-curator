@@ -1,10 +1,4 @@
-import {
-  FileInfo,
-  FileProcessorConfig,
-  FileStats,
-  Metadata,
-  MediaInfo,
-} from './types'; // Removed unused FileStatsConfig, AdaptiveExtractionConfig
+import { FileInfo, FileProcessorConfig } from './types'; // Removed unused FileStatsConfig, AdaptiveExtractionConfig
 import { LmdbCache } from './caching/LmdbCache';
 import { ExifTool } from 'exiftool-vendored';
 import { WorkerPool } from './contexts/types';

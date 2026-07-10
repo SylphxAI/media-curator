@@ -187,9 +187,14 @@ export class CliReporter {
     const percentage = (params.progress * 100).toFixed(2);
     let timeInfo: string;
 
-    if (params.stopTime == null) {
+    if (params.stopTime === null || params.stopTime === undefined) {
       // Still running
-      if (params.eta != null && params.eta > 0 && Number.isFinite(params.eta)) {
+      if (
+        params.eta !== null &&
+        params.eta !== undefined &&
+        params.eta > 0 &&
+        Number.isFinite(params.eta)
+      ) {
         const eta = this.formatTime(params.eta); // Use helper method
         timeInfo = `ETA: ${chalk.yellow(eta.padStart(9))}`;
       } else {

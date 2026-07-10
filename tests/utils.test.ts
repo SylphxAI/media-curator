@@ -353,7 +353,6 @@ describe('Utility Functions', () => {
           throw new Error('Unexpected parsing error');
         },
       };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = parseExifTagsToMetadata(badTags as any); // Keep 'as any' for this specific error test case
       expect(result.isErr()).toBe(true);
       expect(result._unsafeUnwrapErr().message).toContain(
