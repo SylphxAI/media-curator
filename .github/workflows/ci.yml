@@ -65,7 +65,10 @@ jobs:
           changed_files="$(mktemp)"
           git diff --name-only "$base" "$head" > "$changed_files"
 
-          if grep -Ev '^(\.doctrine/project\.json|AGENTS\.md|PROJECT\.md|\.github/workflows/ci\.yml)$' "$changed_files"; then
+          # Non-product / governance surfaces: control-plane docs + doctrine + this workflow.
+          # docs/** includes migration-ledger and ADRs so path-pure governance PRs do not
+          # run the product validate job against an unrelated red main product surface.
+          if grep -Ev '^(\.doctrine/project\.json|AGENTS\.md|PROJECT\.md|\.github/workflows/ci\.yml|docs/.*)$' "$changed_files"; then
             echo "product_changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "product_changed=false" >> "$GITHUB_OUTPUT"
