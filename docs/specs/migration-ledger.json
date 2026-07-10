@@ -19,9 +19,7 @@
   ],
   "reauditRef": "rej-010",
   "verificationRef": "verification/media-curator-cycle50-cli-metadata-extraction-rust-impl.json",
-  "inventorySource": [
-    "manual"
-  ],
+  "inventorySource": ["manual"],
   "inScopeBoundary": {
     "includeGlobs": [
       "index.ts",
