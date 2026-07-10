@@ -95,6 +95,13 @@ jobs:
         if: needs.changed-files.outputs.product_changed == 'true'
         uses: oven-sh/setup-bun@v2 # Use official setup-bun action
 
+      - name: Setup Node
+        # @vitest/coverage-v8 needs node:inspector (not implemented in Bun)
+        if: needs.changed-files.outputs.product_changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - name: Install dependencies
         if: needs.changed-files.outputs.product_changed == 'true'
         run: bun install --frozen-lockfile # Use frozen lockfile for reproducibility
@@ -109,7 +116,8 @@ jobs:
 
       - name: Run tests with coverage
         if: needs.changed-files.outputs.product_changed == 'true'
-        run: bun run test:cov # This will fail if coverage < 100% due to vitest.config.ts
+        # Run under Node: coverage-v8 uses node:inspector which Bun does not implement
+        run: node node_modules/vitest/vitest.mjs run --coverage
 
       # Optional: Upload coverage report (e.g., to Codecov)
       # - name: Upload coverage reports to Codecov
