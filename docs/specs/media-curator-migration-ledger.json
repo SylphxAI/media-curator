@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 2,
+  "repo": "SylphxAI/media-curator",
+  "lockedAt": "2026-07-10T21:30:00Z",
+  "reauditRef": "rej-010",
+  "verificationRef": "verification/media-curator-2026-07-10T2130-file-stats-gather-differential.json",
+  "inventorySource": ["manual"],
+  "northStarAdr": "docs/adr/ADR-168-fleet-media-curator-rust-north-star.md",
+  "inScopeBoundary": {
+    "includeGlobs": [
+      "index.ts",
+      "src/**",
+      "MediaComparator.ts",
+      "MediaOrganizer.ts",
+      "VPTree.ts",
+      "assembly/**",
+      "crates/media-curator-cli/**",
+      "fixtures/discovery/**",
+      "fixtures/file-stats/**",
+      "fixtures/gather/**",
+      "tests/**",
+      "scripts/differential/**",
+      "scripts/run-media-curator-differential.sh",
+      "verification/**",
+      "docs/adr/ADR-168-fleet-media-curator-rust-north-star.md"
+    ],
+    "excludeGlobs": [
+      "index.html",
+      "memory-bank/**",
+      "docs/**",
+      "!docs/adr/ADR-168-fleet-media-curator-rust-north-star.md",
+      "!docs/specs/media-curator-migration-ledger.json",
+      "!docs/specs/media-curator-s2-parity-slice.json",
+      "node_modules/**",
+      "build/**"
+    ]
+  },
+  "capabilities": [
+    {
+      "id": "cli/discovery-gather",
+      "domain": "pipeline",
+      "weight": 4,
+      "state": "rust_impl",
+      "proof": {
+        "status": "missing",
+        "dependencyGlobs": [
+          "src/gatherer.ts",
+          "src/discovery.ts",
+          "crates/media-curator-cli/src/gather.rs",
+          "fixtures/gather/gather.golden.json",
+          "crates/media-curator-cli/tests/media_curator_differential.rs",
+          "scripts/differential/**",
+          "scripts/run-media-curator-differential.sh"
+        ],
+        "staleReason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs",
+        "verificationRef": "verification/media-curator-2026-07-10T2130-file-stats-gather-differential.json"
+      },
+      "promotionHold": {
+        "active": true,
+        "reason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs; NO auto-promotion",
+        "rejectionRef": "rej-010",
+        "since": "2026-07-10T21:30:00Z"
+      },
+      "tsSurface": "src/discovery.ts; src/gatherer.ts#gatherFileStatsCore (parity baseline; opt-out via MEDIA_CURATOR_RUST=ts)",
+      "rustSurface": "crates/media-curator-cli/src/discovery.rs; crates/media-curator-cli/src/gather.rs; crates/media-curator-cli/src/main.rs; src/external/rustCli.ts",
+      "parityTest": "fixtures/discovery/discovery.golden.json; fixtures/gather/gather.golden.json; crates/media-curator-cli/tests/discovery_fixture_parity.rs; crates/media-curator-cli/tests/gather_fixture_parity.rs; tests/discoveryParity.test.ts; tests/gatherParity.test.ts; scripts/check-no-ts-file-stats-backend.sh; tests/check-no-ts-file-stats-backend.test.ts",
+      "differentialTest": "crates/media-curator-cli/tests/media_curator_differential.rs#cli_discovery_gather_differential_matches_ts_oracle; scripts/run-media-curator-differential.sh --slice cli/discovery-gather",
+      "branch": "feat/adr-168-s3-file-stats-authority",
+      "baseBranch": "feat/adr-168-s2-file-stats-gather-parity",
+      "prodProbe": "bun run validate (check:no-ts-file-stats-backend + fileStatsAuthority + cross-parity); bun run check:native-packaging; cargo test -p media-curator-cli",
+      "notes": "ADR-168 S3: npm entry defaults MEDIA_CURATOR_RUST=1; gatherFileStatsFn + discovery delegate to Rust CLI. TS gatherFileStatsCore retained for golden parity. rej-010 rust_impl packaging: npm publish ships bin/native/media-curator-cli. authority_rust NOT claimed until differential_green + prod smoke."
+    },
+    {
+      "id": "cli/metadata-extraction",
+      "domain": "pipeline",
+      "weight": 5,
+      "state": "rust_impl",
+      "proof": {
+        "status": "missing",
+        "dependencyGlobs": [
+          "src/jobs/fileStats.ts",
+          "src/utils.ts",
+          "crates/media-curator-cli/src/file_stats.rs",
+          "fixtures/file-stats/file-stats.golden.json",
+          "crates/media-curator-cli/tests/media_curator_differential.rs",
+          "scripts/differential/**",
+          "scripts/run-media-curator-differential.sh"
+        ],
+        "staleReason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs",
+        "verificationRef": "verification/media-curator-2026-07-10T2130-file-stats-gather-differential.json"
+      },
+      "promotionHold": {
+        "active": true,
+        "reason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs; NO auto-promotion",
+        "rejectionRef": "rej-010",
+        "since": "2026-07-10T21:30:00Z"
+      },
+      "tsSurface": "src/jobs/fileStats.ts#processFileStatsTsCore (parity baseline; opt-out via MEDIA_CURATOR_RUST=ts); src/jobs/metadataExtraction.ts; src/external/ExifToolService.ts",
+      "rustSurface": "crates/media-curator-cli/src/file_stats.rs; src/external/rustCli.ts",
+      "parityTest": "fixtures/file-stats/file-stats.golden.json; scripts/generate-s2-golden.ts; crates/media-curator-cli/tests/file_stats_cross_parity.rs; tests/fileStatsParity.test.ts; tests/fileStatsAuthority.test.ts; scripts/check-no-ts-file-stats-backend.sh; tests/check-no-ts-file-stats-backend.test.ts",
+      "differentialTest": "crates/media-curator-cli/tests/media_curator_differential.rs#cli_metadata_extraction_differential_matches_ts_oracle; scripts/run-media-curator-differential.sh --slice cli/metadata-extraction",
+      "branch": "feat/adr-168-s3-file-stats-authority",
+      "baseBranch": "feat/adr-168-s2-file-stats-gather-parity",
+      "prodProbe": "bun run validate (check:no-ts-file-stats-backend + fileStatsAuthority); bun run check:native-packaging; cargo test -p media-curator-cli file_stats_cross_parity",
+      "notes": "S3 hardened: file-stats (MD5 + size) Rust authority via processFileStats→fileStatsViaRust; check-no-ts-file-stats-backend gate wired into validate + CI. rej-010 rust_impl packaging: npm publish ships bin/native/media-curator-cli via build:rust + check:native-packaging. ts_deleted NOT claimed (rej-001) — pending PR merge + prod smoke."
+    },
+    {
+      "id": "cli/perceptual-hash-lsh",
+      "domain": "pipeline",
+      "weight": 5,
+      "state": "ts_only",
+      "tsSurface": "src/worker/perceptualHashWorker.ts; MediaComparator.ts; VPTree.ts; assembly/index.ts",
+      "parityTest": "tests/comparatorUtils.test.ts; tests/deduplicator.test.ts"
+    },
+    {
+      "id": "cli/deduplication-engine",
+      "domain": "pipeline",
+      "weight": 5,
+      "state": "ts_only",
+      "tsSurface": "src/deduplicator.ts; src/fileProcessor.ts",
+      "parityTest": "tests/deduplicator.integration.test.ts"
+    },
+    {
+      "id": "cli/cache-persistence",
+      "domain": "persistence",
+      "weight": 4,
+      "state": "ts_only",
+      "tsSurface": "src/caching/LmdbCache.ts; src/services/MetadataDBService.ts",
+      "parityTest": "tests/caching/LmdbCache.integration.test.ts; tests/services/MetadataDBService.integration.test.ts"
+    },
+    {
+      "id": "cli/transfer-reporting",
+      "domain": "pipeline",
+      "weight": 4,
+      "state": "ts_only",
+      "tsSurface": "src/transfer.ts; src/services/FileTransferService.ts; src/reporting/CliReporter.ts",
+      "parityTest": "tests/transfer.test.ts; tests/transfer.integration.test.ts"
+    },
+    {
+      "id": "cli/npm-entry",
+      "domain": "cli",
+      "weight": 5,
+      "state": "ts_only",
+      "tsSurface": "index.ts",
+      "notes": "Published CLI entry sets MEDIA_CURATOR_RUST=1 default; probes + pipeline delegate to Rust for discovery/file-stats/gather."
+    },
+    {
+      "id": "cli/rust-s0-scaffold",
+      "domain": "cli",
+      "weight": 2,
+      "state": "rust_impl",
+      "rustSurface": "crates/media-curator-cli/src/lib.rs; crates/media-curator-cli/src/main.rs",
+      "parityTest": "crates/media-curator-cli/tests/health_subcommand.rs; crates/media-curator-cli/tests/cli_version.rs",
+      "notes": "ADR-168 S0 health+version; health slice=S3 marker. Subsumed by discovery/gather/file-stats subcommands."
+    },
+    {
+      "id": "contracts/proto-ssot",
+      "domain": "contracts",
+      "weight": 2,
+      "state": "ts_only",
+      "tsSurface": "src/types.ts",
+      "notes": "ADR-168 targets proto/media_curator/v1/ for future MCP/plugin surfaces."
+    }
+  ],
+  "summary": {
+    "total": 9,
+    "ts_only": 6,
+    "contracted": 0,
+    "rust_impl": 3,
+    "parity_proven": 0,
+    "authority_rust": 0,
+    "ts_deleted": 0,
+    "completion_progress": 0.0,
+    "authority_progress": 0.0,
+    "weighted_progress": 0.1111
+  },
+  "promotionHold": {
+    "active": true,
+    "reason": "rej-010 promotion freeze — 0 capabilities with differential_green or canary_green proof",
+    "rejectionRef": "rej-010",
+    "since": "2026-07-10T21:30:00Z"
+  },
+  "slices": {
+    "S1": {
+      "status": "shipped",
+      "evidence": [
+        "fixtures/discovery/discovery.golden.json",
+        "crates/media-curator-cli/tests/discovery_fixture_parity.rs",
+        "tests/discoveryParity.test.ts"
+      ],
+      "notes": "Rust `discover` emits DiscoveryMap JSON matching TS on prepared basic fixture corpus."
+    },
+    "S2": {
+      "status": "shipped",
+      "evidence": [
+        "fixtures/gather/gather.golden.json",
+        "fixtures/file-stats/file-stats.golden.json",
+        "crates/media-curator-cli/src/file_stats.rs",
+        "crates/media-curator-cli/src/gather.rs",
+        "crates/media-curator-cli/tests/file_stats_cross_parity.rs",
+        "crates/media-curator-cli/tests/gather_fixture_parity.rs",
+        "tests/fileStatsParity.test.ts",
+        "tests/gatherParity.test.ts",
+        "scripts/generate-s2-golden.ts",
+        "scripts/run-media-curator-differential.sh",
+        "crates/media-curator-cli/tests/media_curator_differential.rs",
+        "verification/media-curator-2026-07-10T2130-file-stats-gather-differential.json"
+      ],
+      "notes": "Rust `gather` + `file-stats` subcommands match TS file-stats gather on fixture corpus. rej-010 differential harness landed for SHA-bound TS oracle vs Rust SSOT."
+    },
+    "S3": {
+      "status": "rust_impl",
+      "evidence": [
+        "index.ts",
+        "src/external/rustCli.ts",
+        "src/jobs/fileStats.ts",
+        "src/gatherer.ts",
+        "fixtures/file-stats/file-stats.golden.json",
+        "scripts/check-no-ts-file-stats-backend.sh",
+        "tests/check-no-ts-file-stats-backend.test.ts",
+        "tests/fileStatsAuthority.test.ts",
+        "crates/media-curator-cli/src/lib.rs",
+        "package.json",
+        ".github/workflows/ci.yml",
+        "scripts/run-media-curator-differential.sh",
+        "scripts/stage-rust-cli.ts",
+        "scripts/check-native-packaging.sh",
+        "tests/native-packaging.test.ts",
+        "bin/native/media-curator-cli"
+      ],
+      "notes": "Published npm entry defaults MEDIA_CURATOR_RUST=1. processFileStats + gatherFileStatsFn delegate to Rust CLI; TS cores retained for golden parity. check-no-ts-file-stats-backend hard gate in validate + CI. rej-010 rust_impl packaging: prepublishOnly stages bin/native/media-curator-cli; publish CI verifies pack:beta. authority_rust NOT restored (NO auto-promotion). ts_deleted NOT claimed (rej-001) — pending PR merge + prod smoke."
+    }
+  },
+  "cycle38": {
+    "boundedSlice": "cli/metadata-extraction|cli/discovery-gather",
+    "status": "harness_landed_disk",
+    "evidenceRef": "/tmp/grok-goal-729a939ec6e2/implementer/cycle38-mcp/cycle38-mcp.json"
+  }
+}
