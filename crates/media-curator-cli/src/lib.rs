@@ -1,4 +1,9 @@
-//! media-curator-cli — ADR-168 S0 scaffold: health probe + version surface.
+//! media-curator-cli — ADR-168 bounded differential slices (health + pipeline helpers).
+
+pub mod discovery;
+pub mod extensions;
+pub mod file_stats;
+pub mod hamming;
 
 use serde::Serialize;
 

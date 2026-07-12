@@ -52,12 +52,12 @@
           "scripts/differential/**",
           "scripts/run-media-curator-differential.sh"
         ],
-        "staleReason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs",
+        "staleReason": "B06 phantom-fix: harness landed on feat/phantom-fix-media-curator-differential-b06 \u2014 awaiting differential_green at merge tip",
         "verificationRef": "verification/media-curator-2026-07-10T2130-file-stats-gather-differential.json"
       },
       "promotionHold": {
         "active": true,
-        "reason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs; NO auto-promotion",
+        "reason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
         "rejectionRef": "rej-010",
         "since": "2026-07-10T21:30:00Z"
       },
@@ -86,12 +86,12 @@
           "scripts/differential/**",
           "scripts/run-media-curator-differential.sh"
         ],
-        "staleReason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs",
+        "staleReason": "B06 phantom-fix: harness landed on feat/phantom-fix-media-curator-differential-b06 \u2014 awaiting differential_green at merge tip",
         "verificationRef": "verification/media-curator-2026-07-10T2130-file-stats-gather-differential.json"
       },
       "promotionHold": {
         "active": true,
-        "reason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs; NO auto-promotion",
+        "reason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
         "rejectionRef": "rej-010",
         "since": "2026-07-10T21:30:00Z"
       },
@@ -102,7 +102,7 @@
       "branch": "feat/adr-168-s3-file-stats-authority",
       "baseBranch": "feat/adr-168-s2-file-stats-gather-parity",
       "prodProbe": "bun run validate (check:no-ts-file-stats-backend + fileStatsAuthority); bun run check:native-packaging; cargo test -p media-curator-cli file_stats_cross_parity",
-      "notes": "S3 hardened: file-stats (MD5 + size) Rust authority via processFileStats→fileStatsViaRust; check-no-ts-file-stats-backend gate wired into validate + CI. rej-010 rust_impl packaging: npm publish ships bin/native/media-curator-cli via build:rust + check:native-packaging. ts_deleted NOT claimed (rej-001) — pending PR merge + prod smoke."
+      "notes": "S3 hardened: file-stats (MD5 + size) Rust authority via processFileStats\u2192fileStatsViaRust; check-no-ts-file-stats-backend gate wired into validate + CI. rej-010 rust_impl packaging: npm publish ships bin/native/media-curator-cli via build:rust + check:native-packaging. ts_deleted NOT claimed (rej-001) \u2014 pending PR merge + prod smoke."
     },
     {
       "id": "cli/perceptual-hash-lsh",
@@ -172,11 +172,12 @@
     "ts_deleted": 0,
     "completion_progress": 0.0,
     "authority_progress": 0.0,
-    "weighted_progress": 0.1111
+    "weighted_progress": 0.1111,
+    "summaryNote": "B06 phantom-fix: bounded differential harness on disk (14 cases); proof.status missing until merge tip green"
   },
   "promotionHold": {
     "active": true,
-    "reason": "rej-010 promotion freeze — 0 capabilities with differential_green or canary_green proof",
+    "reason": "rej-010 promotion freeze \u2014 0 capabilities with differential_green or canary_green proof",
     "rejectionRef": "rej-010",
     "since": "2026-07-10T21:30:00Z"
   },
@@ -228,7 +229,7 @@
         "tests/native-packaging.test.ts",
         "bin/native/media-curator-cli"
       ],
-      "notes": "Published npm entry defaults MEDIA_CURATOR_RUST=1. processFileStats + gatherFileStatsFn delegate to Rust CLI; TS cores retained for golden parity. check-no-ts-file-stats-backend hard gate in validate + CI. rej-010 rust_impl packaging: prepublishOnly stages bin/native/media-curator-cli; publish CI verifies pack:beta. authority_rust NOT restored (NO auto-promotion). ts_deleted NOT claimed (rej-001) — pending PR merge + prod smoke."
+      "notes": "Published npm entry defaults MEDIA_CURATOR_RUST=1. processFileStats + gatherFileStatsFn delegate to Rust CLI; TS cores retained for golden parity. check-no-ts-file-stats-backend hard gate in validate + CI. rej-010 rust_impl packaging: prepublishOnly stages bin/native/media-curator-cli; publish CI verifies pack:beta. authority_rust NOT restored (NO auto-promotion). ts_deleted NOT claimed (rej-001) \u2014 pending PR merge + prod smoke."
     }
   },
   "cycle38": {

@@ -66,12 +66,12 @@
           "scripts/differential/**",
           "scripts/run-media-curator-differential.sh"
         ],
-        "staleReason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs",
+        "staleReason": "B06 phantom-fix: harness landed on feat/phantom-fix-media-curator-differential-b06 \u2014 awaiting differential_green at merge tip",
         "verificationRef": "verification/media-curator-2026-07-10T2130-file-stats-gather-differential.json"
       },
       "promotionHold": {
         "active": true,
-        "reason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs; NO auto-promotion",
+        "reason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
         "rejectionRef": "rej-010",
         "since": "2026-07-10T21:30:00Z"
       },
@@ -100,12 +100,12 @@
           "scripts/differential/**",
           "scripts/run-media-curator-differential.sh"
         ],
-        "staleReason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs",
+        "staleReason": "B06 phantom-fix: harness landed on feat/phantom-fix-media-curator-differential-b06 \u2014 awaiting differential_green at merge tip",
         "verificationRef": "verification/media-curator-2026-07-10T2130-file-stats-gather-differential.json"
       },
       "promotionHold": {
         "active": true,
-        "reason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs; NO auto-promotion",
+        "reason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
         "rejectionRef": "rej-010",
         "since": "2026-07-10T21:30:00Z"
       },
@@ -116,7 +116,7 @@
       "branch": "feat/adr-168-s3-file-stats-authority",
       "baseBranch": "feat/adr-168-s2-file-stats-gather-parity",
       "prodProbe": "bun run validate (check:no-ts-file-stats-backend + fileStatsAuthority); bun run check:native-packaging; cargo test -p media-curator-cli file_stats_cross_parity",
-      "notes": "S3 hardened: file-stats (MD5 + size) Rust authority via processFileStats→fileStatsViaRust; check-no-ts-file-stats-backend gate wired into validate + CI. rej-010 rust_impl packaging: npm publish ships bin/native/media-curator-cli via build:rust + check:native-packaging. ts_deleted NOT claimed (rej-001) — pending PR merge + prod smoke."
+      "notes": "S3 hardened: file-stats (MD5 + size) Rust authority via processFileStats\u2192fileStatsViaRust; check-no-ts-file-stats-backend gate wired into validate + CI. rej-010 rust_impl packaging: npm publish ships bin/native/media-curator-cli via build:rust + check:native-packaging. ts_deleted NOT claimed (rej-001) \u2014 pending PR merge + prod smoke."
     },
     {
       "id": "cli/perceptual-hash-lsh",
@@ -129,7 +129,7 @@
       "differentialTest": "crates/media-curator-cli/tests/media_curator_differential.rs#cli_perceptual_hash_lsh_differential_matches_ts_oracle; scripts/run-media-curator-differential.sh --slice cli/perceptual-hash-lsh",
       "promotionHold": {
         "active": true,
-        "reason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs; NO auto-promotion",
+        "reason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
         "rejectionRef": "rej-010",
         "since": "2026-07-10T32:00:00Z"
       },
@@ -143,10 +143,10 @@
           "scripts/differential/fixtures/phash-hamming-corpus.json",
           "scripts/run-media-curator-differential.sh"
         ],
-        "staleReason": "rej-010: cli/perceptual-hash-lsh differential harness landed — awaiting differential_green at bound SHAs",
+        "staleReason": "B06 phantom-fix: harness landed on feat/phantom-fix-media-curator-differential-b06 \u2014 awaiting differential_green at merge tip",
         "verificationRef": "verification/media-curator-cycle51-cli-perceptual-hash-lsh-rust-impl.json"
       },
-      "notes": "Cycle51 rej-010: Hamming distance rust_impl + TS JS-fallback oracle differential (7 cases). VPTree/DBSCAN remain ts_only. rust_impl ONLY — proof.status missing until differential_green."
+      "notes": "Cycle51 rej-010: Hamming distance rust_impl + TS JS-fallback oracle differential (7 cases). VPTree/DBSCAN remain ts_only. rust_impl ONLY \u2014 proof.status missing until differential_green."
     },
     {
       "id": "cli/deduplication-engine",
@@ -213,42 +213,43 @@
       "rust_impl_verified": 2,
       "slice": "cli/metadata-extraction|cli/discovery-gather",
       "verificationRef": "verification/media-curator-cycle45-file-stats-gather-rust-impl.json",
-      "notes": "rej-010 rust_impl ONLY — cycle45 product monolith batch: S3 file-stats + gather bounded differential harness re-verified on disk"
+      "notes": "rej-010 rust_impl ONLY \u2014 cycle45 product monolith batch: S3 file-stats + gather bounded differential harness re-verified on disk"
     },
     "cycle48_delta": {
       "rust_impl_verified": 1,
       "slice": "cli/metadata-extraction",
       "verificationRef": "verification/media-curator-cycle48-metadata-extraction-rust-impl.json",
-      "notes": "rej-010 rust_impl ONLY — cycle48 highest-value unimplemented slice: cli/metadata-extraction bounded differential (6 MD5+size cases)"
+      "notes": "rej-010 rust_impl ONLY \u2014 cycle48 highest-value unimplemented slice: cli/metadata-extraction bounded differential (6 MD5+size cases)"
     },
     "cycle50_delta": {
       "rust_impl_verified": 1,
       "slice": "cli/metadata-extraction",
       "verificationRef": "verification/media-curator-cycle50-cli-metadata-extraction-rust-impl.json",
-      "notes": "rej-010 rust_impl ONLY — cycle50 highest-value unimplemented slice: cli/metadata-extraction bounded differential (6 MD5+size cases)"
+      "notes": "rej-010 rust_impl ONLY \u2014 cycle50 highest-value unimplemented slice: cli/metadata-extraction bounded differential (6 MD5+size cases)"
     },
     "cycle51_delta": {
       "rust_impl_verified": 1,
       "slice": "cli/perceptual-hash-lsh",
       "verificationRef": "verification/media-curator-cycle51-cli-perceptual-hash-lsh-rust-impl.json",
-      "notes": "rej-010 rust_impl ONLY — cycle51 next ts_only slice: cli/perceptual-hash-lsh bounded differential (7 Hamming cases)"
+      "notes": "rej-010 rust_impl ONLY \u2014 cycle51 next ts_only slice: cli/perceptual-hash-lsh bounded differential (7 Hamming cases)"
     },
     "cycle63_delta": {
       "action": "skip",
       "slice": "cli/deduplication-engine",
       "verificationRef": "verification/media-curator-cycle63-deduplication-engine-skip.json",
-      "notes": "rej-010 cycle63 — cli/deduplication-engine ts_only deferred"
+      "notes": "rej-010 cycle63 \u2014 cli/deduplication-engine ts_only deferred"
     },
     "cycle64_delta": {
       "ts_only_deferred": 1,
       "slice": "cli/cache-persistence",
       "verificationRef": "verification/media-curator-cycle64-cache-persistence-skip.json",
-      "notes": "rej-010 cycle64 — cli/cache-persistence ts_only deferred"
-    }
+      "notes": "rej-010 cycle64 \u2014 cli/cache-persistence ts_only deferred"
+    },
+    "summaryNote": "B06 phantom-fix: bounded differential harness on disk (14 cases); proof.status missing until merge tip green"
   },
   "promotionHold": {
     "active": true,
-    "reason": "rej-010 promotion freeze — 0 capabilities with differential_green or canary_green proof",
+    "reason": "rej-010 promotion freeze \u2014 0 capabilities with differential_green or canary_green proof",
     "rejectionRef": "rej-010",
     "since": "2026-07-10T21:30:00Z"
   },
@@ -301,7 +302,7 @@
         "tests/native-packaging.test.ts",
         "bin/native/media-curator-cli"
       ],
-      "notes": "Published npm entry defaults MEDIA_CURATOR_RUST=1. processFileStats + gatherFileStatsFn delegate to Rust CLI; TS cores retained for golden parity. check-no-ts-file-stats-backend hard gate in validate + CI. rej-010 rust_impl packaging: prepublishOnly stages bin/native/media-curator-cli; publish CI verifies pack:beta. authority_rust NOT restored (NO auto-promotion). ts_deleted NOT claimed (rej-001) — pending PR merge + prod smoke."
+      "notes": "Published npm entry defaults MEDIA_CURATOR_RUST=1. processFileStats + gatherFileStatsFn delegate to Rust CLI; TS cores retained for golden parity. check-no-ts-file-stats-backend hard gate in validate + CI. rej-010 rust_impl packaging: prepublishOnly stages bin/native/media-curator-cli; publish CI verifies pack:beta. authority_rust NOT restored (NO auto-promotion). ts_deleted NOT claimed (rej-001) \u2014 pending PR merge + prod smoke."
     }
   },
   "cycle38": {
@@ -319,7 +320,7 @@
       "metadataExtraction": 6,
       "discoveryGather": 1
     },
-    "notes": "cycle38 rej-010: S3 file-stats + gather bounded differential harness + matrix gate confirmed on disk. rust_impl only — proof.status missing until differential_green at bound SHAs."
+    "notes": "cycle38 rej-010: S3 file-stats + gather bounded differential harness + matrix gate confirmed on disk. rust_impl only \u2014 proof.status missing until differential_green at bound SHAs."
   },
   "cycle40": {
     "boundedSlice": "cli/metadata-extraction|cli/discovery-gather",
@@ -337,7 +338,7 @@
       "metadataExtraction": 6,
       "discoveryGather": 1
     },
-    "notes": "cycle40 rej-010: S3 file-stats + gather bounded differential harness re-verified on disk. rust_impl only — proof.status missing until differential_green at bound SHAs."
+    "notes": "cycle40 rej-010: S3 file-stats + gather bounded differential harness re-verified on disk. rust_impl only \u2014 proof.status missing until differential_green at bound SHAs."
   },
   "cycle45": {
     "boundedSlice": "cli/metadata-extraction|cli/discovery-gather",
@@ -358,11 +359,10 @@
       "metadataExtraction": 6,
       "discoveryGather": 1
     },
-    "notes": "cycle45 rej-010: S3 file-stats + gather bounded differential harness + matrix gate re-verified on disk. rust_impl ONLY — proof.status missing until differential_green at bound SHAs."
+    "notes": "cycle45 rej-010: S3 file-stats + gather bounded differential harness + matrix gate re-verified on disk. rust_impl ONLY \u2014 proof.status missing until differential_green at bound SHAs."
   },
-  "cycle45Slice": "cli/metadata-extraction|cli/discovery-gather — cycle45 product monolith batch re-verify; bash scripts/run-media-curator-differential.sh",
-  "verificationRef": "verification/media-curator-cycle50-cli-metadata-extraction-rust-impl.json",
-  "cycle48Slice": "cli/metadata-extraction — bounded differential; bash scripts/run-media-curator-differential.sh --slice cli/metadata-extraction",
+  "cycle45Slice": "cli/metadata-extraction|cli/discovery-gather \u2014 cycle45 product monolith batch re-verify; bash scripts/run-media-curator-differential.sh",
+  "cycle48Slice": "cli/metadata-extraction \u2014 bounded differential; bash scripts/run-media-curator-differential.sh --slice cli/metadata-extraction",
   "cycle48": {
     "boundedSlice": "cli/metadata-extraction",
     "status": "rust_impl_on_disk_verified",
@@ -380,9 +380,9 @@
     "caseCounts": {
       "metadataExtraction": 6
     },
-    "notes": "cycle48 rej-010: cli/metadata-extraction bounded differential harness on-disk verify. rust_impl ONLY — proof.status missing until differential_green at bound SHAs."
+    "notes": "cycle48 rej-010: cli/metadata-extraction bounded differential harness on-disk verify. rust_impl ONLY \u2014 proof.status missing until differential_green at bound SHAs."
   },
-  "cycle50Slice": "cli/metadata-extraction — bounded --slice entrypoint; bash scripts/run-media-curator-differential.sh --slice cli/metadata-extraction",
+  "cycle50Slice": "cli/metadata-extraction \u2014 bounded --slice entrypoint; bash scripts/run-media-curator-differential.sh --slice cli/metadata-extraction",
   "cycle50": {
     "boundedSlice": "cli/metadata-extraction",
     "status": "rust_impl_on_disk_verified",
@@ -396,10 +396,12 @@
       "scripts/differential/media-curator-oracle.ts",
       "scripts/differential/fixtures/media-curator-corpus.json"
     ],
-    "caseCounts": { "metadataExtraction": 6 },
-    "notes": "cycle50 rej-010: cli/metadata-extraction bounded differential harness on-disk verify. rust_impl ONLY — proof.status missing until differential_green at bound SHAs."
+    "caseCounts": {
+      "metadataExtraction": 6
+    },
+    "notes": "cycle50 rej-010: cli/metadata-extraction bounded differential harness on-disk verify. rust_impl ONLY \u2014 proof.status missing until differential_green at bound SHAs."
   },
-  "cycle51Slice": "cli/perceptual-hash-lsh — bounded --slice entrypoint; bash scripts/run-media-curator-differential.sh --slice cli/perceptual-hash-lsh",
+  "cycle51Slice": "cli/perceptual-hash-lsh \u2014 bounded --slice entrypoint; bash scripts/run-media-curator-differential.sh --slice cli/perceptual-hash-lsh",
   "cycle51": {
     "boundedSlice": "cli/perceptual-hash-lsh",
     "status": "rust_impl_on_disk_verified",
@@ -413,11 +415,13 @@
       "scripts/differential/fixtures/phash-hamming-corpus.json",
       "scripts/run-media-curator-differential.sh"
     ],
-    "caseCounts": { "hammingDistance": 7 },
-    "notes": "cycle51 rej-010: cli/perceptual-hash-lsh ts_only→rust_impl bounded differential harness on-disk verify. rust_impl ONLY — proof.status missing until differential_green at bound SHAs."
+    "caseCounts": {
+      "hammingDistance": 7
+    },
+    "notes": "cycle51 rej-010: cli/perceptual-hash-lsh ts_only\u2192rust_impl bounded differential harness on-disk verify. rust_impl ONLY \u2014 proof.status missing until differential_green at bound SHAs."
   },
-  "cycle63Slice": "cli/deduplication-engine — cycle63 skip; cli/perceptual-hash-lsh re-verify via bash scripts/run-media-curator-differential.sh --slice cli/perceptual-hash-lsh",
-  "cycle64Slice": "cli/cache-persistence — cycle64 skip; cli/perceptual-hash-lsh re-verify via bash scripts/run-media-curator-differential.sh --slice cli/perceptual-hash-lsh",
+  "cycle63Slice": "cli/deduplication-engine \u2014 cycle63 skip; cli/perceptual-hash-lsh re-verify via bash scripts/run-media-curator-differential.sh --slice cli/perceptual-hash-lsh",
+  "cycle64Slice": "cli/cache-persistence \u2014 cycle64 skip; cli/perceptual-hash-lsh re-verify via bash scripts/run-media-curator-differential.sh --slice cli/perceptual-hash-lsh",
   "cycle63": {
     "action": "skip",
     "boundedSlice": "cli/deduplication-engine",
@@ -425,7 +429,7 @@
     "reauditRef": "rej-010",
     "verificationRef": "verification/media-curator-cycle63-deduplication-engine-skip.json",
     "harnessPath": "scripts/run-media-curator-differential.sh --slice cli/perceptual-hash-lsh",
-    "notes": "cycle63 rej-010: cli/deduplication-engine ts_only deferred — harness metadata only."
+    "notes": "cycle63 rej-010: cli/deduplication-engine ts_only deferred \u2014 harness metadata only."
   },
   "cycle64": {
     "boundedSlice": "cli/cache-persistence",
@@ -436,6 +440,6 @@
     "skipReason": "cli/cache-persistence requires SQLite cache migration",
     "harnessPath": "scripts/run-media-curator-differential.sh --slice cli/perceptual-hash-lsh",
     "reverifySlice": "cli/perceptual-hash-lsh",
-    "notes": "cycle64 rej-010: cli/cache-persistence ts_only deferred — harness metadata only."
+    "notes": "cycle64 rej-010: cli/cache-persistence ts_only deferred \u2014 harness metadata only."
   }
 }
