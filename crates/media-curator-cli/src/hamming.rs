@@ -39,8 +39,8 @@ pub fn hamming_distance(a: &[u8], b: &[u8]) -> u32 {
     }
     // Remaining bytes in the longer side count as differing bits (full popcount).
     let longer = if a.len() > b.len() { a } else { b };
-    for i in min_len..longer.len() {
-        distance += popcount8(longer[i]);
+    for &byte in longer.iter().skip(min_len) {
+        distance += popcount8(byte);
     }
     distance
 }

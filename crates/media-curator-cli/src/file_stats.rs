@@ -23,7 +23,7 @@ pub fn build_file_stats_core(size: u64, hash_hex: impl Into<String>) -> FileStat
 #[must_use]
 pub fn is_valid_hash_hex(hash_hex: &str) -> bool {
     !hash_hex.is_empty()
-        && hash_hex.len() % 2 == 0
+        && hash_hex.len().is_multiple_of(2)
         && hash_hex.bytes().all(|b| b.is_ascii_hexdigit())
 }
 
