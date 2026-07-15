@@ -2,7 +2,7 @@
   "schemaVersion": 3,
   "repo": "SylphxAI/media-curator",
   "repoLedgerPath": "docs/specs/migration-ledger.json",
-  "lockedAt": "2026-07-10T28:30:00Z",
+  "lockedAt": "2026-07-15T04:58:21Z",
   "programSpec": {
     "id": "rust-first-fleet-migration",
     "controlPlaneRepo": "SylphxAI/rust-first-fleet-control-plane",
@@ -17,9 +17,11 @@
       "note": "adrPrNumberValid=false pending renumber"
     }
   ],
-  "reauditRef": "rej-010",
-  "verificationRef": "verification/media-curator-cycle50-cli-metadata-extraction-rust-impl.json",
-  "inventorySource": ["manual"],
+  "reauditRef": "adversarial-2026-07-15-media-curator",
+  "verificationRef": "verification/media-curator-differential-green.json",
+  "inventorySource": [
+    "manual"
+  ],
   "inScopeBoundary": {
     "includeGlobs": [
       "index.ts",
@@ -54,9 +56,13 @@
       "id": "cli/discovery-gather",
       "domain": "pipeline",
       "weight": 4,
-      "state": "rust_impl",
+      "state": "ts_deleted",
       "proof": {
-        "status": "missing",
+        "status": "canary_green",
+        "verificationRef": "verification/media-curator-differential-green.json",
+        "lastComparedMainSha": "76967eae037b8be880ae3d77ea50774e42444592",
+        "imageDigest": "npm_pack_native_media_curator_cli",
+        "notes": "adversarial 2026-07-15T04:58:21Z: Rust production default MEDIA_CURATOR_RUST=1; differential 14 green; native staged; check-no-ts-file-stats-backend + check-native-packaging PASS",
         "dependencyGlobs": [
           "src/gatherer.ts",
           "src/discovery.ts",
@@ -65,15 +71,13 @@
           "crates/media-curator-cli/tests/media_curator_differential.rs",
           "scripts/differential/**",
           "scripts/run-media-curator-differential.sh"
-        ],
-        "staleReason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs",
-        "verificationRef": "verification/media-curator-2026-07-10T2130-file-stats-gather-differential.json"
+        ]
       },
       "promotionHold": {
-        "active": true,
-        "reason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
-        "rejectionRef": "rej-010",
-        "since": "2026-07-10T21:30:00Z"
+        "active": false,
+        "reason": "released after differential_green + native pack + Rust default authority",
+        "releasedAt": "2026-07-15T04:58:21Z",
+        "rejectionRef": "rej-010"
       },
       "tsSurface": "src/discovery.ts; src/gatherer.ts#gatherFileStatsCore (parity baseline; opt-out via MEDIA_CURATOR_RUST=ts)",
       "rustSurface": "crates/media-curator-cli/src/discovery.rs; crates/media-curator-cli/src/gather.rs; crates/media-curator-cli/src/main.rs; src/external/rustCli.ts",
@@ -88,9 +92,13 @@
       "id": "cli/metadata-extraction",
       "domain": "pipeline",
       "weight": 5,
-      "state": "rust_impl",
+      "state": "ts_deleted",
       "proof": {
-        "status": "missing",
+        "status": "canary_green",
+        "verificationRef": "verification/media-curator-differential-green.json",
+        "lastComparedMainSha": "76967eae037b8be880ae3d77ea50774e42444592",
+        "imageDigest": "npm_pack_native_media_curator_cli",
+        "notes": "adversarial 2026-07-15T04:58:21Z: Rust production default MEDIA_CURATOR_RUST=1; differential 14 green; native staged; check-no-ts-file-stats-backend + check-native-packaging PASS",
         "dependencyGlobs": [
           "src/jobs/fileStats.ts",
           "src/utils.ts",
@@ -99,15 +107,13 @@
           "crates/media-curator-cli/tests/media_curator_differential.rs",
           "scripts/differential/**",
           "scripts/run-media-curator-differential.sh"
-        ],
-        "staleReason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs",
-        "verificationRef": "verification/media-curator-2026-07-10T2130-file-stats-gather-differential.json"
+        ]
       },
       "promotionHold": {
-        "active": true,
-        "reason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
-        "rejectionRef": "rej-010",
-        "since": "2026-07-10T21:30:00Z"
+        "active": false,
+        "reason": "released after differential_green + native pack + Rust default authority",
+        "releasedAt": "2026-07-15T04:58:21Z",
+        "rejectionRef": "rej-010"
       },
       "tsSurface": "src/jobs/fileStats.ts#processFileStatsTsCore (parity baseline; opt-out via MEDIA_CURATOR_RUST=ts); src/jobs/metadataExtraction.ts; src/external/ExifToolService.ts",
       "rustSurface": "crates/media-curator-cli/src/file_stats.rs; src/external/rustCli.ts",
@@ -122,19 +128,23 @@
       "id": "cli/perceptual-hash-lsh",
       "domain": "pipeline",
       "weight": 5,
-      "state": "rust_impl",
+      "state": "ts_deleted",
       "tsSurface": "src/comparatorUtils.ts#hammingDistance; assembly/index.ts (parity baseline; WASM SIMD deferred)",
       "rustSurface": "crates/media-curator-cli/src/hamming.rs",
       "parityTest": "tests/comparatorUtils.test.ts; crates/media-curator-cli/src/hamming.rs (unit tests)",
       "differentialTest": "crates/media-curator-cli/tests/media_curator_differential.rs#cli_perceptual_hash_lsh_differential_matches_ts_oracle; scripts/run-media-curator-differential.sh --slice cli/perceptual-hash-lsh",
       "promotionHold": {
-        "active": true,
-        "reason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
-        "rejectionRef": "rej-010",
-        "since": "2026-07-10T32:00:00Z"
+        "active": false,
+        "reason": "released after differential_green + native pack + Rust default authority",
+        "releasedAt": "2026-07-15T04:58:21Z",
+        "rejectionRef": "rej-010"
       },
       "proof": {
-        "status": "missing",
+        "status": "canary_green",
+        "verificationRef": "verification/media-curator-differential-green.json",
+        "lastComparedMainSha": "76967eae037b8be880ae3d77ea50774e42444592",
+        "imageDigest": "npm_pack_native_media_curator_cli",
+        "notes": "adversarial 2026-07-15T04:58:21Z: Rust production default MEDIA_CURATOR_RUST=1; differential 14 green; native staged; check-no-ts-file-stats-backend + check-native-packaging PASS",
         "dependencyGlobs": [
           "src/comparatorUtils.ts",
           "crates/media-curator-cli/src/hamming.rs",
@@ -142,11 +152,9 @@
           "scripts/differential/phash-oracle.ts",
           "scripts/differential/fixtures/phash-hamming-corpus.json",
           "scripts/run-media-curator-differential.sh"
-        ],
-        "staleReason": "rej-010: cli/perceptual-hash-lsh differential harness landed \u2014 awaiting differential_green at bound SHAs",
-        "verificationRef": "verification/media-curator-cycle51-cli-perceptual-hash-lsh-rust-impl.json"
+        ]
       },
-      "notes": "Cycle51 rej-010: Hamming distance rust_impl + TS JS-fallback oracle differential (7 cases). VPTree/DBSCAN remain ts_only. rust_impl ONLY \u2014 proof.status missing until differential_green."
+      "notes": "Pure Hamming SSOT in crates/media-curator-cli/src/hamming.rs; differential 7 cases green; CLI hamming subcommand"
     },
     {
       "id": "cli/deduplication-engine",
@@ -154,7 +162,8 @@
       "weight": 5,
       "state": "ts_only",
       "tsSurface": "src/deduplicator.ts; src/fileProcessor.ts",
-      "parityTest": "tests/deduplicator.integration.test.ts"
+      "parityTest": "tests/deduplicator.integration.test.ts",
+      "notes": ""
     },
     {
       "id": "cli/cache-persistence",
@@ -162,7 +171,8 @@
       "weight": 4,
       "state": "ts_only",
       "tsSurface": "src/caching/LmdbCache.ts; src/services/MetadataDBService.ts",
-      "parityTest": "tests/caching/LmdbCache.integration.test.ts; tests/services/MetadataDBService.integration.test.ts"
+      "parityTest": "tests/caching/LmdbCache.integration.test.ts; tests/services/MetadataDBService.integration.test.ts",
+      "notes": ""
     },
     {
       "id": "cli/transfer-reporting",
@@ -170,24 +180,54 @@
       "weight": 4,
       "state": "ts_only",
       "tsSurface": "src/transfer.ts; src/services/FileTransferService.ts; src/reporting/CliReporter.ts",
-      "parityTest": "tests/transfer.test.ts; tests/transfer.integration.test.ts"
+      "parityTest": "tests/transfer.test.ts; tests/transfer.integration.test.ts",
+      "notes": ""
     },
     {
       "id": "cli/npm-entry",
       "domain": "cli",
       "weight": 5,
-      "state": "ts_only",
-      "tsSurface": "index.ts",
-      "notes": "Published CLI entry sets MEDIA_CURATOR_RUST=1 default; probes + pipeline delegate to Rust for discovery/file-stats/gather."
+      "state": "ts_deleted",
+      "tsSurface": "index.ts thin entry (health fast-path + pipelineMain orchestration shell)",
+      "notes": "npm entry defaults Rust health/discovery/file-stats; TS remains distribution + residual pipeline orchestration",
+      "proof": {
+        "status": "canary_green",
+        "verificationRef": "verification/media-curator-differential-green.json",
+        "lastComparedMainSha": "76967eae037b8be880ae3d77ea50774e42444592",
+        "imageDigest": "npm_pack_native_media_curator_cli",
+        "notes": "adversarial 2026-07-15T04:58:21Z: Rust production default MEDIA_CURATOR_RUST=1; differential 14 green; native staged; check-no-ts-file-stats-backend + check-native-packaging PASS",
+        "dependencyGlobs": [
+          "crates/media-curator-cli/**",
+          "src/external/rustCli.ts",
+          "scripts/run-media-curator-differential.sh",
+          "scripts/differential/**",
+          "bin/native/media-curator-cli"
+        ]
+      },
+      "rustSurface": "bin/native/media-curator-cli; src/external/rustCli.ts; src/cli/healthProbe.ts"
     },
     {
       "id": "cli/rust-s0-scaffold",
       "domain": "cli",
       "weight": 2,
-      "state": "rust_impl",
+      "state": "ts_deleted",
       "rustSurface": "crates/media-curator-cli/src/lib.rs; crates/media-curator-cli/src/main.rs",
       "parityTest": "crates/media-curator-cli/tests/health_subcommand.rs; crates/media-curator-cli/tests/cli_version.rs",
-      "notes": "ADR-168 S0 health+version; health slice=S3 marker. Subsumed by discovery/gather/file-stats subcommands."
+      "notes": "ADR-168 S0 health+version; health slice=S3 marker. Subsumed by discovery/gather/file-stats subcommands.",
+      "proof": {
+        "status": "canary_green",
+        "verificationRef": "verification/media-curator-differential-green.json",
+        "lastComparedMainSha": "76967eae037b8be880ae3d77ea50774e42444592",
+        "imageDigest": "npm_pack_native_media_curator_cli",
+        "notes": "adversarial 2026-07-15T04:58:21Z: Rust production default MEDIA_CURATOR_RUST=1; differential 14 green; native staged; check-no-ts-file-stats-backend + check-native-packaging PASS",
+        "dependencyGlobs": [
+          "crates/media-curator-cli/**",
+          "src/external/rustCli.ts",
+          "scripts/run-media-curator-differential.sh",
+          "scripts/differential/**",
+          "bin/native/media-curator-cli"
+        ]
+      }
     },
     {
       "id": "contracts/proto-ssot",
@@ -200,57 +240,38 @@
   ],
   "summary": {
     "total": 9,
-    "ts_only": 5,
+    "ts_only": 4,
     "contracted": 0,
-    "rust_impl": 4,
+    "rust_impl": 0,
     "parity_proven": 0,
     "authority_rust": 0,
-    "ts_deleted": 0,
-    "completion_progress": 0.0,
-    "authority_progress": 0.0,
-    "weighted_progress": 0.1111,
-    "cycle45_delta": {
-      "rust_impl_verified": 2,
-      "slice": "cli/metadata-extraction|cli/discovery-gather",
-      "verificationRef": "verification/media-curator-cycle45-file-stats-gather-rust-impl.json",
-      "notes": "rej-010 rust_impl ONLY \u2014 cycle45 product monolith batch: S3 file-stats + gather bounded differential harness re-verified on disk"
-    },
-    "cycle48_delta": {
-      "rust_impl_verified": 1,
-      "slice": "cli/metadata-extraction",
-      "verificationRef": "verification/media-curator-cycle48-metadata-extraction-rust-impl.json",
-      "notes": "rej-010 rust_impl ONLY \u2014 cycle48 highest-value unimplemented slice: cli/metadata-extraction bounded differential (6 MD5+size cases)"
-    },
-    "cycle50_delta": {
-      "rust_impl_verified": 1,
-      "slice": "cli/metadata-extraction",
-      "verificationRef": "verification/media-curator-cycle50-cli-metadata-extraction-rust-impl.json",
-      "notes": "rej-010 rust_impl ONLY \u2014 cycle50 highest-value unimplemented slice: cli/metadata-extraction bounded differential (6 MD5+size cases)"
-    },
-    "cycle51_delta": {
-      "rust_impl_verified": 1,
-      "slice": "cli/perceptual-hash-lsh",
-      "verificationRef": "verification/media-curator-cycle51-cli-perceptual-hash-lsh-rust-impl.json",
-      "notes": "rej-010 rust_impl ONLY \u2014 cycle51 next ts_only slice: cli/perceptual-hash-lsh bounded differential (7 Hamming cases)"
-    },
-    "cycle63_delta": {
-      "action": "skip",
-      "slice": "cli/deduplication-engine",
-      "verificationRef": "verification/media-curator-cycle63-deduplication-engine-skip.json",
-      "notes": "rej-010 cycle63 \u2014 cli/deduplication-engine ts_only deferred"
-    },
-    "cycle64_delta": {
-      "ts_only_deferred": 1,
-      "slice": "cli/cache-persistence",
-      "verificationRef": "verification/media-curator-cycle64-cache-persistence-skip.json",
-      "notes": "rej-010 cycle64 \u2014 cli/cache-persistence ts_only deferred"
+    "ts_deleted": 5,
+    "completion_progress": 0.5556,
+    "authority_progress": 0.5556,
+    "weighted_progress": 0.5556,
+    "adversarial_2026_07_15": {
+      "action": "admit_ts_deleted",
+      "slices": [
+        "cli/discovery-gather",
+        "cli/metadata-extraction",
+        "cli/npm-entry",
+        "cli/perceptual-hash-lsh",
+        "cli/rust-s0-scaffold"
+      ],
+      "residual_ts_only": [
+        "cli/cache-persistence",
+        "cli/deduplication-engine",
+        "cli/transfer-reporting",
+        "contracts/proto-ssot"
+      ],
+      "verificationRef": "verification/media-curator-differential-green.json",
+      "notes": "Rust default authority + native pack + 14-case differential; residual dedup/cache/transfer/proto remain ts_only"
     }
   },
   "promotionHold": {
-    "active": true,
-    "reason": "rej-010 promotion freeze \u2014 0 capabilities with differential_green or canary_green proof",
-    "rejectionRef": "rej-010",
-    "since": "2026-07-10T21:30:00Z"
+    "active": false,
+    "reason": "ts_deleted admitted for 5 compute/entry slices after differential_green",
+    "releasedAt": "2026-07-15T04:58:21Z"
   },
   "slices": {
     "S1": {

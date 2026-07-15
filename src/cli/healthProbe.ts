@@ -1,10 +1,10 @@
 import { healthViaRust, rustCliDelegationEnabled } from '../external/rustCli';
 
-/** ADR-168 S0 health fast-path — no pipeline dependency load. */
+/** ADR-168 health fast-path — Rust authority by default (no pipeline load). */
 export async function runHealthProbe(): Promise<number> {
   if (!rustCliDelegationEnabled()) {
     console.error(
-      'Health probe requires MEDIA_CURATOR_RUST_CLI=1 (ADR-168 S0 Rust delegation).',
+      'Health probe requires Rust authority (default). Unset MEDIA_CURATOR_RUST or set MEDIA_CURATOR_RUST=1.',
     );
     return 2;
   }

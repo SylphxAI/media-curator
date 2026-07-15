@@ -1,5 +1,7 @@
-//! media-curator-cli — ADR-168: health probe + pure cores (hamming, file-stats).
+//! media-curator-cli — ADR-168 production authority cores.
 
+pub mod discovery;
+pub mod extensions;
 pub mod file_stats;
 pub mod hamming;
 
@@ -10,14 +12,16 @@ use serde::Serialize;
 pub struct HealthBody {
     pub status: &'static str,
     pub stub: bool,
+    pub authority: &'static str,
 }
 
-/// Build the S0 health response (dependency-free).
+/// Build the production health response.
 #[must_use]
 pub fn health_body() -> HealthBody {
     HealthBody {
         status: "ok",
-        stub: true,
+        stub: false,
+        authority: "rust",
     }
 }
 
@@ -35,16 +39,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn health_body_is_ok_stub() {
+    fn health_body_is_ok_rust_authority() {
         let body = health_body();
         assert_eq!(body.status, "ok");
-        assert!(body.stub);
+        assert!(!body.stub);
+        assert_eq!(body.authority, "rust");
     }
 
     #[test]
     fn health_json_round_trips() {
         let json = health_json();
         assert!(json.contains(r#""status":"ok""#));
-        assert!(json.contains(r#""stub":true"#));
+        assert!(json.contains(r#""authority":"rust""#));
     }
 }

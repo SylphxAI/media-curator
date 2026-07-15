@@ -6,6 +6,7 @@ import {
   healthViaRust,
   resolveRustCliBinary,
   rustCliDelegationEnabled,
+  fileStatsViaRust,
 } from '../src/external/rustCli';
 
 const repoRoot = path.resolve(import.meta.dirname, '..');
@@ -23,17 +24,20 @@ beforeAll(() => {
 afterEach(() => {
   delete process.env.MEDIA_CURATOR_RUST_CLI;
   delete process.env.MEDIA_CURATOR_RUST_CLI_BIN;
+  delete process.env.MEDIA_CURATOR_RUST;
+  delete process.env.MEDIA_CURATOR_RUST_BIN;
 });
 
-describe('rustCli bridge (ADR-168 S0)', () => {
-  it('rustCliDelegationEnabled respects MEDIA_CURATOR_RUST_CLI', () => {
+describe('rustCli bridge (ADR-168 production authority)', () => {
+  it('rustCliDelegationEnabled defaults to true when unset', () => {
+    delete process.env.MEDIA_CURATOR_RUST;
     delete process.env.MEDIA_CURATOR_RUST_CLI;
-    expect(rustCliDelegationEnabled()).toBe(false);
-
-    process.env.MEDIA_CURATOR_RUST_CLI = '1';
     expect(rustCliDelegationEnabled()).toBe(true);
 
-    process.env.MEDIA_CURATOR_RUST_CLI = 'true';
+    process.env.MEDIA_CURATOR_RUST = 'ts';
+    expect(rustCliDelegationEnabled()).toBe(false);
+
+    process.env.MEDIA_CURATOR_RUST = '1';
     expect(rustCliDelegationEnabled()).toBe(true);
   });
 
@@ -42,15 +46,25 @@ describe('rustCli bridge (ADR-168 S0)', () => {
     expect(resolveRustCliBinary()).toBe(rustBinary);
   });
 
-  it('healthViaRust returns S0 stub JSON from media-curator-cli', () => {
+  it('healthViaRust returns rust authority JSON', () => {
     process.env.MEDIA_CURATOR_RUST_CLI_BIN = rustBinary;
     const body = healthViaRust();
 
     expect(body.status).toBe('ok');
-    expect(body.stub).toBe(true);
+    expect(body.stub).toBe(false);
+    expect(body.authority).toBe('rust');
   });
 
-  it('CLI --health delegates to Rust when MEDIA_CURATOR_RUST_CLI=1', () => {
+  it('fileStatsViaRust returns md5+size for fixture', () => {
+    process.env.MEDIA_CURATOR_RUST_CLI_BIN = rustBinary;
+    const stats = fileStatsViaRust(
+      path.join(repoRoot, 'fixtures/file-stats/sample-a.txt'),
+    );
+    expect(stats.size).toBeGreaterThan(0);
+    expect(stats.md5).toMatch(/^[a-f0-9]{32}$/);
+  });
+
+  it('CLI --health delegates to Rust by default', () => {
     const result = spawnSync(
       'bun',
       ['run', path.join(repoRoot, 'index.ts'), '--health'],
@@ -59,7 +73,6 @@ describe('rustCli bridge (ADR-168 S0)', () => {
         encoding: 'utf8',
         env: {
           ...process.env,
-          MEDIA_CURATOR_RUST_CLI: '1',
           MEDIA_CURATOR_RUST_CLI_BIN: rustBinary,
         },
         stdio: ['ignore', 'pipe', 'pipe'],
@@ -70,8 +83,9 @@ describe('rustCli bridge (ADR-168 S0)', () => {
     const payload = JSON.parse(result.stdout.trim()) as {
       status: string;
       stub: boolean;
+      authority: string;
     };
     expect(payload.status).toBe('ok');
-    expect(payload.stub).toBe(true);
+    expect(payload.authority).toBe('rust');
   });
 });

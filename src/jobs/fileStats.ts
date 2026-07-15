@@ -4,119 +4,144 @@ import {
   getFileStats,
   calculateFileHash,
   sharedArrayBufferToHex,
+  hexToSharedArrayBuffer,
 } from '../utils';
-import { AppResult, ok, err, DatabaseError } from '../errors'; // Removed unused AnyAppError
+import {
+  fileStatsViaRust,
+  rustCliDelegationEnabled,
+} from '../external/rustCli';
+import { AppResult, ok, err, DatabaseError, FileSystemError } from '../errors';
 
-const JOB_NAME = 'fileStats'; // Define job name constant
+const JOB_NAME = 'fileStats';
 
 /**
- * Processes a file to get its stats (size, dates, hash).
- * Uses LMDB cache to avoid redundant processing.
- * @param filePath Path to the file.
- * @param config Configuration for file stats job.
- * @param cache LmdbCache instance.
- * @returns Promise resolving to FileStats.
+ * TS parity baseline for file-stats (MD5 + size + dates). Used only when
+ * MEDIA_CURATOR_RUST is explicitly opted out (ts|0|false|no).
  */
-export async function processFileStats(
+export async function processFileStatsTsCore(
   filePath: string,
   config: FileStatsConfig,
-  cache: LmdbCache,
 ): Promise<AppResult<FileStats>> {
-  // Update return type
-  // Use filePath as cache key for stats (as in original BaseFileInfoJob)
-  const cacheKey = filePath;
-
-  // Check cache
-  // Wrap cache operations in try/catch until LmdbCache is refactored
-  const configCheckResult = await cache.checkConfig(JOB_NAME, cacheKey, config);
-  if (configCheckResult.isErr()) {
-    // Log or handle config check error, but proceed to calculate
-    console.warn(
-      `Cache config check failed for ${filePath}, proceeding with calculation:`,
-      configCheckResult.error,
-    );
-  } else if (configCheckResult.value.isValid) {
-    // Config is valid, try getting data
-    const cacheGetResult = await cache.getCache<FileStats>(JOB_NAME, cacheKey);
-    if (cacheGetResult.isErr()) {
-      // Log or handle cache get error, but proceed to calculate
-      console.warn(
-        `Cache get failed for ${filePath}, proceeding with calculation:`,
-        cacheGetResult.error,
-      );
-    } else if (cacheGetResult.value.hit) {
-      // Cache hit and data is valid
-      return ok(cacheGetResult.value.data!); // Return cached data wrapped in ok
-    }
-  }
-
-  // Cache miss or invalid config: calculate stats
-  // Handle AppResult from getFileStats
   const statsResult = await getFileStats(filePath);
   if (statsResult.isErr()) {
-    return err(statsResult.error); // Propagate error
+    return err(statsResult.error);
   }
-  const stats = statsResult.value; // Unwrap
+  const stats = statsResult.value;
 
-  // Handle AppResult from calculateFileHash
   const hashResult = await calculateFileHash(
     filePath,
     stats.size,
     config.maxChunkSize,
   );
   if (hashResult.isErr()) {
-    return err(hashResult.error); // Propagate error
+    return err(hashResult.error);
   }
-  const hash = hashResult.value; // Unwrap
+  const hash = hashResult.value;
 
-  const result: FileStats = {
+  return ok({
     hash,
     size: stats.size,
     createdAt: stats.birthtime,
     modifiedAt: stats.mtime,
-  };
+  });
+}
 
-  // Store in cache
-  // Wrap cache set operation
+/**
+ * Production file-stats: Rust MD5+size authority by default (fail-closed).
+ * Dates still come from local fs metadata. Cache wrapper remains in TS.
+ */
+export async function processFileStats(
+  filePath: string,
+  config: FileStatsConfig,
+  cache: LmdbCache,
+): Promise<AppResult<FileStats>> {
+  const cacheKey = filePath;
+
+  const configCheckResult = await cache.checkConfig(JOB_NAME, cacheKey, config);
+  if (configCheckResult.isErr()) {
+    console.warn(
+      `Cache config check failed for ${filePath}, proceeding with calculation:`,
+      configCheckResult.error,
+    );
+  } else if (configCheckResult.value.isValid) {
+    const cacheGetResult = await cache.getCache<FileStats>(JOB_NAME, cacheKey);
+    if (cacheGetResult.isErr()) {
+      console.warn(
+        `Cache get failed for ${filePath}, proceeding with calculation:`,
+        cacheGetResult.error,
+      );
+    } else if (cacheGetResult.value.hit) {
+      return ok(cacheGetResult.value.data!);
+    }
+  }
+
+  let result: FileStats;
+
+  if (rustCliDelegationEnabled()) {
+    try {
+      const rust = fileStatsViaRust(filePath);
+      const datesResult = await getFileStats(filePath);
+      if (datesResult.isErr()) {
+        return err(datesResult.error);
+      }
+      const dates = datesResult.value;
+      const hashResult = hexToSharedArrayBuffer(rust.md5);
+      if (hashResult.isErr()) {
+        return err(hashResult.error);
+      }
+      result = {
+        hash: hashResult.value,
+        size: rust.size,
+        createdAt: dates.birthtime,
+        modifiedAt: dates.mtime,
+      };
+    } catch (error) {
+      return err(
+        new FileSystemError(
+          `Rust file-stats failed for ${filePath}: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+          {
+            cause: error instanceof Error ? error : undefined,
+            context: { path: filePath, operation: 'fileStatsViaRust' },
+          },
+        ),
+      );
+    }
+  } else {
+    const coreResult = await processFileStatsTsCore(filePath, config);
+    if (coreResult.isErr()) {
+      return err(coreResult.error);
+    }
+    result = coreResult.value;
+  }
+
   const setResult = await cache.setCache(JOB_NAME, cacheKey, result, config);
   if (setResult.isErr()) {
-    // Log cache set error but return the calculated result anyway
     console.warn(
       `Cache set failed for ${filePath}, but returning calculated result:`,
       setResult.error,
     );
   }
 
-  return ok(result); // Return calculated result wrapped in ok
+  return ok(result);
 }
 
-/**
- * Gets the cache key (content hash) for jobs that depend on FileStats.
- * @param filePath Path to the file.
- * @param config Configuration for file stats job.
- * @param cache LmdbCache instance.
- * @returns Promise resolving to the hex representation of the content hash.
- */
 export async function getFileStatsHashKey(
   filePath: string,
   config: FileStatsConfig,
   cache: LmdbCache,
 ): Promise<AppResult<string>> {
-  // Update return type
-  // This function essentially runs processFileStats but only returns the hash key
-  // It leverages the caching within processFileStats
   const statsResult = await processFileStats(filePath, config, cache);
   if (statsResult.isErr()) {
-    return err(statsResult.error); // Propagate error
+    return err(statsResult.error);
   }
-  const stats = statsResult.value; // Unwrap
+  const stats = statsResult.value;
 
-  // Assuming sharedArrayBufferToHex is safe or will be refactored later
   try {
     const hexKey = sharedArrayBufferToHex(stats.hash);
-    return ok(hexKey); // Wrap result in ok
+    return ok(hexKey);
   } catch (error) {
-    // Handle potential errors from hex conversion if any
     return err(
       new DatabaseError(
         `Failed to convert hash to hex key for ${filePath}: ${error instanceof Error ? error.message : String(error)}`,

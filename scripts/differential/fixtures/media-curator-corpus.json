@@ -1,0 +1,183 @@
+{
+  "corpusVersion": 1,
+  "slice": "cli/metadata-extraction|cli/discovery-gather|cli/perceptual-hash-lsh",
+  "cases": [
+    {
+      "id": "file-stats-sample-a.txt",
+      "slice": "cli/metadata-extraction",
+      "domain": "pipeline",
+      "input": {
+        "file": "fixtures/file-stats/sample-a.txt"
+      },
+      "output": {
+        "md5": "7d95d500f85558ea3bb38bd402236274",
+        "size": 19
+      }
+    },
+    {
+      "id": "file-stats-sample-b.txt",
+      "slice": "cli/metadata-extraction",
+      "domain": "pipeline",
+      "input": {
+        "file": "fixtures/file-stats/sample-b.txt"
+      },
+      "output": {
+        "md5": "f3d3f3625e297b6cb96c334df7d7bd1e",
+        "size": 22
+      }
+    },
+    {
+      "id": "file-stats-sample-c.txt",
+      "slice": "cli/metadata-extraction",
+      "domain": "pipeline",
+      "input": {
+        "file": "fixtures/file-stats/sample-c.txt"
+      },
+      "output": {
+        "md5": "a2e4822a98337283e39f7b60acf85ec9",
+        "size": 5
+      }
+    },
+    {
+      "id": "file-stats-sample-d.txt",
+      "slice": "cli/metadata-extraction",
+      "domain": "pipeline",
+      "input": {
+        "file": "fixtures/file-stats/sample-d.txt"
+      },
+      "output": {
+        "md5": "9dd4e461268c8034f5c8564e155c67a6",
+        "size": 1
+      }
+    },
+    {
+      "id": "file-stats-sample-e.txt",
+      "slice": "cli/metadata-extraction",
+      "domain": "pipeline",
+      "input": {
+        "file": "fixtures/file-stats/sample-e.txt"
+      },
+      "output": {
+        "md5": "bbe5825a8a14a423fd47d13e43ad50c7",
+        "size": 17
+      }
+    },
+    {
+      "id": "file-stats-sample-f.txt",
+      "slice": "cli/metadata-extraction",
+      "domain": "pipeline",
+      "input": {
+        "file": "fixtures/file-stats/sample-f.txt"
+      },
+      "output": {
+        "md5": "04d6ddace207667b7c3f5a569c9fc559",
+        "size": 17
+      }
+    },
+    {
+      "id": "discovery-basic-jpg",
+      "slice": "cli/discovery-gather",
+      "domain": "pipeline",
+      "input": {
+        "sourceDirs": ["fixtures/discovery/basic"],
+        "concurrency": 1
+      },
+      "output": {
+        "byExtension": {
+          "jpg": [
+            "fixtures/discovery/basic/jpg/a.jpg",
+            "fixtures/discovery/basic/jpg/b.JPG"
+          ]
+        },
+        "stats": {
+          "fileCount": 2,
+          "dirCount": 2
+        }
+      }
+    },
+    {
+      "id": "hamming-identical",
+      "slice": "cli/perceptual-hash-lsh",
+      "domain": "pipeline",
+      "input": {
+        "hash1Hex": "0000000000000000",
+        "hash2Hex": "0000000000000000"
+      },
+      "output": {
+        "distance": 0
+      }
+    },
+    {
+      "id": "hamming-opposite",
+      "slice": "cli/perceptual-hash-lsh",
+      "domain": "pipeline",
+      "input": {
+        "hash1Hex": "ffffffffffffffff",
+        "hash2Hex": "0000000000000000"
+      },
+      "output": {
+        "distance": 64
+      }
+    },
+    {
+      "id": "hamming-alt-bits",
+      "slice": "cli/perceptual-hash-lsh",
+      "domain": "pipeline",
+      "input": {
+        "hash1Hex": "0101010101010101",
+        "hash2Hex": "0000000000000000"
+      },
+      "output": {
+        "distance": 8
+      }
+    },
+    {
+      "id": "hamming-single-bit",
+      "slice": "cli/perceptual-hash-lsh",
+      "domain": "pipeline",
+      "input": {
+        "hash1Hex": "0000000000000001",
+        "hash2Hex": "0000000000000000"
+      },
+      "output": {
+        "distance": 1
+      }
+    },
+    {
+      "id": "hamming-near-miss",
+      "slice": "cli/perceptual-hash-lsh",
+      "domain": "pipeline",
+      "input": {
+        "hash1Hex": "0123456789abcdef",
+        "hash2Hex": "0123456789abcdee"
+      },
+      "output": {
+        "distance": 1
+      }
+    },
+    {
+      "id": "hamming-tail-bit",
+      "slice": "cli/perceptual-hash-lsh",
+      "domain": "pipeline",
+      "input": {
+        "hash1Hex": "deadbeefcafebabe",
+        "hash2Hex": "deadbeefcafebabf"
+      },
+      "output": {
+        "distance": 1
+      }
+    },
+    {
+      "id": "hamming-scrambled",
+      "slice": "cli/perceptual-hash-lsh",
+      "domain": "pipeline",
+      "input": {
+        "hash1Hex": "aabbccddeeff0011",
+        "hash2Hex": "bbaaccddffee1100"
+      },
+      "output": {
+        "distance": 12
+      }
+    }
+  ]
+}

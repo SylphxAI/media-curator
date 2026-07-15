@@ -44,7 +44,7 @@ async function main() {
     .description(
       'Intelligently curate, organize, and deduplicate your digital photo and video collection.',
     )
-    .version('1.0.0')
+    .version('1.3.0')
     .argument('<source>', 'Source directories to process')
     .argument('<destination>', 'Destination directory for organized media')
     .option(

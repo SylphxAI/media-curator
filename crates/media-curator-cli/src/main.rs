@@ -1,9 +1,12 @@
-//! media-curator-cli binary — health + pure-core subcommands.
+//! media-curator-cli binary — production subcommands for health + pure cores.
 
 use std::io::{self, Write};
+use std::path::PathBuf;
 use std::process::ExitCode;
 
 use clap::{Parser, Subcommand};
+use media_curator_cli::discovery::{discover_files_json, DiscoverOptions};
+use media_curator_cli::file_stats::file_stats_for_path;
 use media_curator_cli::hamming::hamming_distance;
 use media_curator_cli::health_json;
 
@@ -11,7 +14,7 @@ use media_curator_cli::health_json;
 #[command(
     name = "media-curator-cli",
     version,
-    about = "Media Curator Rust CLI (ADR-168 health + pure cores)"
+    about = "Media Curator Rust CLI (ADR-168 production authority)"
 )]
 struct Cli {
     #[command(subcommand)]
@@ -20,7 +23,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
-    /// Dependency-free health probe (S0).
+    /// Health probe (Rust authority).
     Health,
     /// Hamming distance between two hex-encoded hashes.
     Hamming {
@@ -28,6 +31,21 @@ enum Command {
         a: String,
         /// Second hash as hex.
         b: String,
+    },
+    /// File stats (size + MD5) for a path.
+    #[command(name = "file-stats")]
+    FileStats {
+        /// File path.
+        path: PathBuf,
+    },
+    /// Discover media files under source directories.
+    Discover {
+        /// Source directories (repeatable).
+        #[arg(long = "source", required = true)]
+        sources: Vec<PathBuf>,
+        /// Directory scan concurrency.
+        #[arg(long, default_value_t = 4)]
+        concurrency: usize,
     },
 }
 
@@ -45,8 +63,36 @@ fn main() -> ExitCode {
                 ExitCode::from(1)
             }
         },
+        Some(Command::FileStats { path }) => match file_stats_for_path(&path) {
+            Ok(stats) => match serde_json::to_string(&stats) {
+                Ok(json) => write_stdout(&json),
+                Err(error) => {
+                    eprintln!("serialize file-stats: {error}");
+                    ExitCode::from(1)
+                }
+            },
+            Err(error) => {
+                eprintln!("file-stats: {error}");
+                ExitCode::from(1)
+            }
+        },
+        Some(Command::Discover {
+            sources,
+            concurrency,
+        }) => match discover_files_json(DiscoverOptions {
+            source_dirs: sources,
+            concurrency,
+        }) {
+            Ok(json) => write_stdout(&json),
+            Err(error) => {
+                eprintln!("discover: {error}");
+                ExitCode::from(1)
+            }
+        },
         None => {
-            eprintln!("media-curator-cli: no subcommand specified; use `health`, `hamming`, or `--help`");
+            eprintln!(
+                "media-curator-cli: no subcommand specified; use `health`, `hamming`, `file-stats`, `discover`, or `--help`"
+            );
             ExitCode::from(2)
         }
     }

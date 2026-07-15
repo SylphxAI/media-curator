@@ -1,30 +1,29 @@
 import { readdir } from 'fs/promises';
 import path from 'path';
 import { Semaphore } from 'async-mutex';
-import chalk from 'chalk'; // Re-add chalk for specific formatting
-// Removed Spinner import
-// Removed chalk import
-import { ALL_SUPPORTED_EXTENSIONS, getFileTypeByExt } from './utils'; // Assuming utils is in parent dir
-import { CliReporter } from './reporting/CliReporter'; // Import reporter
-import { FileSystemError, safeTryAsync } from './errors'; // Removed unused AppResult, ok, err
+import chalk from 'chalk';
+import { ALL_SUPPORTED_EXTENSIONS, getFileTypeByExt } from './utils';
+import { CliReporter } from './reporting/CliReporter';
+import { FileSystemError, safeTryAsync } from './errors';
+import {
+  discoverViaRust,
+  rustCliDelegationEnabled,
+} from './external/rustCli';
 
 /**
- * Discovers supported media files recursively within source directories.
- * @param sourceDirs Array of source directory paths.
- * @param concurrency Maximum number of directories to scan concurrently.
- * @returns A Promise resolving to a Map where keys are file extensions and values are arrays of file paths.
+ * TS parity baseline for discovery. Used only when MEDIA_CURATOR_RUST is
+ * explicitly opted out (ts|0|false|no).
  */
-export async function discoverFilesFn(
+export async function discoverFilesFnTsCore(
   sourceDirs: string[],
   concurrency: number = 10,
-  reporter: CliReporter, // Add reporter parameter
+  reporter: CliReporter,
 ): Promise<Map<string, string[]>> {
   const allFiles: string[] = [];
   let dirCount = 0;
   let fileCount = 0;
   const semaphore = new Semaphore(concurrency);
-  // TODO: Abstract spinner logic later if needed
-  reporter.startSpinner('Discovering files...'); // Use reporter
+  reporter.startSpinner('Discovering files...');
 
   async function scanDirectory(dirPath: string): Promise<void> {
     dirCount++;
@@ -41,13 +40,11 @@ export async function discoverFilesFn(
     );
 
     if (readDirResult.isErr()) {
-      // Log error using reporter
       reporter.logError(readDirResult.error.message);
-      // Update spinner text even on error to show progress
       reporter.updateSpinnerText(
         `Processed ${dirCount} directories, found ${fileCount} files... (Error in ${dirPath})`,
       );
-      return; // Stop processing this directory
+      return;
     }
 
     const entries = readDirResult.value;
@@ -55,7 +52,6 @@ export async function discoverFilesFn(
     for (const entry of entries) {
       const entryPath = path.join(dirPath, entry.name);
       if (entry.isDirectory()) {
-        // Acquire semaphore slot before recursing
         promises.push(semaphore.runExclusive(() => scanDirectory(entryPath)));
       } else if (
         ALL_SUPPORTED_EXTENSIONS.has(
@@ -66,9 +62,8 @@ export async function discoverFilesFn(
         fileCount++;
       }
     }
-    // Use try/catch for Promise.all in case semaphore logic throws unexpectedly
     try {
-      await Promise.all(promises); // Wait for recursive calls initiated in this directory
+      await Promise.all(promises);
     } catch (promiseAllError) {
       reporter.logError(
         `Error during concurrent directory scan under ${dirPath}:`,
@@ -80,27 +75,15 @@ export async function discoverFilesFn(
     );
   }
 
-  // Start scanning all source directories concurrently
   const initialScanPromises = sourceDirs.map((dirPath) =>
     semaphore.runExclusive(() => scanDirectory(dirPath)),
   );
   await Promise.all(initialScanPromises);
 
-  // Wait for all recursive scans to complete (ensure semaphore is drained)
-  // This simple wait might not be perfectly accurate if new tasks are added rapidly,
-  // but should be sufficient for directory scanning. A more robust approach might involve tracking active promises.
-  // await semaphore.waitForUnlock(concurrency); // Wait for initial tasks - Promise.all should handle this.
-  // The complex while loop waiting for the semaphore might be incorrect or unnecessary
-  // as Promise.all on the initial scans should theoretically wait for all nested awaits.
-  // Removing this loop to see if it resolves the hanging issue.
-  // If hangs persist, the issue is likely within the recursive scanDirectory calls or error handling.
-
-  // spinner.succeed is called within stopSpinnerSuccess
   reporter.stopSpinnerSuccess(
-    `Discovery completed: Found ${fileCount} files in ${dirCount} directories`, // Simplified message, reporter might add timing
+    `Discovery completed: Found ${fileCount} files in ${dirCount} directories`,
   );
 
-  // Group files by extension
   const result = new Map<string, string[]>();
   for (const file of allFiles) {
     const ext = path.extname(file).slice(1).toLowerCase();
@@ -110,17 +93,23 @@ export async function discoverFilesFn(
     result.get(ext)!.push(file);
   }
 
-  // Log statistics (Keep logging here for now, or abstract later)
-  reporter.logInfo('\nFile Format Statistics:'); // Use reporter
-  // Sort formats for consistent logging
+  logDiscoveryStats(reporter, result, fileCount);
+  return result;
+}
+
+function logDiscoveryStats(
+  reporter: CliReporter,
+  result: Map<string, string[]>,
+  fileCount: number,
+): void {
+  reporter.logInfo('\nFile Format Statistics:');
   const sortedFormats = Array.from(result.keys()).sort(
     (a, b) =>
-      getFileTypeByExt(a).unwrapOr(0) - getFileTypeByExt(b).unwrapOr(0) || // Handle AppResult, default to 0 on error
-      result.get(b)!.length - result.get(a)!.length, // Then by count descending
+      getFileTypeByExt(a).unwrapOr(0) - getFileTypeByExt(b).unwrapOr(0) ||
+      result.get(b)!.length - result.get(a)!.length,
   );
   for (const format of sortedFormats) {
     const count = result.get(format)!.length;
-    // Use reporter.logInfo, but keep chalk for specific color if desired
     reporter.logInfo(
       `${chalk.white(format.padEnd(6))}: ${count.toString().padStart(8)}`,
     );
@@ -128,6 +117,42 @@ export async function discoverFilesFn(
   reporter.logSuccess(
     `${chalk.green('Total'.padEnd(6))}: ${fileCount.toString().padStart(8)}`,
   );
+}
 
-  return result;
+/**
+ * Production discovery: Rust authority by default (fail-closed).
+ */
+export async function discoverFilesFn(
+  sourceDirs: string[],
+  concurrency: number = 10,
+  reporter: CliReporter,
+): Promise<Map<string, string[]>> {
+  if (!rustCliDelegationEnabled()) {
+    return discoverFilesFnTsCore(sourceDirs, concurrency, reporter);
+  }
+
+  reporter.startSpinner('Discovering files (Rust)...');
+  try {
+    const rust = discoverViaRust(sourceDirs, concurrency);
+    const result = new Map<string, string[]>();
+    for (const [ext, paths] of Object.entries(rust.byExtension ?? {})) {
+      result.set(ext, paths);
+    }
+    reporter.stopSpinnerSuccess(
+      `Discovery completed: Found ${rust.stats.fileCount} files in ${rust.stats.dirCount} directories`,
+    );
+    logDiscoveryStats(reporter, result, rust.stats.fileCount);
+    return result;
+  } catch (error) {
+    reporter.stopSpinnerSuccess('Discovery failed');
+    throw new FileSystemError(
+      `Rust discovery failed: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+      {
+        cause: error instanceof Error ? error : undefined,
+        context: { operation: 'discoverViaRust' },
+      },
+    );
+  }
 }
