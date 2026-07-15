@@ -114,6 +114,33 @@ fn compare_case(case: &OracleCase) {
                 .expect("hash2 hex");
             json!({ "distance": hamming_distance(&hash1, &hash2) })
         }
+        "cli/deduplication-engine" => {
+            use media_curator_cli::dedup::cluster_exact_by_phash;
+            let entries = case.input["entries"]
+                .as_array()
+                .expect("entries")
+                .iter()
+                .map(|entry| {
+                    let path = entry["path"].as_str().expect("path").to_string();
+                    let phash = entry
+                        .get("phashHex")
+                        .and_then(Value::as_str)
+                        .map(str::trim)
+                        .filter(|value| !value.is_empty())
+                        .map(str::to_string);
+                    (path, phash)
+                })
+                .collect::<Vec<_>>();
+            let result = cluster_exact_by_phash(&entries);
+            json!({
+                "clusters": result.clusters.iter().map(|cluster| json!({
+                    "phashHex": cluster.phash_hex,
+                    "paths": cluster.paths,
+                })).collect::<Vec<_>>(),
+                "singletons": result.singletons,
+                "missingPhash": result.missing_phash,
+            })
+        }
         other => panic!("unsupported slice {other} in case {}", case.id),
     };
 
@@ -140,6 +167,11 @@ fn cli_discovery_gather_differential_matches_ts_oracle() {
 #[test]
 fn cli_perceptual_hash_lsh_differential_matches_ts_oracle() {
     run_slice("cli/perceptual-hash-lsh");
+}
+
+#[test]
+fn cli_deduplication_engine_exact_dup_differential_matches_ts_oracle() {
+    run_slice("cli/deduplication-engine");
 }
 
 #[test]

@@ -8,6 +8,7 @@ use clap::{Parser, Subcommand};
 use media_curator_cli::discovery::{discover_files_json, DiscoverOptions};
 use media_curator_cli::file_stats::file_stats_for_path;
 use media_curator_cli::hamming::hamming_distance;
+use media_curator_cli::dedup::cluster_exact_by_phash;
 use media_curator_cli::health_json;
 
 #[derive(Parser)]
@@ -46,6 +47,13 @@ enum Command {
         /// Directory scan concurrency.
         #[arg(long, default_value_t = 4)]
         concurrency: usize,
+    },
+    /// Exact-duplicate clusters by identical pHash hex (JSON lines on stdin or --entry path=hex).
+    #[command(name = "exact-dup")]
+    ExactDup {
+        /// Entry as path=phashHex (repeatable). Empty phash via path= 
+        #[arg(long = "entry")]
+        entries: Vec<String>,
     },
 }
 
@@ -89,9 +97,37 @@ fn main() -> ExitCode {
                 ExitCode::from(1)
             }
         },
+        Some(Command::ExactDup { entries }) => {
+            let parsed: Vec<(String, Option<String>)> = entries
+                .into_iter()
+                .map(|raw| {
+                    if let Some((path, hash)) = raw.split_once('=') {
+                        let hash = hash.trim();
+                        (
+                            path.to_string(),
+                            if hash.is_empty() {
+                                None
+                            } else {
+                                Some(hash.to_string())
+                            },
+                        )
+                    } else {
+                        (raw, None)
+                    }
+                })
+                .collect();
+            let result = cluster_exact_by_phash(&parsed);
+            match serde_json::to_string(&result) {
+                Ok(json) => write_stdout(&json),
+                Err(error) => {
+                    eprintln!("exact-dup serialize: {error}");
+                    ExitCode::from(1)
+                }
+            }
+        }
         None => {
             eprintln!(
-                "media-curator-cli: no subcommand specified; use `health`, `hamming`, `file-stats`, `discover`, or `--help`"
+                "media-curator-cli: no subcommand specified; use `health`, `hamming`, `file-stats`, `discover`, `exact-dup`, or `--help`"
             );
             ExitCode::from(2)
         }

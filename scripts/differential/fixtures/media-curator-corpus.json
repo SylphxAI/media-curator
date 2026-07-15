@@ -79,7 +79,9 @@
       "slice": "cli/discovery-gather",
       "domain": "pipeline",
       "input": {
-        "sourceDirs": ["fixtures/discovery/basic"],
+        "sourceDirs": [
+          "fixtures/discovery/basic"
+        ],
         "concurrency": 1
       },
       "output": {
@@ -177,6 +179,66 @@
       },
       "output": {
         "distance": 12
+      }
+    },
+    {
+      "id": "exact-dup-two-match",
+      "slice": "cli/deduplication-engine",
+      "input": {
+        "entries": [
+          {
+            "path": "a.jpg",
+            "phashHex": "aabb"
+          },
+          {
+            "path": "b.jpg",
+            "phashHex": "aabb"
+          },
+          {
+            "path": "c.jpg",
+            "phashHex": "ccdd"
+          }
+        ]
+      },
+      "output": {
+        "clusters": [
+          {
+            "phashHex": "aabb",
+            "paths": [
+              "a.jpg",
+              "b.jpg"
+            ]
+          }
+        ],
+        "singletons": [
+          "c.jpg"
+        ],
+        "missingPhash": []
+      }
+    },
+    {
+      "id": "exact-dup-missing-hash",
+      "slice": "cli/deduplication-engine",
+      "input": {
+        "entries": [
+          {
+            "path": "x.png",
+            "phashHex": ""
+          },
+          {
+            "path": "y.png",
+            "phashHex": "1111"
+          }
+        ]
+      },
+      "output": {
+        "clusters": [],
+        "singletons": [
+          "y.png"
+        ],
+        "missingPhash": [
+          "x.png"
+        ]
       }
     }
   ]

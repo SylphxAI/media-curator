@@ -143,6 +143,40 @@ function runCase(testCase: (typeof corpus.cases)[number]) {
         ),
       };
     }
+    case 'cli/deduplication-engine': {
+      // Exact pHash cluster step (TS deduplicateFilesFn step 1) — oracle for Rust SSOT.
+      const entries = testCase.input.entries as Array<{
+        path: string;
+        phashHex?: string;
+      }>;
+      const byHash = new Map<string, string[]>();
+      const missingPhash: string[] = [];
+      for (const entry of entries) {
+        const hash = (entry.phashHex ?? '').trim();
+        if (!hash) {
+          missingPhash.push(entry.path);
+          continue;
+        }
+        const list = byHash.get(hash) ?? [];
+        list.push(entry.path);
+        byHash.set(hash, list);
+      }
+      const clusters: Array<{ phashHex: string; paths: string[] }> = [];
+      const singletons: string[] = [];
+      for (const [phashHex, paths] of [...byHash.entries()].sort(([a], [b]) =>
+        a.localeCompare(b),
+      )) {
+        paths.sort();
+        if (paths.length >= 2) {
+          clusters.push({ phashHex, paths });
+        } else if (paths.length === 1) {
+          singletons.push(paths[0]!);
+        }
+      }
+      singletons.sort();
+      missingPhash.sort();
+      return { clusters, singletons, missingPhash };
+    }
     default:
       throw new Error(`unsupported slice: ${testCase.slice}`);
   }

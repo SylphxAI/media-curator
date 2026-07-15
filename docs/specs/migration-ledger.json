@@ -160,10 +160,10 @@
       "id": "cli/deduplication-engine",
       "domain": "pipeline",
       "weight": 5,
-      "state": "ts_only",
+      "state": "rust_impl",
       "tsSurface": "src/deduplicator.ts; src/fileProcessor.ts",
-      "parityTest": "tests/deduplicator.integration.test.ts",
-      "notes": ""
+      "parityTest": "crates/media-curator-cli/tests/media_curator_differential.rs#cli_deduplication_engine_exact_dup_differential_matches_ts_oracle",
+      "notes": "Exact pHash clustering pure core in crates/media-curator-cli/src/dedup.rs + exact-dup CLI + differential 2 cases. Full pipeline (LSH similarity, DB, transfer) remains TS residual."
     },
     {
       "id": "cli/cache-persistence",
@@ -240,9 +240,9 @@
   ],
   "summary": {
     "total": 9,
-    "ts_only": 4,
+    "ts_only": 3,
     "contracted": 0,
-    "rust_impl": 0,
+    "rust_impl": 1,
     "parity_proven": 0,
     "authority_rust": 0,
     "ts_deleted": 5,
@@ -266,7 +266,8 @@
       ],
       "verificationRef": "verification/media-curator-differential-green.json",
       "notes": "Rust default authority + native pack + 14-case differential; residual dedup/cache/transfer/proto remain ts_only"
-    }
+    },
+    "lastMutation": "ADVERSARIAL-EXACT-DUP-RUST-IMPL"
   },
   "promotionHold": {
     "active": false,
