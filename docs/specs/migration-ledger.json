@@ -60,7 +60,7 @@
       "proof": {
         "status": "canary_green",
         "verificationRef": "verification/media-curator-differential-green.json",
-        "lastComparedMainSha": "76967eae037b8be880ae3d77ea50774e42444592",
+        "lastComparedMainSha": "db5767a4381f4aa72b8a0fb6120bc4ada4e4fff6",
         "imageDigest": "npm_pack_native_media_curator_cli",
         "notes": "adversarial 2026-07-15T04:58:21Z: Rust production default MEDIA_CURATOR_RUST=1; differential 14 green; native staged; check-no-ts-file-stats-backend + check-native-packaging PASS",
         "dependencyGlobs": [
@@ -96,7 +96,7 @@
       "proof": {
         "status": "canary_green",
         "verificationRef": "verification/media-curator-differential-green.json",
-        "lastComparedMainSha": "76967eae037b8be880ae3d77ea50774e42444592",
+        "lastComparedMainSha": "db5767a4381f4aa72b8a0fb6120bc4ada4e4fff6",
         "imageDigest": "npm_pack_native_media_curator_cli",
         "notes": "adversarial 2026-07-15T04:58:21Z: Rust production default MEDIA_CURATOR_RUST=1; differential 14 green; native staged; check-no-ts-file-stats-backend + check-native-packaging PASS",
         "dependencyGlobs": [
@@ -142,7 +142,7 @@
       "proof": {
         "status": "canary_green",
         "verificationRef": "verification/media-curator-differential-green.json",
-        "lastComparedMainSha": "76967eae037b8be880ae3d77ea50774e42444592",
+        "lastComparedMainSha": "db5767a4381f4aa72b8a0fb6120bc4ada4e4fff6",
         "imageDigest": "npm_pack_native_media_curator_cli",
         "notes": "adversarial 2026-07-15T04:58:21Z: Rust production default MEDIA_CURATOR_RUST=1; differential 14 green; native staged; check-no-ts-file-stats-backend + check-native-packaging PASS",
         "dependencyGlobs": [
@@ -193,7 +193,7 @@
       "proof": {
         "status": "canary_green",
         "verificationRef": "verification/media-curator-differential-green.json",
-        "lastComparedMainSha": "76967eae037b8be880ae3d77ea50774e42444592",
+        "lastComparedMainSha": "db5767a4381f4aa72b8a0fb6120bc4ada4e4fff6",
         "imageDigest": "npm_pack_native_media_curator_cli",
         "notes": "adversarial 2026-07-15T04:58:21Z: Rust production default MEDIA_CURATOR_RUST=1; differential 14 green; native staged; check-no-ts-file-stats-backend + check-native-packaging PASS",
         "dependencyGlobs": [
@@ -217,7 +217,7 @@
       "proof": {
         "status": "canary_green",
         "verificationRef": "verification/media-curator-differential-green.json",
-        "lastComparedMainSha": "76967eae037b8be880ae3d77ea50774e42444592",
+        "lastComparedMainSha": "db5767a4381f4aa72b8a0fb6120bc4ada4e4fff6",
         "imageDigest": "npm_pack_native_media_curator_cli",
         "notes": "adversarial 2026-07-15T04:58:21Z: Rust production default MEDIA_CURATOR_RUST=1; differential 14 green; native staged; check-no-ts-file-stats-backend + check-native-packaging PASS",
         "dependencyGlobs": [
