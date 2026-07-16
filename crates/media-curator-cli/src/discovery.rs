@@ -335,3 +335,63 @@ mod wave63_tests {
         assert!(opts.source_dirs.is_empty());
     }
 }
+
+
+// ── wave68 pure residual dens: discovery concurrency clamp ladder dual-oracle residual ──
+// Dual-oracle residual of discovery concurrency clamp/default pure half.
+// Filesystem walk I/O residual retained. dens ≠ flip.
+// Complementary to concurrent LSH/cache wave68 dens.
+
+/// Dual-oracle residual: concurrency shell (min, default).
+#[must_use]
+pub fn discovery_concurrency_shell() -> (usize, usize) {
+    (MIN_DISCOVERY_CONCURRENCY, DEFAULT_DISCOVERY_CONCURRENCY)
+}
+
+/// Dual-oracle residual: clamp ladder for 0/1/10/32/64.
+#[must_use]
+pub fn discovery_clamp_ladder() -> [usize; 5] {
+    [
+        clamp_discovery_concurrency(0),
+        clamp_discovery_concurrency(1),
+        clamp_discovery_concurrency(10),
+        clamp_discovery_concurrency(32),
+        clamp_discovery_concurrency(64),
+    ]
+}
+
+/// Dual-oracle residual: default options carry default concurrency.
+#[must_use]
+pub fn default_options_concurrency_matches() -> bool {
+    discover_options_default(vec![]).concurrency == DEFAULT_DISCOVERY_CONCURRENCY
+}
+
+/// Dual-oracle residual: min is serial scan.
+#[must_use]
+pub fn min_concurrency_is_serial() -> bool {
+    MIN_DISCOVERY_CONCURRENCY == 1
+}
+
+/// Dual-oracle residual: default is tenfold min.
+#[must_use]
+pub fn default_is_tenfold_min() -> bool {
+    DEFAULT_DISCOVERY_CONCURRENCY == MIN_DISCOVERY_CONCURRENCY * 10
+}
+
+#[cfg(test)]
+mod wave68_tests {
+    use super::*;
+
+    #[test]
+    fn wave68_discovery_concurrency_clamp_ladder_dual_oracle() {
+        assert_eq!(discovery_concurrency_shell(), (1, 10));
+        assert_eq!(discovery_clamp_ladder(), [1, 1, 10, 32, 64]);
+        assert!(default_options_concurrency_matches());
+        assert!(min_concurrency_is_serial());
+        assert!(default_is_tenfold_min());
+        assert!(default_discovery_concurrency_is_ten());
+        let opts = discover_options_default(vec![std::path::PathBuf::from("/tmp")]);
+        assert_eq!(opts.concurrency, 10);
+        assert_eq!(opts.source_dirs.len(), 1);
+    }
+}
