@@ -320,3 +320,46 @@ mod wave79_tests {
         assert!(wave79_hamming_multichunk_shell());
     }
 }
+
+
+// ── product residual dens wave80: hamming popcount patterns+min_len dual-oracle residual ──
+// Dual-oracle residual of comparatorUtils hammingDistance pure halves.
+// Filesystem / phash I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: popcount zero/nibble/high-bit patterns.
+#[must_use]
+pub fn wave80_popcount_pattern_shell() -> bool {
+    popcount64(0) == 0
+        && popcount64(0x0F) == 4
+        && popcount64(0xF0) == 4
+        && popcount64(0x8000_0000_0000_0000) == 1
+        && popcount64(0xAAAA_AAAA_AAAA_AAAA) == 32
+}
+
+/// Dual-oracle residual: unequal length uses common prefix only.
+#[must_use]
+pub fn wave80_hamming_min_len_shell() -> bool {
+    hamming_distance(&[0xFF, 0x00], &[0x00]) == 8
+        && hamming_distance(&[0x00], &[0xFF, 0xFF]) == 8
+        && hamming_distance(&[], &[1, 2, 3]) == 0
+}
+
+/// Dual-oracle residual: complementary bytes full 8 distance on single byte.
+#[must_use]
+pub fn wave80_hamming_complement_shell() -> bool {
+    hamming_distance(&[0x00], &[0xFF]) == 8
+        && hamming_distance(&[0x0F], &[0xF0]) == 8
+        && hamming_distance(&[0xAA], &[0xAA]) == 0
+}
+
+#[cfg(test)]
+mod wave80_tests {
+    use super::*;
+
+    #[test]
+    fn wave80_hamming_popcount_minlen_complement_dual_oracle() {
+        assert!(wave80_popcount_pattern_shell());
+        assert!(wave80_hamming_min_len_shell());
+        assert!(wave80_hamming_complement_shell());
+    }
+}
