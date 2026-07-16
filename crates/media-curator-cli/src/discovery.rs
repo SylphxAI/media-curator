@@ -452,3 +452,50 @@ mod wave70_tests {
         assert!(default_discovery_concurrency_is_ten());
     }
 }
+
+
+// ── product residual dens wave72: discovery concurrency band+default dual-oracle residual ──
+// Dual-oracle residual of clamp_discovery_concurrency / default options pure halves.
+// Filesystem walk I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: default/min concurrency constants.
+#[must_use]
+pub fn discovery_defaults_shell() -> bool {
+    DEFAULT_DISCOVERY_CONCURRENCY == 10
+        && MIN_DISCOVERY_CONCURRENCY == 1
+        && default_discovery_concurrency_is_ten()
+        && min_concurrency_is_serial()
+        && default_is_tenfold_min()
+}
+
+/// Dual-oracle residual: clamp under min and identity at default.
+#[must_use]
+pub fn discovery_clamp_under_default_shell() -> bool {
+    clamp_discovery_concurrency(0) == MIN_DISCOVERY_CONCURRENCY
+        && clamp_discovery_concurrency(1) == 1
+        && clamp_discovery_concurrency(DEFAULT_DISCOVERY_CONCURRENCY)
+            == DEFAULT_DISCOVERY_CONCURRENCY
+        && clamp_discovery_concurrency(64) == 64
+}
+
+/// Dual-oracle residual: default options carry concurrency 10.
+#[must_use]
+pub fn discovery_options_default_shell() -> bool {
+    let o = discover_options_default(vec![]);
+    o.concurrency == DEFAULT_DISCOVERY_CONCURRENCY && default_options_concurrency_matches()
+}
+
+#[cfg(test)]
+mod wave72_product_tests {
+    use super::*;
+
+    #[test]
+    fn wave72_discovery_concurrency_band_dual_oracle() {
+        assert!(discovery_defaults_shell());
+        assert!(discovery_clamp_under_default_shell());
+        assert!(discovery_options_default_shell());
+        assert_eq!(discovery_concurrency_shell(), (1, 10));
+        assert!(zero_clamps_to_min());
+        assert!(high_concurrency_preserved());
+    }
+}
