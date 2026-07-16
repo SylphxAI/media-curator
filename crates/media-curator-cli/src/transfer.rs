@@ -247,3 +247,72 @@ mod wave64_tests {
     }
 }
 
+
+
+// ── wave65 pure residual dens: transfer plan residual dual-oracle dens ──
+// Dual-oracle residual of transferOrganizedFiles plan pure half.
+// Filesystem transfer I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: bucket count is 4.
+#[must_use]
+pub fn transfer_bucket_count() -> usize {
+    TRANSFER_BUCKETS.len()
+}
+
+/// Dual-oracle residual: plan total actions.
+#[must_use]
+pub fn transfer_plan_total(plan: &TransferPlan) -> usize {
+    plan.target_count + plan.duplicate_count + plan.error_count + plan.skip_count
+}
+
+/// Dual-oracle residual: skip is not a destination bucket.
+#[must_use]
+pub fn skip_is_not_destination() -> bool {
+    !is_destination_bucket("skip") && is_transfer_bucket("skip")
+}
+
+/// Dual-oracle residual: unique-only plan lands in target.
+#[must_use]
+pub fn unique_only_targets(unique: &[String]) -> bool {
+    let plan = plan_transfer_destinations(unique, &[], &[], true, true);
+    plan.target_count == unique.len()
+        && plan.duplicate_count == 0
+        && plan.error_count == 0
+        && transfer_plan_counts_consistent(&plan)
+}
+
+/// Dual-oracle residual: empty inputs → empty plan.
+#[must_use]
+pub fn empty_inputs_empty_plan() -> bool {
+    let plan = plan_transfer_destinations(&[], &[], &[], true, true);
+    plan.actions.is_empty() && transfer_plan_total(&plan) == 0
+}
+
+#[cfg(test)]
+mod wave65_tests {
+    use super::*;
+
+    #[test]
+    fn wave65_transfer_plan_residual_dual_oracle() {
+        assert_eq!(transfer_bucket_count(), 4);
+        assert!(skip_is_not_destination());
+        assert!(empty_inputs_empty_plan());
+        assert!(unique_only_targets(&["/a.jpg".into(), "/b.png".into()]));
+        let plan = plan_transfer_destinations(
+            &["/u.jpg".into()],
+            &[DupSetInput {
+                best_file: "/best.jpg".into(),
+                duplicates: vec!["/dup.jpg".into()],
+            }],
+            &["/err.bin".into()],
+            true,
+            true,
+        );
+        assert_eq!(plan.target_count, 1);
+        assert_eq!(plan.duplicate_count, 1);
+        assert_eq!(plan.error_count, 1);
+        assert!(transfer_plan_counts_consistent(&plan));
+        assert_eq!(transfer_plan_total(&plan), plan.actions.len());
+        assert!(is_destination_bucket("error"));
+    }
+}
