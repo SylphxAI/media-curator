@@ -2950,3 +2950,72 @@ mod wave112_tests {
         assert!(wave111_gif_bmp_shell());
     }
 }
+// ── wave113 pure residual dens: extension jpeg-png webp-tiff upper-path unsupported-doc family-product dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: jpeg/png image membership dual-oracle.
+#[must_use]
+pub fn wave113_jpeg_png_shell() -> bool {
+    is_image_extension("jpeg")
+        && is_image_extension("PNG")
+        && extension_kind("jpeg") == Some("image")
+        && extension_kind("png") == Some("image")
+        && is_media_extension("jpg")
+        && !is_video_extension("png")
+}
+
+/// Dual-oracle residual: webp/tiff image membership dual-oracle.
+#[must_use]
+pub fn wave113_webp_tiff_shell() -> bool {
+    is_image_extension("webp")
+        && is_image_extension("TIFF")
+        && extension_kind("webp") == Some("image")
+        && extension_kind("tif") == Some("image")
+        && is_media_extension("tiff")
+        && !is_video_extension("webp")
+}
+
+/// Dual-oracle residual: upper path extract dual-oracle.
+#[must_use]
+pub fn wave113_upper_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("Photo.JPEG")) == Some("jpeg".to_string())
+        && extension_of(Path::new("/tmp/X.PNG")) == Some("png".to_string())
+        && extension_of(Path::new("a.B.WEBP")) == Some("webp".to_string())
+}
+
+/// Dual-oracle residual: unsupported doc dual-oracle.
+#[must_use]
+pub fn wave113_unsupported_doc_shell() -> bool {
+    use std::path::Path;
+    !is_media_extension("doc")
+        && extension_kind("docx").is_none()
+        && extension_of(Path::new("readme.md")).is_none()
+        && !is_image_extension("exe")
+}
+
+/// Dual-oracle residual: family product counts dual-oracle.
+#[must_use]
+pub fn wave113_family_product_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && IMAGE_EXTENSIONS.len() * VIDEO_EXTENSIONS.len() == 132
+        && is_media_extension("mp4")
+        && is_media_extension("raw")
+}
+
+#[cfg(test)]
+mod wave113_tests {
+    use super::*;
+
+    #[test]
+    fn wave113_extension_jpeg_png_webp_tiff_upper_path_unsupported_doc_family_product_dual_oracle() {
+        assert!(wave113_jpeg_png_shell());
+        assert!(wave113_webp_tiff_shell());
+        assert!(wave113_upper_path_shell());
+        assert!(wave113_unsupported_doc_shell());
+        assert!(wave113_family_product_shell());
+        assert!(wave111_gif_bmp_shell());
+    }
+}
