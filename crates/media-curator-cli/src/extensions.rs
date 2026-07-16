@@ -4210,3 +4210,70 @@ mod wave131_tests {
         assert!(wave130_jpg_image_shell());
     }
 }
+// ── wave132 pure residual dens: extension png mkv pdf webp multi-dot dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: png image family dual-oracle.
+#[must_use]
+pub fn wave132_png_image_shell() -> bool {
+    is_image_extension("png")
+        && is_image_extension("PNG")
+        && extension_kind("png") == Some("image")
+        && is_media_extension("png")
+        && !is_video_extension("png")
+}
+
+/// Dual-oracle residual: mkv video family dual-oracle.
+#[must_use]
+pub fn wave132_mkv_video_shell() -> bool {
+    is_video_extension("mkv")
+        && is_video_extension("MKV")
+        && extension_kind("mkv") == Some("video")
+        && is_media_extension("mkv")
+        && !is_image_extension("mkv")
+}
+
+/// Dual-oracle residual: pdf reject dual-oracle.
+#[must_use]
+pub fn wave132_pdf_reject_shell() -> bool {
+    use std::path::Path;
+    !is_media_extension("pdf")
+        && !is_image_extension("pdf")
+        && !is_video_extension("pdf")
+        && extension_kind("pdf").is_none()
+        && extension_of(Path::new("doc.pdf")).is_none()
+}
+
+/// Dual-oracle residual: webp image membership dual-oracle.
+#[must_use]
+pub fn wave132_webp_image_shell() -> bool {
+    is_image_extension("webp")
+        && is_image_extension("WEBP")
+        && extension_kind("webp") == Some("image")
+        && IMAGE_EXTENSIONS.contains(&"webp")
+        && is_media_extension("webp")
+}
+
+/// Dual-oracle residual: multi-dot path extension dual-oracle.
+#[must_use]
+pub fn wave132_multi_dot_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("archive.tar.jpg")) == Some("jpg".to_string())
+        && extension_of(Path::new("clip.final.mp4")) == Some("mp4".to_string())
+        && extension_of(Path::new("notes.txt")).is_none()
+}
+
+#[cfg(test)]
+mod wave132_tests {
+    use super::*;
+
+    #[test]
+    fn wave132_extension_png_mkv_pdf_webp_multidot_dual_oracle() {
+        assert!(wave132_png_image_shell());
+        assert!(wave132_mkv_video_shell());
+        assert!(wave132_pdf_reject_shell());
+        assert!(wave132_webp_image_shell());
+        assert!(wave132_multi_dot_shell());
+        assert!(wave131_jpeg_image_shell());
+    }
+}
