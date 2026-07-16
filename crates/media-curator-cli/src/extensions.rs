@@ -715,3 +715,71 @@ mod wave79_tests {
         assert!(wave78_webp_mov_shell());
     }
 }
+
+
+// ── wave80 pure residual dens: extension tiff raw avi mkv path dual-oracle residual ──
+// Dual-oracle residual of ALL_SUPPORTED_EXTENSIONS pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: tiff/tif image membership + path extract.
+#[must_use]
+pub fn wave80_tiff_shell() -> bool {
+    is_image_extension("tiff")
+        && is_image_extension("TIF")
+        && extension_kind("tiff") == Some("image")
+        && extension_of(std::path::Path::new("scan.TIFF")) == Some("tiff".into())
+}
+
+/// Dual-oracle residual: raw image + avi video partition.
+#[must_use]
+pub fn wave80_raw_avi_shell() -> bool {
+    is_image_extension("raw")
+        && is_video_extension("avi")
+        && !is_video_extension("raw")
+        && !is_image_extension("avi")
+        && extension_kind("raw") == Some("image")
+        && extension_kind("avi") == Some("video")
+}
+
+/// Dual-oracle residual: mkv multi-dot path + case.
+#[must_use]
+pub fn wave80_mkv_path_shell() -> bool {
+    is_video_extension("mkv")
+        && extension_of(std::path::Path::new("/lib/a.b.MKV")) == Some("mkv".into())
+        && extension_kind("mkv") == Some("video")
+}
+
+/// Dual-oracle residual: bmp jpg head image + flv divx video tails.
+#[must_use]
+pub fn wave80_head_tail_shell() -> bool {
+    is_image_extension("bmp")
+        && is_image_extension("jpg")
+        && is_video_extension("flv")
+        && is_video_extension("divx")
+        && IMAGE_EXTENSIONS.first() == Some(&"jpg")
+        && VIDEO_EXTENSIONS.first() == Some(&"mp4")
+}
+
+/// Dual-oracle residual: unsupported exe + empty not media.
+#[must_use]
+pub fn wave80_unsupported_shell() -> bool {
+    !is_media_extension("exe")
+        && !is_media_extension("")
+        && extension_kind("zip").is_none()
+        && extension_of(std::path::Path::new("README")).is_none()
+}
+
+#[cfg(test)]
+mod wave80_tests {
+    use super::*;
+
+    #[test]
+    fn wave80_extension_tiff_raw_avi_mkv_path_dual_oracle() {
+        assert!(wave80_tiff_shell());
+        assert!(wave80_raw_avi_shell());
+        assert!(wave80_mkv_path_shell());
+        assert!(wave80_head_tail_shell());
+        assert!(wave80_unsupported_shell());
+        assert!(wave79_family_size_shell());
+    }
+}
