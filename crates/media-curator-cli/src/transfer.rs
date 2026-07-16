@@ -479,3 +479,97 @@ mod wave67_tests {
         assert!(errors_skip_without_error_dir());
     }
 }
+
+// ── wave75 pure residual dens: transfer routing partition dual-oracle residual ──
+// Dual-oracle residual of transferOrganizedFiles bucket routing pure halves.
+// Filesystem transfer I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: bucket catalog closed four.
+#[must_use]
+pub fn wave75_bucket_catalog_shell() -> bool {
+    TRANSFER_BUCKETS == ["target", "duplicate", "error", "skip"]
+        && transfer_bucket_count() == 4
+        && is_transfer_bucket("target")
+        && !is_transfer_bucket("archive")
+        && is_destination_bucket("error")
+        && !is_destination_bucket("skip")
+}
+
+/// Dual-oracle residual: unique → target with basename relative key.
+#[must_use]
+pub fn wave75_unique_target_basename_shell() -> bool {
+    let plan = plan_transfer_destinations(
+        &["/photos/trip/IMG_001.JPG".into()],
+        &[],
+        &[],
+        true,
+        true,
+    );
+    plan.target_count == 1
+        && plan.actions[0].bucket == "target"
+        && plan.actions[0].relative_key == "IMG_001.JPG"
+        && transfer_plan_counts_consistent(&plan)
+}
+
+/// Dual-oracle residual: dups under best stem folder when dir present.
+#[must_use]
+pub fn wave75_dup_folder_relative_shell() -> bool {
+    let plan = plan_transfer_destinations(
+        &[],
+        &[DupSetInput {
+            best_file: "/in/best.jpg".into(),
+            duplicates: vec!["/in/copy.jpg".into()],
+        }],
+        &[],
+        true,
+        true,
+    );
+    plan.duplicate_count == 1
+        && plan.actions[0].bucket == "duplicate"
+        && plan.actions[0].relative_key == "best/copy.jpg"
+}
+
+/// Dual-oracle residual: missing dest dirs skip dups+errors.
+#[must_use]
+pub fn wave75_missing_dirs_skip_shell() -> bool {
+    let plan = plan_transfer_destinations(
+        &["/u.jpg".into()],
+        &[DupSetInput {
+            best_file: "/best.jpg".into(),
+            duplicates: vec!["/d.jpg".into()],
+        }],
+        &["/e.bin".into()],
+        false,
+        false,
+    );
+    plan.target_count == 1
+        && plan.duplicate_count == 0
+        && plan.error_count == 0
+        && plan.skip_count == 2
+        && transfer_plan_counts_consistent(&plan)
+}
+
+/// Dual-oracle residual: empty plan shell.
+#[must_use]
+pub fn wave75_empty_plan_shell() -> bool {
+    let plan = empty_transfer_plan();
+    plan.actions.is_empty()
+        && transfer_plan_total(&plan) == 0
+        && empty_inputs_empty_plan()
+}
+
+#[cfg(test)]
+mod wave75_tests {
+    use super::*;
+
+    #[test]
+    fn wave75_transfer_routing_partition_dual_oracle() {
+        assert!(wave75_bucket_catalog_shell());
+        assert!(wave75_unique_target_basename_shell());
+        assert!(wave75_dup_folder_relative_shell());
+        assert!(wave75_missing_dirs_skip_shell());
+        assert!(wave75_empty_plan_shell());
+        assert!(unique_targets_when_dirs_present());
+        assert!(errors_route_to_error_bucket());
+    }
+}

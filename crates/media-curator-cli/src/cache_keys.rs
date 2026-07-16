@@ -262,3 +262,61 @@ mod wave71_tests {
         assert_eq!(DEFAULT_CACHE_DIR, ".mediadb");
     }
 }
+
+// ── wave75 pure residual dens: cache naming + LSH bands dual-oracle residual ──
+// Dual-oracle residual of LmdbCache / MetadataDB naming pure halves.
+// LMDB/SQLite open I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: default layout constants.
+#[must_use]
+pub fn wave75_default_layout_shell() -> bool {
+    DEFAULT_CACHE_DIR == ".mediadb"
+        && DEFAULT_METADATA_FILENAME == "metadata.sqlite"
+        && SERIALIZE_MARKER_MSGPACK == 0
+        && SERIALIZE_MARKER_SHARED_ARRAY_BUFFER == 1
+        && SERIALIZE_MARKER_DATE == 2
+        && serialize_markers_closed()
+}
+
+/// Dual-oracle residual: job db names + mutex key.
+#[must_use]
+pub fn wave75_job_naming_shell() -> bool {
+    job_results_db_name("phash") == "phash_results"
+        && job_config_db_name("fileStats") == "fileStats_config"
+        && cache_mutex_key("phash", "abc") == "phash:abc"
+}
+
+/// Dual-oracle residual: metadata LSH four bands valid hex.
+#[must_use]
+pub fn wave75_metadata_lsh_shell() -> bool {
+    let keys = metadata_lsh_keys(Some("0123456789abcdef"));
+    keys == [
+        Some("0123".to_string()),
+        Some("4567".to_string()),
+        Some("89ab".to_string()),
+        Some("cdef".to_string()),
+    ] && lsh_invalid_all_none()
+}
+
+/// Dual-oracle residual: path join + default plan.
+#[must_use]
+pub fn wave75_path_and_plan_shell() -> bool {
+    metadata_db_path("/data/", "m.db") == "/data/m.db"
+        && metadata_db_path("/data", "m.db") == "/data/m.db"
+        && phash_default_layout_shell()
+}
+
+#[cfg(test)]
+mod wave75_tests {
+    use super::*;
+
+    #[test]
+    fn wave75_cache_naming_lsh_bands_dual_oracle() {
+        assert!(wave75_default_layout_shell());
+        assert!(wave75_job_naming_shell());
+        assert!(wave75_metadata_lsh_shell());
+        assert!(wave75_path_and_plan_shell());
+        assert_eq!(serialize_marker_ladder(), [true, true, true, false]);
+        assert_eq!(default_cache_dir_shell(), ".mediadb");
+    }
+}

@@ -6,7 +6,6 @@
   <img src="docs/banner.png" alt="media-curator banner" width="100%" />
 </p>
 
-
 **Intelligent media library management - LSH-based deduplication with blazing-fast processing**
 
 [![npm version](https://img.shields.io/npm/v/@sylphlab/media-curator?style=flat-square)](https://www.npmjs.com/package/@sylphlab/media-curator)
