@@ -287,3 +287,51 @@ mod tests {
         assert!(map.by_extension.contains_key("jpg"));
     }
 }
+// ── wave63 pure residual dens: discovery concurrency dual-oracle residual ──
+// Dual-oracle residual of `src/discovery.ts` default concurrency=10 pure half.
+// Filesystem walk I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: default discovery concurrency (TS default).
+pub const DEFAULT_DISCOVERY_CONCURRENCY: usize = 10;
+
+/// Dual-oracle residual: minimum concurrency (serial scan).
+pub const MIN_DISCOVERY_CONCURRENCY: usize = 1;
+
+/// Dual-oracle residual: clamp concurrency into product band.
+#[must_use]
+pub fn clamp_discovery_concurrency(n: usize) -> usize {
+    n.max(MIN_DISCOVERY_CONCURRENCY)
+}
+
+/// Dual-oracle residual: default concurrency is 10.
+#[must_use]
+pub fn default_discovery_concurrency_is_ten() -> bool {
+    DEFAULT_DISCOVERY_CONCURRENCY == 10
+}
+
+/// Dual-oracle residual: DiscoverOptions with product default concurrency.
+#[must_use]
+pub fn discover_options_default(source_dirs: Vec<std::path::PathBuf>) -> DiscoverOptions {
+    DiscoverOptions {
+        source_dirs,
+        concurrency: DEFAULT_DISCOVERY_CONCURRENCY,
+    }
+}
+
+#[cfg(test)]
+mod wave63_tests {
+    use super::*;
+
+    #[test]
+    fn wave63_discovery_concurrency_dual_oracle() {
+        assert_eq!(DEFAULT_DISCOVERY_CONCURRENCY, 10);
+        assert_eq!(MIN_DISCOVERY_CONCURRENCY, 1);
+        assert!(default_discovery_concurrency_is_ten());
+        assert_eq!(clamp_discovery_concurrency(0), 1);
+        assert_eq!(clamp_discovery_concurrency(10), 10);
+        assert_eq!(clamp_discovery_concurrency(32), 32);
+        let opts = discover_options_default(vec![]);
+        assert_eq!(opts.concurrency, 10);
+        assert!(opts.source_dirs.is_empty());
+    }
+}
