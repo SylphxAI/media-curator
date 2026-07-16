@@ -3600,3 +3600,72 @@ mod wave122_tests {
         assert!(wave121_heic_image_shell());
     }
 }
+// ── wave123 pure residual dens: extension jpeg-image mp4-video dotted reject-json family dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: jpeg image family dual-oracle.
+#[must_use]
+pub fn wave123_jpeg_image_shell() -> bool {
+    is_image_extension("jpeg")
+        && is_image_extension("jpg")
+        && extension_kind("jpeg") == Some("image")
+        && is_media_extension("JPEG")
+        && !is_video_extension("jpeg")
+}
+
+/// Dual-oracle residual: mp4 video family dual-oracle.
+#[must_use]
+pub fn wave123_mp4_video_shell() -> bool {
+    is_video_extension("mp4")
+        && extension_kind("mp4") == Some("video")
+        && is_media_extension("MP4")
+        && !is_image_extension("mp4")
+}
+
+/// Dual-oracle residual: dotted multi-ext last segment dual-oracle.
+#[must_use]
+pub fn wave123_dotted_ext_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("photo.backup.JPEG")).as_deref() == Some("jpeg")
+        && extension_of(Path::new("movie.final.mkv")).as_deref() == Some("mkv")
+}
+
+/// Dual-oracle residual: reject non-media json dual-oracle.
+#[must_use]
+pub fn wave123_reject_json_shell() -> bool {
+    !is_media_extension("json")
+        && !is_image_extension("json")
+        && !is_video_extension("json")
+        && extension_kind("json").is_none()
+        && {
+            use std::path::Path;
+            extension_of(Path::new("manifest.json")).is_none()
+        }
+}
+
+/// Dual-oracle residual: family membership dual-oracle.
+#[must_use]
+pub fn wave123_family_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && IMAGE_EXTENSIONS.contains(&"jpeg")
+        && IMAGE_EXTENSIONS.contains(&"jpg")
+        && VIDEO_EXTENSIONS.contains(&"mp4")
+        && !IMAGE_EXTENSIONS.contains(&"mp4")
+        && all_supported_extensions().len() == 23
+}
+
+#[cfg(test)]
+mod wave123_tests {
+    use super::*;
+
+    #[test]
+    fn wave123_extension_jpeg_mp4_dotted_json_family_dual_oracle() {
+        assert!(wave123_jpeg_image_shell());
+        assert!(wave123_mp4_video_shell());
+        assert!(wave123_dotted_ext_shell());
+        assert!(wave123_reject_json_shell());
+        assert!(wave123_family_shell());
+        assert!(wave122_png_image_shell());
+    }
+}
