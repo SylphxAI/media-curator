@@ -587,3 +587,64 @@ mod wave77_tests {
         assert!(wave76_kind_closed_shell());
     }
 }
+
+
+// ── wave78 pure residual dens: extension webp mov jpeg multi-dot dual-oracle residual ──
+// Dual-oracle residual of ALL_SUPPORTED_EXTENSIONS pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: webp image + mov video membership.
+#[must_use]
+pub fn wave78_webp_mov_shell() -> bool {
+    is_image_extension("webp")
+        && is_video_extension("mov")
+        && extension_kind("webp") == Some("image")
+        && extension_kind("mov") == Some("video")
+}
+
+/// Dual-oracle residual: multi-dot final extension PNG.
+#[must_use]
+pub fn wave78_multi_dot_shell() -> bool {
+    extension_of(std::path::Path::new("photo.final.PNG")) == Some("png".into())
+        && extension_of(std::path::Path::new("clip.backup.MOV")) == Some("mov".into())
+}
+
+/// Dual-oracle residual: jpeg case membership.
+#[must_use]
+pub fn wave78_jpeg_case_shell() -> bool {
+    is_image_extension("JPEG")
+        && is_media_extension("Jpeg")
+        && extension_of(std::path::Path::new("PIC.JPEG")) == Some("jpeg".into())
+}
+
+/// Dual-oracle residual: raw image / divx video partition tails.
+#[must_use]
+pub fn wave78_raw_divx_shell() -> bool {
+    is_image_extension("raw")
+        && is_video_extension("divx")
+        && !is_video_extension("raw")
+        && !is_image_extension("divx")
+}
+
+/// Dual-oracle residual: bare name + unsupported none.
+#[must_use]
+pub fn wave78_bare_unsupported_shell() -> bool {
+    extension_of(std::path::Path::new("README")).is_none()
+        && !is_media_extension("md")
+        && extension_kind("exe").is_none()
+}
+
+#[cfg(test)]
+mod wave78_tests {
+    use super::*;
+
+    #[test]
+    fn wave78_extension_webp_mov_jpeg_multi_dot_dual_oracle() {
+        assert!(wave78_webp_mov_shell());
+        assert!(wave78_multi_dot_shell());
+        assert!(wave78_jpeg_case_shell());
+        assert!(wave78_raw_divx_shell());
+        assert!(wave78_bare_unsupported_shell());
+        assert!(wave77_family_size_shell());
+    }
+}
