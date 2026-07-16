@@ -274,3 +274,49 @@ mod wave78_tests {
         assert!(wave78_hamming_unequal_shell());
     }
 }
+
+
+// ── product residual dens wave79: hamming 8-byte word+xor pattern dual-oracle residual ──
+// Dual-oracle residual of comparatorUtils hammingDistance pure halves.
+// Filesystem / phash I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: full 8-byte word popcount via hamming.
+#[must_use]
+pub fn wave79_hamming_word_shell() -> bool {
+    hamming_distance(&[0u8; 8], &[0xFFu8; 8]) == 64
+        && hamming_distance(&[0u8; 8], &[0u8; 8]) == 0
+        && popcount64(0xFFFF_FFFF_FFFF_FFFF) == 64
+}
+
+/// Dual-oracle residual: single-bit LE word flip distance 1.
+#[must_use]
+pub fn wave79_hamming_single_bit_word_shell() -> bool {
+    let a = [0u8; 8];
+    let mut b = [0u8; 8];
+    b[0] = 0x01; // bit 0 of first byte
+    hamming_distance(&a, &b) == 1
+        && popcount64(1) == 1
+        && popcount64(0x80) == 1
+}
+
+/// Dual-oracle residual: multi-chunk 16-byte + unequal tail ignored.
+#[must_use]
+pub fn wave79_hamming_multichunk_shell() -> bool {
+    let a = [0u8; 16];
+    let mut b = [0u8; 16];
+    b[8] = 0xFF;
+    hamming_distance(&a, &b) == 8
+        && hamming_distance(&[0xFF], &[0x00, 0xFF]) == 8
+}
+
+#[cfg(test)]
+mod wave79_tests {
+    use super::*;
+
+    #[test]
+    fn wave79_hamming_word_xor_multichunk_dual_oracle() {
+        assert!(wave79_hamming_word_shell());
+        assert!(wave79_hamming_single_bit_word_shell());
+        assert!(wave79_hamming_multichunk_shell());
+    }
+}
