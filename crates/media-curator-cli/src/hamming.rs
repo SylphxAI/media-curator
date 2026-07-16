@@ -91,3 +91,50 @@ mod wave74_tests {
         assert!(wave74_hamming_min_len_shell());
     }
 }
+
+
+// ── product residual dens wave75: hamming multi-bit+tail dual-oracle residual ──
+// Dual-oracle residual of hammingDistance / popcount64 pure halves.
+// Filesystem / phash I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: popcount multi-bit patterns.
+#[must_use]
+pub fn wave75_popcount_pattern_shell() -> bool {
+    popcount64(0) == 0
+        && popcount64(0b1111) == 4
+        && popcount64(0xFF) == 8
+        && popcount64(0x8000_0000_0000_0000) == 1
+        && popcount64(0xFFFF_FFFF_FFFF_FFFF) == 64
+}
+
+/// Dual-oracle residual: multi-bit xor distance on 8-byte chunks.
+#[must_use]
+pub fn wave75_hamming_multibit_shell() -> bool {
+    let a = [0u8; 8];
+    let mut b = [0u8; 8];
+    b[0] = 0b0000_0111; // 3 bits
+    hamming_distance(&a, &b) == 3
+        && hamming_distance(&a, &a) == 0
+}
+
+/// Dual-oracle residual: tail bytes beyond 8-byte chunks.
+#[must_use]
+pub fn wave75_hamming_tail_shell() -> bool {
+    let a = [0u8; 10];
+    let mut b = [0u8; 10];
+    b[9] = 0b11; // two bits in tail
+    hamming_distance(&a, &b) == 2
+        && hamming_distance(&[0x01], &[0x00]) == 1
+}
+
+#[cfg(test)]
+mod wave75_tests {
+    use super::*;
+
+    #[test]
+    fn wave75_hamming_multibit_tail_dual_oracle() {
+        assert!(wave75_popcount_pattern_shell());
+        assert!(wave75_hamming_multibit_shell());
+        assert!(wave75_hamming_tail_shell());
+    }
+}
