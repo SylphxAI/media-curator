@@ -2188,3 +2188,72 @@ mod wave101_tests {
         assert!(wave100_heic_jpeg_shell());
     }
 }
+// ── wave102 pure residual dens: extension jpg-gif mkv-m4v family-sizes head-tail unsupported dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: jpg/gif image membership dual-oracle.
+#[must_use]
+pub fn wave102_jpg_gif_shell() -> bool {
+    is_image_extension("jpg")
+        && is_image_extension("GIF")
+        && extension_kind("jpg") == Some("image")
+        && extension_kind("gif") == Some("image")
+        && is_media_extension("gif")
+        && !is_video_extension("jpg")
+}
+
+/// Dual-oracle residual: mkv/m4v video membership dual-oracle.
+#[must_use]
+pub fn wave102_mkv_m4v_shell() -> bool {
+    is_video_extension("mkv")
+        && is_video_extension("M4V")
+        && extension_kind("mkv") == Some("video")
+        && extension_kind("m4v") == Some("video")
+        && is_media_extension("m4v")
+        && !is_image_extension("mkv")
+}
+
+/// Dual-oracle residual: family sizes dual-oracle.
+#[must_use]
+pub fn wave102_family_sizes_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && family_size_product_shell()
+        && extension_family_size_shell() == [11, 12, 23]
+}
+
+/// Dual-oracle residual: image/video head-tail dual-oracle.
+#[must_use]
+pub fn wave102_head_tail_shell() -> bool {
+    image_head_tail_shell() == ("jpg", "raw")
+        && video_head_tail_shell() == ("mp4", "divx")
+        && IMAGE_EXTENSIONS[0] == "jpg"
+        && VIDEO_EXTENSIONS[VIDEO_EXTENSIONS.len() - 1] == "divx"
+}
+
+/// Dual-oracle residual: unsupported extension none dual-oracle.
+#[must_use]
+pub fn wave102_unsupported_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("notes.txt")).is_none()
+        && extension_of(Path::new("pkg.deb")).is_none()
+        && !is_media_extension("txt")
+        && extension_kind("pdf") == None
+        && unsupported_path_none_shell()
+}
+
+#[cfg(test)]
+mod wave102_tests {
+    use super::*;
+
+    #[test]
+    fn wave102_extension_jpg_gif_mkv_m4v_family_sizes_head_tail_unsupported_dual_oracle() {
+        assert!(wave102_jpg_gif_shell());
+        assert!(wave102_mkv_m4v_shell());
+        assert!(wave102_family_sizes_shell());
+        assert!(wave102_head_tail_shell());
+        assert!(wave102_unsupported_shell());
+        assert!(wave101_png_webp_shell());
+    }
+}
