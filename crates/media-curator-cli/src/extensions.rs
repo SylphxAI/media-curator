@@ -1473,3 +1473,74 @@ mod wave91_tests {
         assert!(wave90_family_size_unsupported_shell());
     }
 }
+
+// ── wave92 pure residual dens: extension jpg png mp4 webm case path dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: jpg/png image membership + kind.
+#[must_use]
+pub fn wave92_jpg_png_shell() -> bool {
+    is_image_extension("jpg")
+        && is_image_extension("PNG")
+        && extension_kind("jpg") == Some("image")
+        && extension_kind("png") == Some("image")
+        && is_media_extension("jpeg")
+        && !is_video_extension("jpg")
+}
+
+/// Dual-oracle residual: mp4/webm video membership + kind.
+#[must_use]
+pub fn wave92_mp4_webm_shell() -> bool {
+    is_video_extension("mp4")
+        && is_video_extension("WEBM")
+        && extension_kind("mp4") == Some("video")
+        && extension_kind("webm") == Some("video")
+        && is_media_extension("mkv")
+        && !is_image_extension("mp4")
+}
+
+/// Dual-oracle residual: case-fold path extract dual-oracle.
+#[must_use]
+pub fn wave92_case_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("/media/Photo.JPG")) == Some("jpg".to_string())
+        && extension_of(Path::new("clip.Mp4")) == Some("mp4".to_string())
+        && extension_of(Path::new("a.WEBP")) == Some("webp".to_string())
+        && extension_of(Path::new("doc.PDF")).is_none()
+}
+
+/// Dual-oracle residual: heic/bmp image poles dual-oracle.
+#[must_use]
+pub fn wave92_heic_bmp_shell() -> bool {
+    is_image_extension("heic")
+        && is_image_extension("BMP")
+        && extension_kind("heic") == Some("image")
+        && is_media_extension("bmp")
+        && !is_video_extension("heic")
+}
+
+/// Dual-oracle residual: family sizes + union closed.
+#[must_use]
+pub fn wave92_family_sizes_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && all_supported_extensions().len() == 23
+        && IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len()
+            == all_supported_extensions().len()
+}
+
+#[cfg(test)]
+mod wave92_tests {
+    use super::*;
+
+    #[test]
+    fn wave92_extension_jpg_png_mp4_webm_case_path_dual_oracle() {
+        assert!(wave92_jpg_png_shell());
+        assert!(wave92_mp4_webm_shell());
+        assert!(wave92_case_path_shell());
+        assert!(wave92_heic_bmp_shell());
+        assert!(wave92_family_sizes_shell());
+        assert!(wave91_disjoint_union_shell());
+    }
+}
