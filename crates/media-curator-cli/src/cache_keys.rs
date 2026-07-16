@@ -195,3 +195,70 @@ mod wave68_tests {
     }
 }
 
+
+
+// ── wave71 pure residual dens: cache LSH invalid + naming dual-oracle residual ──
+// Dual-oracle residual of LmdbCache / MetadataDB naming pure halves.
+// LMDB/SQLite open I/O residual retained. dens ≠ flip.
+// product residual dens wave71
+
+/// Dual-oracle residual: invalid LSH inputs yield four Nones.
+#[must_use]
+pub fn lsh_invalid_all_none() -> bool {
+    metadata_lsh_keys(None) == [None, None, None, None]
+        && metadata_lsh_keys(Some("short")) == [None, None, None, None]
+        && metadata_lsh_keys(Some("0123456789abcdeg")) == [None, None, None, None]
+}
+
+/// Dual-oracle residual: job naming suffix ladder.
+#[must_use]
+pub fn job_db_name_suffix_shell() -> bool {
+    job_results_db_name("phash") == "phash_results"
+        && job_config_db_name("phash") == "phash_config"
+        && cache_mutex_key("phash", "k1") == "phash:k1"
+}
+
+/// Dual-oracle residual: path join trims trailing slash.
+#[must_use]
+pub fn metadata_path_trim_shell() -> bool {
+    metadata_db_path("/tmp/cache/", "meta.db") == "/tmp/cache/meta.db"
+        && metadata_db_path("/tmp/cache", "meta.db") == "/tmp/cache/meta.db"
+}
+
+/// Dual-oracle residual: serialize marker ladder 0/1/2/3.
+#[must_use]
+pub fn serialize_marker_ladder() -> [bool; 4] {
+    [
+        is_serialize_marker(0),
+        is_serialize_marker(1),
+        is_serialize_marker(2),
+        is_serialize_marker(3),
+    ]
+}
+
+/// Dual-oracle residual: default layout for phash/k1.
+#[must_use]
+pub fn phash_default_layout_shell() -> bool {
+    let plan = plan_default_cache_layout("phash", "k1");
+    plan.root_dir == ".mediadb"
+        && plan.results_db == "phash_results"
+        && plan.config_db == "phash_config"
+        && plan.mutex_key == "phash:k1"
+        && plan.metadata_path == ".mediadb/metadata.sqlite"
+}
+
+#[cfg(test)]
+mod wave71_tests {
+    use super::*;
+
+    #[test]
+    fn wave71_cache_lsh_naming_dual_oracle() {
+        assert!(lsh_invalid_all_none());
+        assert!(job_db_name_suffix_shell());
+        assert!(metadata_path_trim_shell());
+        assert_eq!(serialize_marker_ladder(), [true, true, true, false]);
+        assert!(phash_default_layout_shell());
+        assert!(metadata_lsh_four_bands_ok());
+        assert_eq!(DEFAULT_CACHE_DIR, ".mediadb");
+    }
+}
