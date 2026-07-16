@@ -1120,3 +1120,73 @@ mod wave86_tests {
         assert!(wave85_family_size_shell());
     }
 }
+
+// ── wave87 pure residual dens: extension tiff mov disjoint path dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: tiff/heif image + case kind.
+#[must_use]
+pub fn wave87_tiff_heif_shell() -> bool {
+    is_image_extension("tiff")
+        && is_image_extension("HEIF")
+        && extension_kind("TIF") == Some("image")
+        && is_media_extension("bmp")
+        && !is_video_extension("heic")
+}
+
+/// Dual-oracle residual: mov/avi video + flv kind.
+#[must_use]
+pub fn wave87_mov_avi_shell() -> bool {
+    is_video_extension("mov")
+        && is_video_extension("AVI")
+        && extension_kind("flv") == Some("video")
+        && is_media_extension("wmv")
+        && !is_image_extension("mov")
+}
+
+/// Dual-oracle residual: families disjoint + raw not video.
+#[must_use]
+pub fn wave87_disjoint_shell() -> bool {
+    IMAGE_EXTENSIONS.iter().all(|e| !VIDEO_EXTENSIONS.contains(e))
+        && VIDEO_EXTENSIONS.iter().all(|e| !IMAGE_EXTENSIONS.contains(e))
+        && is_image_extension("raw")
+        && !is_video_extension("raw")
+        && IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len() == all_supported_extensions().len()
+}
+
+/// Dual-oracle residual: unsupported paths + empty/dot.
+#[must_use]
+pub fn wave87_unsupported_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("notes.md")).is_none()
+        && extension_of(Path::new(".gitignore")).is_none()
+        && !is_media_extension("md")
+        && !is_media_extension("json")
+        && extension_kind("exe").is_none()
+}
+
+/// Dual-oracle residual: multi-dot path + head tail wire.
+#[must_use]
+pub fn wave87_multidot_head_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("archive.tar.jpg")) == Some("jpg".to_string())
+        && extension_of(Path::new("dir/clip.final.MOV")) == Some("mov".to_string())
+        && IMAGE_EXTENSIONS[0] == "jpg"
+        && VIDEO_EXTENSIONS[VIDEO_EXTENSIONS.len() - 1] == "divx"
+}
+
+#[cfg(test)]
+mod wave87_tests {
+    use super::*;
+
+    #[test]
+    fn wave87_extension_tiff_mov_disjoint_path_dual_oracle() {
+        assert!(wave87_tiff_heif_shell());
+        assert!(wave87_mov_avi_shell());
+        assert!(wave87_disjoint_shell());
+        assert!(wave87_unsupported_path_shell());
+        assert!(wave87_multidot_head_shell());
+        assert!(wave85_family_size_shell());
+    }
+}
