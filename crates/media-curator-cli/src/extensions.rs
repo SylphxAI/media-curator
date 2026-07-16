@@ -783,3 +783,70 @@ mod wave80_tests {
         assert!(wave79_family_size_shell());
     }
 }
+
+
+// ── wave81 pure residual dens: extension heif webp mov family sizes dual-oracle residual ──
+// Dual-oracle residual of ALL_SUPPORTED_EXTENSIONS pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: heif/heic image membership + path.
+#[must_use]
+pub fn wave81_heif_shell() -> bool {
+    is_image_extension("heif")
+        && is_image_extension("HEIC")
+        && extension_kind("heif") == Some("image")
+        && extension_of(std::path::Path::new("photo.HEIF")) == Some("heif".into())
+}
+
+/// Dual-oracle residual: webp image + mov video partition.
+#[must_use]
+pub fn wave81_webp_mov_shell() -> bool {
+    is_image_extension("webp")
+        && is_video_extension("mov")
+        && !is_video_extension("webp")
+        && !is_image_extension("mov")
+        && extension_kind("webp") == Some("image")
+        && extension_kind("mov") == Some("video")
+}
+
+/// Dual-oracle residual: family sizes closed (11 image / 12 video).
+#[must_use]
+pub fn wave81_family_size_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && IMAGE_EXTENSIONS.contains(&"png")
+        && VIDEO_EXTENSIONS.contains(&"webm")
+}
+
+/// Dual-oracle residual: multi-dot path extract + case.
+#[must_use]
+pub fn wave81_multi_dot_shell() -> bool {
+    extension_of(std::path::Path::new("/a/b.final.JPEG")) == Some("jpeg".into())
+        && extension_of(std::path::Path::new("clip.Part.2.MP4")) == Some("mp4".into())
+        && is_media_extension("jpeg")
+        && is_media_extension("mp4")
+}
+
+/// Dual-oracle residual: unsupported + empty not media.
+#[must_use]
+pub fn wave81_unsupported_shell() -> bool {
+    !is_media_extension("pdf")
+        && !is_media_extension("")
+        && extension_kind("txt").is_none()
+        && extension_of(std::path::Path::new("Makefile")).is_none()
+}
+
+#[cfg(test)]
+mod wave81_tests {
+    use super::*;
+
+    #[test]
+    fn wave81_extension_heif_webp_mov_family_sizes_dual_oracle() {
+        assert!(wave81_heif_shell());
+        assert!(wave81_webp_mov_shell());
+        assert!(wave81_family_size_shell());
+        assert!(wave81_multi_dot_shell());
+        assert!(wave81_unsupported_shell());
+        assert!(wave80_head_tail_shell());
+    }
+}
