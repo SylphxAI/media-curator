@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package media_curator.v1;
+
+// Operational health contract for media-curator CLI / future MCP-plugin surfaces.
+// Aligns with ADR-168 fleet media-curator Rust north star (S0 proto SSOT).
+
+enum ServingStatus {
+  SERVING_STATUS_UNSPECIFIED = 0;
+  SERVING_STATUS_OK = 1;
+  SERVING_STATUS_NOT_READY = 2;
+  SERVING_STATUS_UNAVAILABLE = 3;
+}
+
+message HealthzRequest {}
+
+message HealthzResponse {
+  ServingStatus status = 1;
+  string message = 2;
+  string slice = 3;
+}
+
+message ReadyzRequest {}
+
+message DependencyStatus {
+  string name = 1;
+  bool ok = 2;
+  string detail = 3;
+}
+
+message ReadyzResponse {
+  ServingStatus status = 1;
+  string message = 2;
+  uint64 uptime_s = 3;
+  string slice = 4;
+  repeated DependencyStatus dependencies = 5;
+  bool stub = 6;
+}
+
+service HealthService {
+  rpc Healthz(HealthzRequest) returns (HealthzResponse);
+  rpc Readyz(ReadyzRequest) returns (ReadyzResponse);
+}

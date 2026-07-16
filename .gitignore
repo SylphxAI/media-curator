@@ -25,3 +25,4 @@ Thumbs.db
 .eslintcache
 target/
 # staged native binaries are committed for npm pack reliability
+.tools/

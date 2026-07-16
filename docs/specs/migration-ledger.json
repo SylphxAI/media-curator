@@ -19,7 +19,9 @@
   ],
   "reauditRef": "adversarial-2026-07-15-media-curator",
   "verificationRef": "verification/media-curator-differential-green.json",
-  "inventorySource": ["manual"],
+  "inventorySource": [
+    "manual"
+  ],
   "inScopeBoundary": {
     "includeGlobs": [
       "index.ts",
@@ -237,9 +239,11 @@
       "id": "contracts/proto-ssot",
       "domain": "contracts",
       "weight": 2,
-      "state": "ts_only",
+      "state": "contracted",
       "tsSurface": "src/types.ts",
-      "notes": "ADR-168 targets proto/media_curator/v1/ for future MCP/plugin surfaces."
+      "notes": "ADR-168 targets proto/media_curator/v1/ for future MCP/plugin surfaces. | PROTO-SSOT-S0 2026-07-16T14:10:18Z: landed proto/media_curator/v1/health.proto + buf.yaml; ts_only\u2192contracted (ADR-168 S0 mirror of photo-dedup). NO authority_rust/ts_deleted invent.",
+      "rustSurface": "proto/media_curator/v1/**",
+      "parityTest": "proto/media_curator/v1/health.proto + buf.yaml structural proof"
     }
   ],
   "summary": {
@@ -265,8 +269,7 @@
       "residual_ts_only": [
         "cli/cache-persistence",
         "cli/deduplication-engine",
-        "cli/transfer-reporting",
-        "contracts/proto-ssot"
+        "cli/transfer-reporting"
       ],
       "verificationRef": "verification/media-curator-differential-green.json",
       "notes": "Rust default authority + native pack + 14-case differential; residual dedup/cache/transfer/proto remain ts_only"
@@ -274,19 +277,27 @@
     "lastMutation": "PHOTO-MEDIA2-RUST-IMPL-DENS",
     "partial_ts_deleted_dens_2026_07_16": {
       "action": "rust_impl dens",
-      "advanced": ["cli/transfer-reporting"],
-      "deepened": ["cli/deduplication-engine"],
-      "residual_ts_only": ["cli/cache-persistence", "contracts/proto-ssot"],
+      "advanced": [
+        "cli/transfer-reporting"
+      ],
+      "deepened": [
+        "cli/deduplication-engine"
+      ],
+      "residual_ts_only": [
+        "cli/cache-persistence"
+      ],
       "notes": "No ts_deleted flips (deletion/parity evidence not claimed). Inventory verified still requires full ts_deleted."
     },
     "photo_media2_dens_2026_07_16": {
       "action": "rust_impl dens",
-      "advanced": ["cli/cache-persistence"],
+      "advanced": [
+        "cli/cache-persistence"
+      ],
       "already_rust_impl": [
         "cli/deduplication-engine",
         "cli/transfer-reporting"
       ],
-      "residual_ts_only": ["contracts/proto-ssot"],
+      "residual_ts_only": [],
       "ts_deleted_unchanged": 5,
       "notes": "No ts_deleted flips. Inventory verified still blocked until full 9/9 ts_deleted.",
       "at": "2026-07-16T04:11:55Z"
