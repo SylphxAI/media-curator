@@ -3215,3 +3215,61 @@ mod wave116_tests {
         assert!(wave115_jpeg_png_shell());
     }
 }
+// ── wave117 pure residual dens: extension upper multi-dot unsupported family-size head-tail dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: uppercase extension membership dual-oracle.
+#[must_use]
+pub fn wave117_upper_membership_shell() -> bool {
+    use std::path::Path;
+    is_image_extension("JPG")
+        || extension_of(Path::new("PHOTO.PNG")).as_deref() == Some("png")
+}
+
+/// Dual-oracle residual: multi-dot path uses last extension dual-oracle.
+#[must_use]
+pub fn wave117_multi_dot_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("archive.backup.mp4")).as_deref() == Some("mp4")
+}
+
+/// Dual-oracle residual: unsupported path returns none dual-oracle.
+#[must_use]
+pub fn wave117_unsupported_none_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("notes.txt")).is_none()
+        && extension_kind("txt").is_none()
+        && !is_media_extension("exe")
+}
+
+/// Dual-oracle residual: family sizes product dual-oracle.
+#[must_use]
+pub fn wave117_family_size_shell() -> bool {
+    IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len() == all_supported_extensions().len()
+        && IMAGE_EXTENSIONS.len() >= 8
+        && VIDEO_EXTENSIONS.len() >= 8
+}
+
+/// Dual-oracle residual: head/tail of families dual-oracle.
+#[must_use]
+pub fn wave117_head_tail_shell() -> bool {
+    IMAGE_EXTENSIONS.first() == Some(&"jpg")
+        && is_image_extension("jpg")
+        && is_video_extension("mp4")
+        && VIDEO_EXTENSIONS.first() == Some(&"mp4")
+}
+
+#[cfg(test)]
+mod wave117_tests {
+    use super::*;
+
+    #[test]
+    fn wave117_extension_upper_multi_dot_unsupported_family_head_tail_dual_oracle() {
+        assert!(wave117_upper_membership_shell());
+        assert!(wave117_multi_dot_shell());
+        assert!(wave117_unsupported_none_shell());
+        assert!(wave117_family_size_shell());
+        assert!(wave117_head_tail_shell());
+        assert!(wave116_families_disjoint_shell());
+    }
+}
