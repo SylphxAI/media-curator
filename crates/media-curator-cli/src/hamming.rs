@@ -185,3 +185,49 @@ mod wave76_tests {
         assert!(wave76_hamming_fullbyte_shell());
     }
 }
+
+
+// ── product residual dens wave77: hamming single-bit+identity dual-oracle residual ──
+// Dual-oracle residual of comparatorUtils hammingDistance pure halves.
+// Filesystem / phash I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: popcount nibble patterns.
+#[must_use]
+pub fn wave77_popcount_nibble_shell() -> bool {
+    popcount64(0b1111) == 4
+        && popcount64(0b1000_0001) == 2
+        && popcount64(0x0F0F_0F0F_0F0F_0F0F) == 32
+        && popcount64(0) == 0
+}
+
+/// Dual-oracle residual: identical 8-byte hashes distance 0; single-bit flip 1.
+#[must_use]
+pub fn wave77_hamming_identity_flip_shell() -> bool {
+    let a = [0u8; 8];
+    let mut b = [0u8; 8];
+    b[0] = 1;
+    hamming_distance(&a, &a) == 0
+        && hamming_distance(&a, &b) == 1
+        && hamming_distance(&b, &a) == 1
+}
+
+/// Dual-oracle residual: multi-byte XOR distance sum.
+#[must_use]
+pub fn wave77_hamming_multibyte_shell() -> bool {
+    let a = [0x00u8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+    let b = [0xFFu8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+    hamming_distance(&a, &b) == 8
+        && hamming_distance(&[1, 2, 3], &[1, 2, 3]) == 0
+}
+
+#[cfg(test)]
+mod wave77_tests {
+    use super::*;
+
+    #[test]
+    fn wave77_hamming_single_bit_identity_dual_oracle() {
+        assert!(wave77_popcount_nibble_shell());
+        assert!(wave77_hamming_identity_flip_shell());
+        assert!(wave77_hamming_multibyte_shell());
+    }
+}
