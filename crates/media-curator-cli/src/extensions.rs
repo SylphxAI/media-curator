@@ -2257,3 +2257,71 @@ mod wave102_tests {
         assert!(wave101_png_webp_shell());
     }
 }
+// ── wave103 pure residual dens: extension jpeg-heic mov-avi disjoint multi-dot all-supported dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: jpeg/heic image membership dual-oracle.
+#[must_use]
+pub fn wave103_jpeg_heic_shell() -> bool {
+    is_image_extension("jpeg")
+        && is_image_extension("HEIC")
+        && extension_kind("jpeg") == Some("image")
+        && extension_kind("heic") == Some("image")
+        && is_media_extension("heic")
+        && !is_video_extension("jpeg")
+}
+
+/// Dual-oracle residual: mov/avi video membership dual-oracle.
+#[must_use]
+pub fn wave103_mov_avi_shell() -> bool {
+    is_video_extension("mov")
+        && is_video_extension("AVI")
+        && extension_kind("mov") == Some("video")
+        && extension_kind("avi") == Some("video")
+        && is_media_extension("avi")
+        && !is_image_extension("mov")
+}
+
+/// Dual-oracle residual: image/video families disjoint dual-oracle.
+#[must_use]
+pub fn wave103_disjoint_shell() -> bool {
+    extension_families_disjoint()
+        && IMAGE_EXTENSIONS.iter().all(|e| !is_video_extension(e))
+        && VIDEO_EXTENSIONS.iter().all(|e| !is_image_extension(e))
+        && IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+}
+
+/// Dual-oracle residual: multi-dot path extension dual-oracle.
+#[must_use]
+pub fn wave103_multi_dot_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("archive.tar.jpg")) == Some("jpg".to_string())
+        && extension_of(Path::new("clip.final.MP4")) == Some("mp4".to_string())
+        && multi_dot_path_shell()
+}
+
+/// Dual-oracle residual: all-supported size matches family union dual-oracle.
+#[must_use]
+pub fn wave103_all_supported_shell() -> bool {
+    all_supported_extensions().len() == 23
+        && all_supported_count_matches_families()
+        && all_supported_size_shell()
+        && families_subset_of_all_supported()
+}
+
+#[cfg(test)]
+mod wave103_tests {
+    use super::*;
+
+    #[test]
+    fn wave103_extension_jpeg_heic_mov_avi_disjoint_multi_dot_all_supported_dual_oracle() {
+        assert!(wave103_jpeg_heic_shell());
+        assert!(wave103_mov_avi_shell());
+        assert!(wave103_disjoint_shell());
+        assert!(wave103_multi_dot_shell());
+        assert!(wave103_all_supported_shell());
+        assert!(wave102_jpg_gif_shell());
+    }
+}
