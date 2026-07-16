@@ -2393,3 +2393,72 @@ mod wave104_tests {
         assert!(wave102_jpg_gif_shell());
     }
 }
+// ── wave105 pure residual dens: extension png-webp mp4-mkv multi-dot unsupported family-sizes dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: png/webp image membership dual-oracle.
+#[must_use]
+pub fn wave105_png_webp_shell() -> bool {
+    is_image_extension("png")
+        && is_image_extension("WEBP")
+        && extension_kind("png") == Some("image")
+        && extension_kind("webp") == Some("image")
+        && is_media_extension("webp")
+        && !is_video_extension("png")
+}
+
+/// Dual-oracle residual: mp4/mkv video membership dual-oracle.
+#[must_use]
+pub fn wave105_mp4_mkv_shell() -> bool {
+    is_video_extension("mp4")
+        && is_video_extension("MKV")
+        && extension_kind("mp4") == Some("video")
+        && extension_kind("mkv") == Some("video")
+        && is_media_extension("mkv")
+        && !is_image_extension("mp4")
+}
+
+/// Dual-oracle residual: multi-dot path dual-oracle.
+#[must_use]
+pub fn wave105_multi_dot_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("archive.tar.PNG")) == Some("png".to_string())
+        && extension_of(Path::new("clip.final.MP4")) == Some("mp4".to_string())
+        && extension_of(Path::new("notes.txt")).is_none()
+}
+
+/// Dual-oracle residual: unsupported dual-oracle.
+#[must_use]
+pub fn wave105_unsupported_shell() -> bool {
+    !is_image_extension("pdf")
+        && !is_video_extension("doc")
+        && !is_media_extension("exe")
+        && extension_kind("zip").is_none()
+        && extension_kind("txt").is_none()
+}
+
+/// Dual-oracle residual: family sizes dual-oracle.
+#[must_use]
+pub fn wave105_family_sizes_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len() == 23
+        && extension_families_disjoint()
+        && all_supported_extensions().len() == 23
+}
+
+#[cfg(test)]
+mod wave105_tests {
+    use super::*;
+
+    #[test]
+    fn wave105_extension_png_webp_mp4_mkv_multi_dot_unsupported_family_sizes_dual_oracle() {
+        assert!(wave105_png_webp_shell());
+        assert!(wave105_mp4_mkv_shell());
+        assert!(wave105_multi_dot_shell());
+        assert!(wave105_unsupported_shell());
+        assert!(wave105_family_sizes_shell());
+        assert!(wave104_jpeg_heic_shell());
+    }
+}
