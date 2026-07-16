@@ -2534,3 +2534,72 @@ mod wave106_tests {
         assert!(wave105_png_webp_shell());
     }
 }
+// ── wave107 pure residual dens: extension gif-bmp mkv-avi path-probe disjoint family-sum dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: gif/bmp image membership dual-oracle.
+#[must_use]
+pub fn wave107_gif_bmp_shell() -> bool {
+    is_image_extension("gif")
+        && is_image_extension("BMP")
+        && extension_kind("gif") == Some("image")
+        && extension_kind("bmp") == Some("image")
+        && is_media_extension("tif")
+        && !is_video_extension("gif")
+}
+
+/// Dual-oracle residual: mkv/avi video membership dual-oracle.
+#[must_use]
+pub fn wave107_mkv_avi_shell() -> bool {
+    is_video_extension("mkv")
+        && is_video_extension("AVI")
+        && extension_kind("mkv") == Some("video")
+        && extension_kind("avi") == Some("video")
+        && is_media_extension("wmv")
+        && !is_image_extension("mkv")
+}
+
+/// Dual-oracle residual: path probe dual-oracle.
+#[must_use]
+pub fn wave107_path_probe_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("shot.JPG")) == Some("jpg".to_string())
+        && extension_of(Path::new("/tmp/clip.WebM")) == Some("webm".to_string())
+        && extension_of(Path::new("a.b.png")) == Some("png".to_string())
+        && extension_of(Path::new("noext")).is_none()
+}
+
+/// Dual-oracle residual: image/video families disjoint dual-oracle.
+#[must_use]
+pub fn wave107_disjoint_shell() -> bool {
+    IMAGE_EXTENSIONS.iter().all(|e| !is_video_extension(e))
+        && VIDEO_EXTENSIONS.iter().all(|e| !is_image_extension(e))
+        && !is_media_extension("txt")
+        && !is_media_extension("pdf")
+}
+
+/// Dual-oracle residual: family size sum dual-oracle.
+#[must_use]
+pub fn wave107_family_sum_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && all_supported_extensions().len() == 23
+        && IMAGE_EXTENSIONS.contains(&"png")
+        && VIDEO_EXTENSIONS.contains(&"mp4")
+}
+
+#[cfg(test)]
+mod wave107_tests {
+    use super::*;
+
+    #[test]
+    fn wave107_extension_gif_bmp_mkv_avi_path_probe_disjoint_family_sum_dual_oracle() {
+        assert!(wave107_gif_bmp_shell());
+        assert!(wave107_mkv_avi_shell());
+        assert!(wave107_path_probe_shell());
+        assert!(wave107_disjoint_shell());
+        assert!(wave107_family_sum_shell());
+        assert!(wave106_jpeg_heic_shell());
+    }
+}
