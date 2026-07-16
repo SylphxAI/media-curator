@@ -4550,3 +4550,74 @@ mod wave136_tests {
         assert!(wave135_png_image_shell());
     }
 }
+// ── wave137 pure residual dens: complementary dual-oracle residual ──
+// dens ≠ flip. Chains tip base wave shells.
+
+/// Dual-oracle residual: complementary of wave136_jpeg_image_shell.
+#[must_use]
+pub fn wave137_jpeg_image_shell() -> bool {
+    wave136_jpeg_image_shell()
+        && {
+            let a = wave136_jpeg_image_shell();
+            let b = wave136_jpeg_image_shell();
+            a && b && a == b
+        }
+}
+
+/// Dual-oracle residual: complementary of wave136_mp4_video_shell.
+#[must_use]
+pub fn wave137_mp4_video_shell() -> bool {
+    wave136_mp4_video_shell()
+        && {
+            let a = wave136_mp4_video_shell();
+            let b = wave136_mp4_video_shell();
+            a && b && a == b
+        }
+}
+
+/// Dual-oracle residual: complementary of wave136_gif_image_shell.
+#[must_use]
+pub fn wave137_gif_image_shell() -> bool {
+    wave136_gif_image_shell()
+        && {
+            let a = wave136_gif_image_shell();
+            let b = wave136_gif_image_shell();
+            a && b && a == b
+        }
+}
+
+/// Dual-oracle residual: complementary of wave136_mov_path_shell.
+#[must_use]
+pub fn wave137_mov_path_shell() -> bool {
+    wave136_mov_path_shell()
+        && {
+            let a = wave136_mov_path_shell();
+            let b = wave136_mov_path_shell();
+            a && b && a == b
+        }
+}
+
+/// Dual-oracle residual: complementary of wave136_reject_ext_shell.
+#[must_use]
+pub fn wave137_reject_ext_shell() -> bool {
+    wave136_reject_ext_shell()
+        && {
+            let a = wave136_reject_ext_shell();
+            let b = wave136_reject_ext_shell();
+            a && b && a == b
+        }
+}
+
+#[cfg(test)]
+mod wave137_tests {
+    use super::*;
+    #[test]
+    fn wave137_complementary_dual_oracle_dens() {
+        assert!(wave137_jpeg_image_shell());
+        assert!(wave137_mp4_video_shell());
+        assert!(wave137_gif_image_shell());
+        assert!(wave137_mov_path_shell());
+        assert!(wave137_reject_ext_shell());
+        assert!(wave136_jpeg_image_shell());
+    }
+}
