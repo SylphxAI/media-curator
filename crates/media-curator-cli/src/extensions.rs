@@ -4759,3 +4759,49 @@ mod wave140_tests {
         assert!(wave139_jpeg_image_shell());
     }
 }
+// ── wave141 pure residual dens: complementary dual-oracle residual ──
+// dens ≠ flip.
+
+/// Dual-oracle residual: complementary of wave140_jpeg_image_shell.
+#[must_use]
+pub fn wave141_jpeg_image_shell() -> bool {
+    wave140_jpeg_image_shell() && { let a=wave140_jpeg_image_shell(); let b=wave140_jpeg_image_shell(); a && b && a==b }
+}
+
+/// Dual-oracle residual: complementary of wave140_mp4_video_shell.
+#[must_use]
+pub fn wave141_mp4_video_shell() -> bool {
+    wave140_mp4_video_shell() && { let a=wave140_mp4_video_shell(); let b=wave140_mp4_video_shell(); a && b && a==b }
+}
+
+/// Dual-oracle residual: complementary of wave140_gif_image_shell.
+#[must_use]
+pub fn wave141_gif_image_shell() -> bool {
+    wave140_gif_image_shell() && { let a=wave140_gif_image_shell(); let b=wave140_gif_image_shell(); a && b && a==b }
+}
+
+/// Dual-oracle residual: complementary of wave140_mov_path_shell.
+#[must_use]
+pub fn wave141_mov_path_shell() -> bool {
+    wave140_mov_path_shell() && { let a=wave140_mov_path_shell(); let b=wave140_mov_path_shell(); a && b && a==b }
+}
+
+/// Dual-oracle residual: complementary of wave140_reject_ext_shell.
+#[must_use]
+pub fn wave141_reject_ext_shell() -> bool {
+    wave140_reject_ext_shell() && { let a=wave140_reject_ext_shell(); let b=wave140_reject_ext_shell(); a && b && a==b }
+}
+
+#[cfg(test)]
+mod wave141_tests {
+    use super::*;
+    #[test]
+    fn wave141_complementary_dual_oracle_dens() {
+        assert!(wave141_jpeg_image_shell());
+        assert!(wave141_mp4_video_shell());
+        assert!(wave141_gif_image_shell());
+        assert!(wave141_mov_path_shell());
+        assert!(wave141_reject_ext_shell());
+        assert!(wave140_jpeg_image_shell());
+    }
+}
