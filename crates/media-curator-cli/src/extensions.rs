@@ -337,3 +337,68 @@ mod wave72_tests {
         assert_eq!(image_head_tail_shell(), ("jpg", "raw"));
     }
 }
+
+// ── wave74 pure residual dens: extension path kind partition dual-oracle residual ──
+// Dual-oracle residual of ALL_SUPPORTED_EXTENSIONS pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: path extension extraction case/path.
+#[must_use]
+pub fn wave74_path_extension_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("a/B.JPG")).as_deref() == Some("jpg")
+        && extension_of(Path::new("clip.MP4")).as_deref() == Some("mp4")
+        && extension_of(Path::new("readme")).is_none()
+        && extension_of(Path::new("x.pdf")).is_none()
+}
+
+/// Dual-oracle residual: bare multi-dot path takes last segment.
+#[must_use]
+pub fn wave74_multi_dot_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("archive.tar.png")).as_deref() == Some("png")
+        && extension_of(Path::new("movie.final.mkv")).as_deref() == Some("mkv")
+}
+
+/// Dual-oracle residual: family partition image vs video.
+#[must_use]
+pub fn wave74_kind_partition_shell() -> bool {
+    extension_kind("heic") == Some("image")
+        && extension_kind("divx") == Some("video")
+        && extension_kind("raw") == Some("image")
+        && extension_kind("pdf").is_none()
+        && is_media_extension("webp")
+        && !is_media_extension("txt")
+}
+
+/// Dual-oracle residual: family sizes 11/12/23.
+#[must_use]
+pub fn wave74_family_size_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len() == 23
+}
+
+/// Dual-oracle residual: head/tail membership.
+#[must_use]
+pub fn wave74_head_tail_shell() -> bool {
+    is_image_extension("jpg")
+        && is_image_extension("raw")
+        && is_video_extension("mp4")
+        && is_video_extension("divx")
+}
+
+#[cfg(test)]
+mod wave74_tests {
+    use super::*;
+
+    #[test]
+    fn wave74_extension_path_kind_partition_dual_oracle() {
+        assert!(wave74_path_extension_shell());
+        assert!(wave74_multi_dot_shell());
+        assert!(wave74_kind_partition_shell());
+        assert!(wave74_family_size_shell());
+        assert!(wave74_head_tail_shell());
+        assert_eq!(all_supported_extensions().len(), 23);
+    }
+}
