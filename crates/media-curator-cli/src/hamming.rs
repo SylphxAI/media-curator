@@ -450,3 +450,49 @@ mod wave82_tests {
         assert!(wave82_hamming_complement_shell());
     }
 }
+
+
+// ── product residual dens wave83: hamming msb+multi-chunk+empty dual-oracle residual ──
+// Dual-oracle residual of comparatorUtils hammingDistance pure halves.
+// Filesystem / phash I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: MSB single-bit + full-word popcount.
+#[must_use]
+pub fn wave83_popcount_msb_shell() -> bool {
+    popcount64(1u64 << 63) == 1
+        && popcount64(u64::MAX) == 64
+        && popcount64(0x8000_0000_0000_0001) == 2
+        && popcount64(0x0101_0101_0101_0101) == 8
+}
+
+/// Dual-oracle residual: multi-chunk hamming across 16 bytes.
+#[must_use]
+pub fn wave83_hamming_multichunk_shell() -> bool {
+    let a = [0u8; 16];
+    let mut b = [0u8; 16];
+    b[0] = 0x01;
+    b[15] = 0x80;
+    hamming_distance(&a, &b) == 2
+        && hamming_distance(&a, &a) == 0
+        && hamming_distance(&[0x0F, 0xF0], &[0x00, 0x00]) == 8
+}
+
+/// Dual-oracle residual: empty buffers distance 0; empty vs non-empty min_len 0.
+#[must_use]
+pub fn wave83_hamming_empty_shell() -> bool {
+    hamming_distance(&[], &[]) == 0
+        && hamming_distance(&[], &[1, 2, 3]) == 0
+        && hamming_distance(&[1, 2, 3], &[]) == 0
+}
+
+#[cfg(test)]
+mod wave83_tests {
+    use super::*;
+
+    #[test]
+    fn wave83_hamming_msb_multichunk_empty_dual_oracle() {
+        assert!(wave83_popcount_msb_shell());
+        assert!(wave83_hamming_multichunk_shell());
+        assert!(wave83_hamming_empty_shell());
+    }
+}
