@@ -138,3 +138,50 @@ mod wave75_tests {
         assert!(wave75_hamming_tail_shell());
     }
 }
+
+
+// ── product residual dens wave76: hamming unequal len+popcount extremes dual-oracle residual ──
+// Dual-oracle residual of hammingDistance / popcount64 pure halves.
+// Filesystem / phash I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: popcount extremes zero/all/msb/nibble.
+#[must_use]
+pub fn wave76_popcount_extreme_shell() -> bool {
+    popcount64(0) == 0
+        && popcount64(u64::MAX) == 64
+        && popcount64(1) == 1
+        && popcount64(0x8000_0000_0000_0000) == 1
+        && popcount64(0xF0F0_F0F0_F0F0_F0F0) == 32
+}
+
+/// Dual-oracle residual: unequal length min-prefix + identity.
+#[must_use]
+pub fn wave76_hamming_unequal_shell() -> bool {
+    let a = [0u8; 3];
+    let mut b = [0u8; 8];
+    b[0] = 0b101; // 2 bits
+    hamming_distance(&a, &b) == 2
+        && hamming_distance(&a, &a) == 0
+        && hamming_distance(&[], &[]) == 0
+}
+
+/// Dual-oracle residual: full-byte xor distance 8.
+#[must_use]
+pub fn wave76_hamming_fullbyte_shell() -> bool {
+    let a = [0u8; 8];
+    let b = [0xFFu8; 8];
+    hamming_distance(&a, &b) == 64
+        && hamming_distance(&b, &b) == 0
+}
+
+#[cfg(test)]
+mod wave76_tests {
+    use super::*;
+
+    #[test]
+    fn wave76_hamming_unequal_popcount_extreme_dual_oracle() {
+        assert!(wave76_popcount_extreme_shell());
+        assert!(wave76_hamming_unequal_shell());
+        assert!(wave76_hamming_fullbyte_shell());
+    }
+}
