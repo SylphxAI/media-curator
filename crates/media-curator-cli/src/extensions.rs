@@ -4277,3 +4277,71 @@ mod wave132_tests {
         assert!(wave131_jpeg_image_shell());
     }
 }
+// ── wave133 pure residual dens: extension heic webm avi raw bmp dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: heic image family dual-oracle.
+#[must_use]
+pub fn wave133_heic_image_shell() -> bool {
+    is_image_extension("heic")
+        && is_image_extension("HEIC")
+        && extension_kind("heic") == Some("image")
+        && is_media_extension("heic")
+        && !is_video_extension("heic")
+}
+
+/// Dual-oracle residual: webm video family dual-oracle.
+#[must_use]
+pub fn wave133_webm_video_shell() -> bool {
+    is_video_extension("webm")
+        && is_video_extension("WEBM")
+        && extension_kind("webm") == Some("video")
+        && is_media_extension("webm")
+        && !is_image_extension("webm")
+}
+
+/// Dual-oracle residual: avi video membership dual-oracle.
+#[must_use]
+pub fn wave133_avi_video_shell() -> bool {
+    is_video_extension("avi")
+        && is_video_extension("AVI")
+        && extension_kind("avi") == Some("video")
+        && VIDEO_EXTENSIONS.contains(&"avi")
+        && is_media_extension("avi")
+}
+
+/// Dual-oracle residual: raw image tail dual-oracle.
+#[must_use]
+pub fn wave133_raw_image_shell() -> bool {
+    is_image_extension("raw")
+        && is_image_extension("RAW")
+        && extension_kind("raw") == Some("image")
+        && IMAGE_EXTENSIONS[IMAGE_EXTENSIONS.len() - 1] == "raw"
+        && is_media_extension("raw")
+}
+
+/// Dual-oracle residual: bmp image + path dual-oracle.
+#[must_use]
+pub fn wave133_bmp_path_shell() -> bool {
+    use std::path::Path;
+    is_image_extension("bmp")
+        && extension_kind("bmp") == Some("image")
+        && extension_of(Path::new("photo.BMP")) == Some("bmp".to_string())
+        && extension_of(Path::new("clip.AVI")) == Some("avi".to_string())
+        && IMAGE_EXTENSIONS.contains(&"bmp")
+}
+
+#[cfg(test)]
+mod wave133_tests {
+    use super::*;
+
+    #[test]
+    fn wave133_extension_heic_webm_avi_raw_bmp_dual_oracle() {
+        assert!(wave133_heic_image_shell());
+        assert!(wave133_webm_video_shell());
+        assert!(wave133_avi_video_shell());
+        assert!(wave133_raw_image_shell());
+        assert!(wave133_bmp_path_shell());
+        assert!(wave132_png_image_shell());
+    }
+}
