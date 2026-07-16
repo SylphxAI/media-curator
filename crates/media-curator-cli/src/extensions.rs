@@ -4345,3 +4345,72 @@ mod wave133_tests {
         assert!(wave132_png_image_shell());
     }
 }
+// ── wave134 pure residual dens: extension jpeg mp4 gif mov reject dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: jpeg image family dual-oracle.
+#[must_use]
+pub fn wave134_jpeg_image_shell() -> bool {
+    is_image_extension("jpeg")
+        && is_image_extension("JPEG")
+        && extension_kind("jpeg") == Some("image")
+        && is_media_extension("jpeg")
+        && IMAGE_EXTENSIONS.contains(&"jpeg")
+}
+
+/// Dual-oracle residual: mp4 video family dual-oracle.
+#[must_use]
+pub fn wave134_mp4_video_shell() -> bool {
+    is_video_extension("mp4")
+        && is_video_extension("MP4")
+        && extension_kind("mp4") == Some("video")
+        && is_media_extension("mp4")
+        && VIDEO_EXTENSIONS[0] == "mp4"
+}
+
+/// Dual-oracle residual: gif image membership dual-oracle.
+#[must_use]
+pub fn wave134_gif_image_shell() -> bool {
+    is_image_extension("gif")
+        && is_image_extension("GIF")
+        && extension_kind("gif") == Some("image")
+        && !is_video_extension("gif")
+        && is_media_extension("gif")
+}
+
+/// Dual-oracle residual: mov video + path dual-oracle.
+#[must_use]
+pub fn wave134_mov_path_shell() -> bool {
+    use std::path::Path;
+    is_video_extension("mov")
+        && extension_kind("mov") == Some("video")
+        && extension_of(Path::new("clip.MOV")) == Some("mov".to_string())
+        && extension_of(Path::new("photo.JPEG")) == Some("jpeg".to_string())
+        && VIDEO_EXTENSIONS.contains(&"mov")
+}
+
+/// Dual-oracle residual: unsupported reject dual-oracle.
+#[must_use]
+pub fn wave134_reject_ext_shell() -> bool {
+    use std::path::Path;
+    !is_media_extension("pdf")
+        && extension_kind("pdf").is_none()
+        && !is_image_extension("txt")
+        && !is_video_extension("docx")
+        && extension_of(Path::new("notes.pdf")).is_none()
+}
+
+#[cfg(test)]
+mod wave134_tests {
+    use super::*;
+
+    #[test]
+    fn wave134_extension_jpeg_mp4_gif_mov_reject_dual_oracle() {
+        assert!(wave134_jpeg_image_shell());
+        assert!(wave134_mp4_video_shell());
+        assert!(wave134_gif_image_shell());
+        assert!(wave134_mov_path_shell());
+        assert!(wave134_reject_ext_shell());
+        assert!(wave133_heic_image_shell());
+    }
+}
