@@ -1050,3 +1050,73 @@ mod wave85_tests {
         assert!(wave84_union_empty_shell());
     }
 }
+// ── wave86 pure residual dens: extension heic/raw mkv multi-dot bare dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: heic/raw/tiff image family.
+#[must_use]
+pub fn wave86_image_family_shell() -> bool {
+    is_image_extension("heic")
+        && is_image_extension("RAW")
+        && is_image_extension("tiff")
+        && extension_kind("heif") == Some("image")
+        && !is_video_extension("heic")
+}
+
+/// Dual-oracle residual: mkv/avi/divx video family.
+#[must_use]
+pub fn wave86_video_family_shell() -> bool {
+    is_video_extension("mkv")
+        && is_video_extension("AVI")
+        && is_video_extension("divx")
+        && extension_kind("wmv") == Some("video")
+        && !is_image_extension("mkv")
+}
+
+/// Dual-oracle residual: multi-dot path extension_of last segment.
+#[must_use]
+pub fn wave86_multi_dot_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("archive.tar.jpg")) == Some("jpg".to_string())
+        && extension_of(Path::new("a.b.c.MP4")) == Some("mp4".to_string())
+        && extension_of(Path::new(".hidden.png")) == Some("png".to_string())
+}
+
+/// Dual-oracle residual: bare name / no extension → none; empty unsupported.
+#[must_use]
+pub fn wave86_bare_unsupported_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("Makefile")).is_none()
+        && extension_of(Path::new("README")).is_none()
+        && !is_media_extension("exe")
+        && !is_media_extension("")
+}
+
+/// Dual-oracle residual: families disjoint + union count 23.
+#[must_use]
+pub fn wave86_family_disjoint_shell() -> bool {
+    let images: std::collections::HashSet<_> = IMAGE_EXTENSIONS.iter().copied().collect();
+    let videos: std::collections::HashSet<_> = VIDEO_EXTENSIONS.iter().copied().collect();
+    images.is_disjoint(&videos)
+        && IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && all_supported_extensions().len() == 23
+        && IMAGE_EXTENSIONS[IMAGE_EXTENSIONS.len() - 1] == "raw"
+        && VIDEO_EXTENSIONS[VIDEO_EXTENSIONS.len() - 1] == "divx"
+}
+
+#[cfg(test)]
+mod wave86_tests {
+    use super::*;
+
+    #[test]
+    fn wave86_extension_heic_raw_mkv_multi_dot_bare_dual_oracle() {
+        assert!(wave86_image_family_shell());
+        assert!(wave86_video_family_shell());
+        assert!(wave86_multi_dot_shell());
+        assert!(wave86_bare_unsupported_shell());
+        assert!(wave86_family_disjoint_shell());
+        assert!(wave85_family_size_shell());
+    }
+}
