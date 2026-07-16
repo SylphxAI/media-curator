@@ -1260,3 +1260,72 @@ mod wave88_tests {
         assert!(wave87_disjoint_shell());
     }
 }
+
+// ── wave89 pure residual dens: extension heif gif raw mov head dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: heif/gif image membership + kind.
+#[must_use]
+pub fn wave89_heif_gif_shell() -> bool {
+    is_image_extension("heif")
+        && is_image_extension("GIF")
+        && extension_kind("heif") == Some("image")
+        && is_media_extension("gif")
+        && !is_video_extension("gif")
+}
+
+/// Dual-oracle residual: raw image + mov/avi video.
+#[must_use]
+pub fn wave89_raw_mov_shell() -> bool {
+    is_image_extension("raw")
+        && is_video_extension("mov")
+        && is_video_extension("AVI")
+        && extension_kind("mov") == Some("video")
+        && !is_image_extension("mov")
+}
+
+/// Dual-oracle residual: family head/tail wire.
+#[must_use]
+pub fn wave89_head_tail_shell() -> bool {
+    IMAGE_EXTENSIONS[0] == "jpg"
+        && IMAGE_EXTENSIONS[IMAGE_EXTENSIONS.len() - 1] == "raw"
+        && VIDEO_EXTENSIONS[0] == "mp4"
+        && VIDEO_EXTENSIONS[VIDEO_EXTENSIONS.len() - 1] == "divx"
+        && IMAGE_EXTENSIONS.len() == 11
+}
+
+/// Dual-oracle residual: families disjoint + union size.
+#[must_use]
+pub fn wave89_disjoint_union_shell() -> bool {
+    IMAGE_EXTENSIONS.iter().all(|e| !VIDEO_EXTENSIONS.contains(e))
+        && VIDEO_EXTENSIONS.iter().all(|e| !IMAGE_EXTENSIONS.contains(e))
+        && all_supported_extensions().len() == 23
+        && VIDEO_EXTENSIONS.len() == 12
+}
+
+/// Dual-oracle residual: path extension + bare unsupported.
+#[must_use]
+pub fn wave89_path_unsupported_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("clip.MOV")) == Some("mov".to_string())
+        && extension_of(Path::new("photo.HEIF")) == Some("heif".to_string())
+        && extension_of(Path::new("noext")).is_none()
+        && !is_media_extension("pdf")
+        && extension_kind("docx").is_none()
+}
+
+#[cfg(test)]
+mod wave89_tests {
+    use super::*;
+
+    #[test]
+    fn wave89_extension_heif_gif_raw_mov_head_dual_oracle() {
+        assert!(wave89_heif_gif_shell());
+        assert!(wave89_raw_mov_shell());
+        assert!(wave89_head_tail_shell());
+        assert!(wave89_disjoint_union_shell());
+        assert!(wave89_path_unsupported_shell());
+        assert!(wave88_family_size_shell());
+    }
+}
