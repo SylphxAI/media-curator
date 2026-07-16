@@ -2603,3 +2603,74 @@ mod wave107_tests {
         assert!(wave106_jpeg_heic_shell());
     }
 }
+// ── wave108 pure residual dens: extension png-webp mp4-mov case-fold raw-heif non-media dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: png/webp image membership dual-oracle.
+#[must_use]
+pub fn wave108_png_webp_shell() -> bool {
+    is_image_extension("png")
+        && is_image_extension("WEBP")
+        && extension_kind("png") == Some("image")
+        && extension_kind("webp") == Some("image")
+        && is_media_extension("png")
+        && !is_video_extension("webp")
+}
+
+/// Dual-oracle residual: mp4/mov video membership dual-oracle.
+#[must_use]
+pub fn wave108_mp4_mov_shell() -> bool {
+    is_video_extension("mp4")
+        && is_video_extension("MOV")
+        && extension_kind("mp4") == Some("video")
+        && extension_kind("mov") == Some("video")
+        && is_media_extension("m4v")
+        && !is_image_extension("mp4")
+}
+
+/// Dual-oracle residual: case-fold membership dual-oracle.
+#[must_use]
+pub fn wave108_case_fold_shell() -> bool {
+    is_image_extension("JpG")
+        && is_image_extension("PnG")
+        && is_video_extension("Mp4")
+        && is_video_extension("WeBm")
+        && extension_kind("HEIC") == Some("image")
+}
+
+/// Dual-oracle residual: raw/heif image dual-oracle.
+#[must_use]
+pub fn wave108_raw_heif_shell() -> bool {
+    is_image_extension("raw")
+        && is_image_extension("HEIF")
+        && extension_kind("raw") == Some("image")
+        && extension_kind("heif") == Some("image")
+        && IMAGE_EXTENSIONS.contains(&"raw")
+        && IMAGE_EXTENSIONS.contains(&"heif")
+}
+
+/// Dual-oracle residual: non-media reject dual-oracle.
+#[must_use]
+pub fn wave108_non_media_shell() -> bool {
+    !is_media_extension("txt")
+        && !is_media_extension("pdf")
+        && !is_media_extension("doc")
+        && extension_kind("zip").is_none()
+        && extension_kind("").is_none()
+}
+
+#[cfg(test)]
+mod wave108_tests {
+    use super::*;
+
+    #[test]
+    fn wave108_extension_png_webp_mp4_mov_case_fold_raw_heif_non_media_dual_oracle() {
+        assert!(wave108_png_webp_shell());
+        assert!(wave108_mp4_mov_shell());
+        assert!(wave108_case_fold_shell());
+        assert!(wave108_raw_heif_shell());
+        assert!(wave108_non_media_shell());
+        assert!(wave107_gif_bmp_shell());
+    }
+}
