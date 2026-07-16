@@ -180,3 +180,70 @@ mod tests {
         assert_eq!(plan.error_count, 0);
     }
 }
+
+
+// ── wave64 pure residual dens: transfer bucket catalog dual-oracle residual ──
+// Dual-oracle residual of transferOrganizedFiles bucket pure half.
+// Filesystem transfer I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: transfer buckets.
+pub const TRANSFER_BUCKETS: &[&str] = &["target", "duplicate", "error", "skip"];
+
+/// Dual-oracle residual: known bucket name.
+#[must_use]
+pub fn is_transfer_bucket(bucket: &str) -> bool {
+    TRANSFER_BUCKETS.contains(&bucket)
+}
+
+/// Dual-oracle residual: bucket is a real destination (not skip).
+#[must_use]
+pub fn is_destination_bucket(bucket: &str) -> bool {
+    matches!(bucket, "target" | "duplicate" | "error")
+}
+
+/// Dual-oracle residual: plan totals consistency.
+#[must_use]
+pub fn transfer_plan_counts_consistent(plan: &TransferPlan) -> bool {
+    plan.actions.len()
+        == plan.target_count + plan.duplicate_count + plan.error_count + plan.skip_count
+}
+
+/// Dual-oracle residual: empty plan.
+#[must_use]
+pub fn empty_transfer_plan() -> TransferPlan {
+    TransferPlan {
+        actions: vec![],
+        target_count: 0,
+        duplicate_count: 0,
+        error_count: 0,
+        skip_count: 0,
+    }
+}
+
+#[cfg(test)]
+mod wave64_tests {
+    use super::*;
+
+    #[test]
+    fn wave64_transfer_bucket_catalog_dual_oracle() {
+        assert_eq!(TRANSFER_BUCKETS.len(), 4);
+        assert!(is_transfer_bucket("target"));
+        assert!(is_transfer_bucket("skip"));
+        assert!(!is_transfer_bucket("archive"));
+        assert!(is_destination_bucket("duplicate"));
+        assert!(!is_destination_bucket("skip"));
+        let empty = empty_transfer_plan();
+        assert!(transfer_plan_counts_consistent(&empty));
+        let plan = plan_transfer_destinations(
+            &["/a.jpg".into()],
+            &[],
+            &[],
+            true,
+            true,
+        );
+        assert_eq!(plan.target_count, 1);
+        assert!(transfer_plan_counts_consistent(&plan));
+        assert_eq!(plan.actions[0].bucket, "target");
+    }
+}
+
