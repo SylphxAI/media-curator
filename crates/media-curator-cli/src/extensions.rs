@@ -2674,3 +2674,71 @@ mod wave108_tests {
         assert!(wave107_gif_bmp_shell());
     }
 }
+// ── wave109 pure residual dens: extension raw-tif flv-divx upper-path family-product unsupported-none dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: raw/tif image membership dual-oracle.
+#[must_use]
+pub fn wave109_raw_tif_shell() -> bool {
+    is_image_extension("raw")
+        && is_image_extension("TIF")
+        && extension_kind("raw") == Some("image")
+        && extension_kind("tiff") == Some("image")
+        && is_media_extension("heif")
+        && !is_video_extension("raw")
+}
+
+/// Dual-oracle residual: flv/divx video membership dual-oracle.
+#[must_use]
+pub fn wave109_flv_divx_shell() -> bool {
+    is_video_extension("flv")
+        && is_video_extension("DIVX")
+        && extension_kind("flv") == Some("video")
+        && extension_kind("divx") == Some("video")
+        && is_media_extension("3gp")
+        && !is_image_extension("flv")
+}
+
+/// Dual-oracle residual: uppercase path probe dual-oracle.
+#[must_use]
+pub fn wave109_upper_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("PHOTO.JPEG")) == Some("jpeg".to_string())
+        && extension_of(Path::new("/tmp/Clip.MOV")) == Some("mov".to_string())
+        && extension_of(Path::new("a.b.HEIC")) == Some("heic".to_string())
+}
+
+/// Dual-oracle residual: family product dual-oracle.
+#[must_use]
+pub fn wave109_family_product_shell() -> bool {
+    IMAGE_EXTENSIONS.len() * VIDEO_EXTENSIONS.len() == 132
+        && IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && all_supported_extensions().len() == IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len()
+}
+
+/// Dual-oracle residual: unsupported kind none dual-oracle.
+#[must_use]
+pub fn wave109_unsupported_none_shell() -> bool {
+    use std::path::Path;
+    extension_kind("pdf").is_none()
+        && extension_kind("txt").is_none()
+        && !is_media_extension("docx")
+        && extension_of(Path::new("readme.md")).is_none()
+}
+
+#[cfg(test)]
+mod wave109_tests {
+    use super::*;
+
+    #[test]
+    fn wave109_extension_raw_tif_flv_divx_upper_path_family_product_unsupported_none_dual_oracle() {
+        assert!(wave109_raw_tif_shell());
+        assert!(wave109_flv_divx_shell());
+        assert!(wave109_upper_path_shell());
+        assert!(wave109_family_product_shell());
+        assert!(wave109_unsupported_none_shell());
+        assert!(wave107_gif_bmp_shell());
+    }
+}
