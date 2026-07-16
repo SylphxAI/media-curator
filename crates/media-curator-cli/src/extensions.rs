@@ -914,3 +914,70 @@ mod wave83_tests {
         assert!(wave83_case_membership_shell());
     }
 }
+
+// ── wave84 pure residual dens: extension heic mp4 head-tail family dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: heic/mp4 path extract + kind.
+#[must_use]
+pub fn wave84_heic_mp4_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("/media/shot.HEIC")) == Some("heic".to_string())
+        && extension_of(Path::new("clip.Mp4")) == Some("mp4".to_string())
+        && extension_kind("heic") == Some("image")
+        && extension_kind("mp4") == Some("video")
+}
+
+/// Dual-oracle residual: head/tail membership + family sizes.
+#[must_use]
+pub fn wave84_head_tail_shell() -> bool {
+    IMAGE_EXTENSIONS[0] == "jpg"
+        && VIDEO_EXTENSIONS[0] == "mp4"
+        && is_image_extension(*IMAGE_EXTENSIONS.last().unwrap())
+        && is_video_extension(*VIDEO_EXTENSIONS.last().unwrap())
+        && IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+}
+
+/// Dual-oracle residual: multi-dot + bare unsupported.
+#[must_use]
+pub fn wave84_multi_dot_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("a.b.c.WEBP")) == Some("webp".to_string())
+        && extension_of(Path::new("Makefile")) == None
+        && !is_media_extension("rs")
+}
+
+/// Dual-oracle residual: raw/avi kind partition dual-oracle.
+#[must_use]
+pub fn wave84_raw_avi_shell() -> bool {
+    is_image_extension("raw")
+        && is_video_extension("avi")
+        && extension_kind("RAW") == Some("image")
+        && extension_kind("AVI") == Some("video")
+}
+
+/// Dual-oracle residual: union size + empty not media.
+#[must_use]
+pub fn wave84_union_empty_shell() -> bool {
+    all_supported_extensions().len() == 23
+        && !is_media_extension("")
+        && !is_image_extension("mp4")
+        && !is_video_extension("png")
+}
+
+#[cfg(test)]
+mod wave84_tests {
+    use super::*;
+
+    #[test]
+    fn wave84_extension_heic_mp4_head_tail_family_dual_oracle() {
+        assert!(wave84_heic_mp4_shell());
+        assert!(wave84_head_tail_shell());
+        assert!(wave84_multi_dot_shell());
+        assert!(wave84_raw_avi_shell());
+        assert!(wave84_union_empty_shell());
+        assert!(wave83_family_sizes_shell());
+    }
+}
