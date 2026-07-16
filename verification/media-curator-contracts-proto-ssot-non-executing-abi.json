@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "repo": "SylphxAI/media-curator",
+  "capability_id": "contracts/proto-ssot",
+  "classification": "non_executing_abi_schema_binding",
+  "non_executing_abi": true,
+  "executing_production_behavior": false,
+  "machine_evidence": {
+    "buf_lint": "pass",
+    "buf_build": "pass",
+    "tip_at_stamp": "ad40abbc2c84fcfb7549f8a5a59d5213e4f8d61e",
+    "surfaces": {
+      "buf.yaml": "51c8e3bc996ebb6ffb297a073662ce10b2884144094101ed5336da5746e45fb3",
+      "scripts/check-proto-buf.sh": "8e2b178b72af023fc10cd2528dd18679d58338f4fbf03f1e25fcdfd55fde2742",
+      "proto/media_curator/v1/health.proto": "5d6098baf34d0b28ae4b7fef334d436afdb2f55691b03c774395bcbe2407f943"
+    },
+    "parity_test": "scripts/check-proto-buf.sh + proto/media_curator/v1/health.proto structural",
+    "notes": "Contracted counts only as non-executing ABI/schema/binding. Not production sole authority. dens\u2260flip."
+  },
+  "stamped_at": "2026-07-16T16:55:52Z"
+}

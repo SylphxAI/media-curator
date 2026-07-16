@@ -19,9 +19,7 @@
   ],
   "reauditRef": "adversarial-2026-07-15-media-curator",
   "verificationRef": "verification/media-curator-differential-green.json",
-  "inventorySource": [
-    "manual"
-  ],
+  "inventorySource": ["manual"],
   "inScopeBoundary": {
     "includeGlobs": [
       "index.ts",
@@ -277,22 +275,14 @@
     "lastMutation": "PHOTO-MEDIA2-RUST-IMPL-DENS",
     "partial_ts_deleted_dens_2026_07_16": {
       "action": "rust_impl dens",
-      "advanced": [
-        "cli/transfer-reporting"
-      ],
-      "deepened": [
-        "cli/deduplication-engine"
-      ],
-      "residual_ts_only": [
-        "cli/cache-persistence"
-      ],
+      "advanced": ["cli/transfer-reporting"],
+      "deepened": ["cli/deduplication-engine"],
+      "residual_ts_only": ["cli/cache-persistence"],
       "notes": "No ts_deleted flips (deletion/parity evidence not claimed). Inventory verified still requires full ts_deleted."
     },
     "photo_media2_dens_2026_07_16": {
       "action": "rust_impl dens",
-      "advanced": [
-        "cli/cache-persistence"
-      ],
+      "advanced": ["cli/cache-persistence"],
       "already_rust_impl": [
         "cli/deduplication-engine",
         "cli/transfer-reporting"
