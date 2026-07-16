@@ -126,3 +126,72 @@ mod tests {
         assert!(!is_serialize_marker(9));
     }
 }
+
+// ── wave68 pure residual dens: cache key layout residual dual-oracle ──
+// Dual-oracle residual of LmdbCache / MetadataDB naming pure halves.
+// LMDB/SQLite open I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: default cache dir shell.
+#[must_use]
+pub fn default_cache_dir_shell() -> &'static str {
+    DEFAULT_CACHE_DIR
+}
+
+/// Dual-oracle residual: default metadata filename shell.
+#[must_use]
+pub fn default_metadata_filename_shell() -> &'static str {
+    DEFAULT_METADATA_FILENAME
+}
+
+/// Dual-oracle residual: serialize markers closed set.
+#[must_use]
+pub fn serialize_markers_closed() -> bool {
+    is_serialize_marker(SERIALIZE_MARKER_MSGPACK)
+        && is_serialize_marker(SERIALIZE_MARKER_SHARED_ARRAY_BUFFER)
+        && is_serialize_marker(SERIALIZE_MARKER_DATE)
+        && !is_serialize_marker(3)
+        && !is_serialize_marker(255)
+}
+
+/// Dual-oracle residual: default layout plan shells.
+#[must_use]
+pub fn default_layout_shell_ok() -> bool {
+    let plan = plan_default_cache_layout("fileStats", "abc");
+    plan.root_dir == DEFAULT_CACHE_DIR
+        && plan.results_db == "fileStats_results"
+        && plan.config_db == "fileStats_config"
+        && plan.mutex_key == "fileStats:abc"
+        && plan.metadata_path == ".mediadb/metadata.sqlite"
+}
+
+/// Dual-oracle residual: LSH keys align with 4 bands.
+#[must_use]
+pub fn metadata_lsh_four_bands_ok() -> bool {
+    let keys = metadata_lsh_keys(Some("0123456789abcdef"));
+    keys.iter().all(|k| k.is_some())
+        && keys[0].as_deref() == Some("0123")
+        && keys[3].as_deref() == Some("cdef")
+}
+
+#[cfg(test)]
+mod wave68_tests {
+    use super::*;
+
+    #[test]
+    fn wave68_cache_key_layout_dual_oracle() {
+        assert_eq!(default_cache_dir_shell(), ".mediadb");
+        assert_eq!(default_metadata_filename_shell(), "metadata.sqlite");
+        assert!(serialize_markers_closed());
+        assert!(default_layout_shell_ok());
+        assert!(metadata_lsh_four_bands_ok());
+        assert_eq!(SERIALIZE_MARKER_MSGPACK, 0);
+        assert_eq!(SERIALIZE_MARKER_SHARED_ARRAY_BUFFER, 1);
+        assert_eq!(SERIALIZE_MARKER_DATE, 2);
+        assert_eq!(
+            metadata_db_path("/tmp/cache/", "meta.db"),
+            "/tmp/cache/meta.db"
+        );
+        assert_eq!(job_results_db_name("phash"), "phash_results");
+    }
+}
+

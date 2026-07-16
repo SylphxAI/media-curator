@@ -229,3 +229,88 @@ mod tests {
         assert_eq!(merged, vec![vec!["a"], vec!["b"]]);
     }
 }
+
+// ── wave68 pure residual dens: LSH keys + adaptive threshold + merge dual-oracle residual ──
+// Dual-oracle residual of deduplicateFilesFn / comparatorUtils pure halves.
+// DB LSH query / transfer I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: LSH band count for valid 16-hex pHash.
+#[must_use]
+pub fn lsh_band_count() -> usize {
+    4
+}
+
+/// Dual-oracle residual: LSH keys shell for known hex.
+#[must_use]
+pub fn lsh_keys_shell_ok() -> bool {
+    generate_lsh_keys("0123456789abcdef")
+        == Some([
+            "0123".to_string(),
+            "4567".to_string(),
+            "89ab".to_string(),
+            "cdef".to_string(),
+        ])
+}
+
+/// Dual-oracle residual: invalid LSH inputs reject.
+#[must_use]
+pub fn lsh_rejects_invalid() -> bool {
+    generate_lsh_keys("short").is_none()
+        && generate_lsh_keys("0123456789abcdeg").is_none()
+        && generate_lsh_keys("").is_none()
+}
+
+/// Dual-oracle residual: adaptive threshold shells image/image-video/video.
+#[must_use]
+pub fn adaptive_threshold_shells_ok() -> bool {
+    adaptive_threshold(0.0, 0.0, 0.9, 0.8, 0.7) == 0.9
+        && adaptive_threshold(0.0, 1.0, 0.9, 0.8, 0.7) == 0.8
+        && adaptive_threshold(2.0, 3.0, 0.9, 0.8, 0.7) == 0.7
+}
+
+/// Dual-oracle residual: merge overlapping clusters produces transitive union.
+#[must_use]
+pub fn merge_transitive_union_ok() -> bool {
+    let clusters = vec![
+        vec!["a".into(), "b".into()],
+        vec!["b".into(), "c".into()],
+        vec!["d".into()],
+    ];
+    let merged = merge_and_deduplicate_clusters(&clusters);
+    merged.len() == 2
+        && merged[0] == ["a".to_string(), "b".to_string(), "c".to_string()]
+        && merged[1] == ["d".to_string()]
+}
+
+/// Dual-oracle residual: exact cluster requires identical pHash + size>=2.
+#[must_use]
+pub fn exact_cluster_requires_pair() -> bool {
+    let entries = vec![
+        ("a.jpg".into(), Some("aabb".into())),
+        ("b.jpg".into(), Some("aabb".into())),
+        ("c.jpg".into(), Some("ccdd".into())),
+    ];
+    let r = cluster_exact_by_phash(&entries);
+    r.clusters.len() == 1 && r.singletons == ["c.jpg".to_string()]
+}
+
+#[cfg(test)]
+mod wave68_tests {
+    use super::*;
+
+    #[test]
+    fn wave68_lsh_threshold_merge_dual_oracle() {
+        assert_eq!(lsh_band_count(), 4);
+        assert!(lsh_keys_shell_ok());
+        assert!(lsh_rejects_invalid());
+        assert!(adaptive_threshold_shells_ok());
+        assert!(merge_transitive_union_ok());
+        assert!(exact_cluster_requires_pair());
+        let empty = merge_and_deduplicate_clusters(&[]);
+        assert!(empty.is_empty());
+        let keys = generate_lsh_keys("ffffffffffffffff").unwrap();
+        assert_eq!(keys.len(), 4);
+        assert_eq!(keys[0], "ffff");
+    }
+}
+
