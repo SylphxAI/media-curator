@@ -3870,3 +3870,71 @@ mod wave126_tests {
         assert!(wave125_webp_image_shell());
     }
 }
+// ── wave127 pure residual dens: extension webp mov gif empty family dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: webp image family dual-oracle.
+#[must_use]
+pub fn wave127_webp_image_shell() -> bool {
+    is_image_extension("webp")
+        && is_image_extension("WEBP")
+        && extension_kind("webp") == Some("image")
+        && is_media_extension("webp")
+        && !is_video_extension("webp")
+}
+
+/// Dual-oracle residual: mov video family dual-oracle.
+#[must_use]
+pub fn wave127_mov_video_shell() -> bool {
+    is_video_extension("mov")
+        && is_video_extension("MOV")
+        && extension_kind("mov") == Some("video")
+        && is_media_extension("mov")
+        && !is_image_extension("mov")
+}
+
+/// Dual-oracle residual: gif image membership dual-oracle.
+#[must_use]
+pub fn wave127_gif_image_shell() -> bool {
+    is_image_extension("gif")
+        && is_image_extension("GIF")
+        && extension_kind("gif") == Some("image")
+        && IMAGE_EXTENSIONS.contains(&"gif")
+        && is_media_extension("gif")
+}
+
+/// Dual-oracle residual: empty/unsupported path dual-oracle.
+#[must_use]
+pub fn wave127_empty_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("noext")).is_none()
+        && extension_of(Path::new("notes.txt")).is_none()
+        && extension_of(Path::new("archive.zip")).is_none()
+        && !is_media_extension("txt")
+        && extension_kind("txt").is_none()
+}
+
+/// Dual-oracle residual: family sizes dual-oracle.
+#[must_use]
+pub fn wave127_family_size_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && all_supported_extensions().len() == IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len()
+        && IMAGE_EXTENSIONS.contains(&"png")
+        && VIDEO_EXTENSIONS.contains(&"webm")
+}
+
+#[cfg(test)]
+mod wave127_tests {
+    use super::*;
+
+    #[test]
+    fn wave127_extension_webp_mov_gif_empty_family_dual_oracle() {
+        assert!(wave127_webp_image_shell());
+        assert!(wave127_mov_video_shell());
+        assert!(wave127_gif_image_shell());
+        assert!(wave127_empty_path_shell());
+        assert!(wave127_family_size_shell());
+        assert!(wave126_jpg_image_shell());
+    }
+}
