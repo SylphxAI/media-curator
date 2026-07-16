@@ -231,3 +231,46 @@ mod wave77_tests {
         assert!(wave77_hamming_multibyte_shell());
     }
 }
+
+
+// ── product residual dens wave78: hamming popcount alternating+tail dual-oracle residual ──
+// Dual-oracle residual of comparatorUtils hammingDistance pure halves.
+// Filesystem / phash I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: alternating bit pattern popcount.
+#[must_use]
+pub fn wave78_popcount_alt_shell() -> bool {
+    popcount64(0xAAAA_AAAA_AAAA_AAAA) == 32
+        && popcount64(0x5555_5555_5555_5555) == 32
+        && popcount64(u64::MAX) == 64
+        && popcount64(1) == 1
+}
+
+/// Dual-oracle residual: short buffer tail path (len < 8).
+#[must_use]
+pub fn wave78_hamming_tail_shell() -> bool {
+    hamming_distance(&[0x00], &[0xFF]) == 8
+        && hamming_distance(&[0x0F], &[0xF0]) == 8
+        && hamming_distance(&[1, 1], &[1, 0]) == 1
+        && hamming_distance(&[], &[]) == 0
+}
+
+/// Dual-oracle residual: unequal length uses min_len only.
+#[must_use]
+pub fn wave78_hamming_unequal_shell() -> bool {
+    hamming_distance(&[0xFF, 0x00], &[0x00]) == 8
+        && hamming_distance(&[0x00, 0xFF], &[0x00, 0x00, 0xFF]) == 8
+        && hamming_distance(&[0u8; 8], &[0u8; 8]) == 0
+}
+
+#[cfg(test)]
+mod wave78_tests {
+    use super::*;
+
+    #[test]
+    fn wave78_hamming_popcount_alt_tail_dual_oracle() {
+        assert!(wave78_popcount_alt_shell());
+        assert!(wave78_hamming_tail_shell());
+        assert!(wave78_hamming_unequal_shell());
+    }
+}
