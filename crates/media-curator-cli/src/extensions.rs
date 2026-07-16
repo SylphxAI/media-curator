@@ -4074,3 +4074,72 @@ mod wave129_tests {
         assert!(wave128_jpg_image_shell());
     }
 }
+// ── wave130 pure residual dens: extension jpg mp4 pdf multi-dot raw dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: jpg image family dual-oracle.
+#[must_use]
+pub fn wave130_jpg_image_shell() -> bool {
+    is_image_extension("jpg")
+        && is_image_extension("JPG")
+        && extension_kind("jpg") == Some("image")
+        && is_media_extension("jpg")
+        && !is_video_extension("jpg")
+}
+
+/// Dual-oracle residual: mp4 video family dual-oracle.
+#[must_use]
+pub fn wave130_mp4_video_shell() -> bool {
+    is_video_extension("mp4")
+        && is_video_extension("MP4")
+        && extension_kind("mp4") == Some("video")
+        && is_media_extension("mp4")
+        && !is_image_extension("mp4")
+}
+
+/// Dual-oracle residual: pdf reject dual-oracle.
+#[must_use]
+pub fn wave130_pdf_reject_shell() -> bool {
+    !is_media_extension("pdf")
+        && !is_image_extension("pdf")
+        && !is_video_extension("pdf")
+        && extension_kind("pdf").is_none()
+        && {
+            use std::path::Path;
+            extension_of(Path::new("doc.pdf")).is_none()
+        }
+}
+
+/// Dual-oracle residual: multi-dot path dual-oracle.
+#[must_use]
+pub fn wave130_multi_dot_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("archive.tar.jpg")) == Some("jpg".to_string())
+        && extension_of(Path::new("clip.final.mp4")) == Some("mp4".to_string())
+        && extension_of(Path::new("a.b.c.webp")) == Some("webp".to_string())
+}
+
+/// Dual-oracle residual: raw image membership dual-oracle.
+#[must_use]
+pub fn wave130_raw_image_shell() -> bool {
+    is_image_extension("raw")
+        && is_image_extension("RAW")
+        && extension_kind("raw") == Some("image")
+        && IMAGE_EXTENSIONS.contains(&"raw")
+        && is_media_extension("raw")
+}
+
+#[cfg(test)]
+mod wave130_tests {
+    use super::*;
+
+    #[test]
+    fn wave130_extension_jpg_mp4_pdf_multidot_raw_dual_oracle() {
+        assert!(wave130_jpg_image_shell());
+        assert!(wave130_mp4_video_shell());
+        assert!(wave130_pdf_reject_shell());
+        assert!(wave130_multi_dot_shell());
+        assert!(wave130_raw_image_shell());
+        assert!(wave129_heic_image_shell());
+    }
+}
