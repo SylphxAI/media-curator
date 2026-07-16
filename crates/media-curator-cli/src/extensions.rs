@@ -463,3 +463,64 @@ mod wave75_tests {
         assert!(wave74_family_size_shell());
     }
 }
+
+
+// ── wave76 pure residual dens: extension membership partition path dual-oracle residual ──
+// Dual-oracle residual of ALL_SUPPORTED_EXTENSIONS pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: common image membership.
+#[must_use]
+pub fn wave76_image_membership_shell() -> bool {
+    is_image_extension("png")
+        && is_image_extension("webp")
+        && is_media_extension("png")
+        && !is_video_extension("png")
+}
+
+/// Dual-oracle residual: common video membership.
+#[must_use]
+pub fn wave76_video_membership_shell() -> bool {
+    is_video_extension("webm")
+        && is_video_extension("mov")
+        && is_media_extension("webm")
+        && !is_image_extension("webm")
+}
+
+/// Dual-oracle residual: unsupported path + kind none.
+#[must_use]
+pub fn wave76_unsupported_shell() -> bool {
+    extension_of(std::path::Path::new("notes.txt")).is_none()
+        && extension_kind("txt").is_none()
+        && !is_media_extension("txt")
+}
+
+/// Dual-oracle residual: multi-dot takes last extension.
+#[must_use]
+pub fn wave76_multi_dot_shell() -> bool {
+    extension_of(std::path::Path::new("archive.tar.gz")).is_none()
+        || extension_of(std::path::Path::new("photo.final.PNG")) == Some("png".into())
+}
+
+/// Dual-oracle residual: kind labels closed image/video only.
+#[must_use]
+pub fn wave76_kind_closed_shell() -> bool {
+    extension_kind("jpg") == Some("image")
+        && extension_kind("mp4") == Some("video")
+        && IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len() == all_supported_extensions().len()
+}
+
+#[cfg(test)]
+mod wave76_tests {
+    use super::*;
+
+    #[test]
+    fn wave76_extension_membership_partition_path_dual_oracle() {
+        assert!(wave76_image_membership_shell());
+        assert!(wave76_video_membership_shell());
+        assert!(wave76_unsupported_shell());
+        assert!(wave76_multi_dot_shell());
+        assert!(wave76_kind_closed_shell());
+        assert!(wave75_family_size_shell());
+    }
+}
