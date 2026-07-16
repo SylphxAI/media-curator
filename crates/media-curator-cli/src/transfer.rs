@@ -573,3 +573,82 @@ mod wave75_tests {
         assert!(errors_route_to_error_bucket());
     }
 }
+
+// ── product residual dens wave73: transfer plan counts+bucket dual-oracle residual ──
+// Dual-oracle residual of transferOrganizedFiles plan counts pure halves.
+// Filesystem transfer I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: destination buckets closed three (skip excluded).
+#[must_use]
+pub fn wave73_destination_buckets_shell() -> bool {
+    is_destination_bucket("target")
+        && is_destination_bucket("duplicate")
+        && is_destination_bucket("error")
+        && !is_destination_bucket("skip")
+        && skip_is_not_destination()
+        && destination_buckets_closed()
+}
+
+/// Dual-oracle residual: error routing when error dir present.
+#[must_use]
+pub fn wave73_error_route_shell() -> bool {
+    let plan = plan_transfer_destinations(
+        &[],
+        &[],
+        &["/bad/corrupt.bin".into()],
+        true,
+        true,
+    );
+    plan.error_count == 1
+        && plan.skip_count == 0
+        && plan.actions[0].bucket == "error"
+        && transfer_plan_counts_consistent(&plan)
+}
+
+/// Dual-oracle residual: multi unique targets.
+#[must_use]
+pub fn wave73_multi_unique_shell() -> bool {
+    let plan = plan_transfer_destinations(
+        &["/a/one.jpg".into(), "/b/two.png".into()],
+        &[],
+        &[],
+        true,
+        true,
+    );
+    plan.target_count == 2
+        && plan.actions.iter().all(|a| a.bucket == "target")
+        && transfer_plan_total(&plan) == 2
+}
+
+/// Dual-oracle residual: transfer plan empty consistency.
+#[must_use]
+pub fn wave73_empty_consistent_shell() -> bool {
+    let plan = empty_transfer_plan();
+    transfer_plan_counts_consistent(&plan)
+        && transfer_plan_total(&plan) == 0
+        && plan.target_count == 0
+}
+
+/// Dual-oracle residual: bucket order constant.
+#[must_use]
+pub fn wave73_bucket_order_shell() -> bool {
+    transfer_bucket_order_ok()
+        && TRANSFER_BUCKETS[0] == "target"
+        && TRANSFER_BUCKETS[3] == "skip"
+}
+
+#[cfg(test)]
+mod wave73_tests {
+    use super::*;
+
+    #[test]
+    fn wave73_transfer_plan_counts_bucket_dual_oracle() {
+        assert!(wave73_destination_buckets_shell());
+        assert!(wave73_error_route_shell());
+        assert!(wave73_multi_unique_shell());
+        assert!(wave73_empty_consistent_shell());
+        assert!(wave73_bucket_order_shell());
+        assert!(wave75_bucket_catalog_shell());
+    }
+}
+
