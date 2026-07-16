@@ -3403,3 +3403,67 @@ mod wave119_tests {
         assert!(wave118_media_union_shell());
     }
 }
+// ── wave120 pure residual dens: extension webp-image mkv-video case-fold path-stem union dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: webp image family dual-oracle.
+#[must_use]
+pub fn wave120_webp_image_shell() -> bool {
+    is_image_extension("webp")
+        && extension_kind("webp") == Some("image")
+        && is_media_extension("WEBP")
+        && !is_video_extension("webp")
+}
+
+/// Dual-oracle residual: mkv video family dual-oracle.
+#[must_use]
+pub fn wave120_mkv_video_shell() -> bool {
+    is_video_extension("mkv")
+        && extension_kind("mkv") == Some("video")
+        && is_media_extension("MKV")
+        && !is_image_extension("mkv")
+}
+
+/// Dual-oracle residual: case-fold membership dual-oracle.
+#[must_use]
+pub fn wave120_case_fold_shell() -> bool {
+    is_image_extension("JPEG")
+        && is_video_extension("Mp4")
+        && extension_kind("PNG") == Some("image")
+        && extension_kind("MOV") == Some("video")
+}
+
+/// Dual-oracle residual: path stem last-ext dual-oracle.
+#[must_use]
+pub fn wave120_path_stem_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("Shot.HEIC")).as_deref() == Some("heic")
+        && extension_of(Path::new("clip.MkV")).as_deref() == Some("mkv")
+        && extension_of(Path::new("README")).is_none()
+}
+
+/// Dual-oracle residual: media union equals family sizes dual-oracle.
+#[must_use]
+pub fn wave120_union_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && all_supported_extensions().len() == IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len()
+        && is_media_extension("webp")
+        && is_media_extension("3gp")
+        && !is_media_extension("pdf")
+}
+
+#[cfg(test)]
+mod wave120_tests {
+    use super::*;
+
+    #[test]
+    fn wave120_extension_webp_mkv_case_path_union_dual_oracle() {
+        assert!(wave120_webp_image_shell());
+        assert!(wave120_mkv_video_shell());
+        assert!(wave120_case_fold_shell());
+        assert!(wave120_path_stem_shell());
+        assert!(wave120_union_shell());
+        assert!(wave119_tiff_image_shell());
+    }
+}
