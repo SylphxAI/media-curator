@@ -226,3 +226,53 @@ mod wave70_tests {
         assert!(!is_media_extension("pdf"));
     }
 }
+
+
+// ── wave71 pure residual dens: extension family head/tail + case dual-oracle residual ──
+// Dual-oracle residual of IMAGE/VIDEO extension catalogs pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: image head/tail extensions.
+#[must_use]
+pub fn image_head_tail_shell() -> (&'static str, &'static str) {
+    (IMAGE_EXTENSIONS[0], IMAGE_EXTENSIONS[IMAGE_EXTENSIONS.len() - 1])
+}
+
+/// Dual-oracle residual: video head/tail extensions.
+#[must_use]
+pub fn video_head_tail_shell() -> (&'static str, &'static str) {
+    (VIDEO_EXTENSIONS[0], VIDEO_EXTENSIONS[VIDEO_EXTENSIONS.len() - 1])
+}
+
+/// Dual-oracle residual: lowercase membership for common types.
+#[must_use]
+pub fn common_media_membership_shell() -> bool {
+    is_image_extension("jpg")
+        && is_image_extension("png")
+        && is_video_extension("mp4")
+        && is_video_extension("webm")
+        && !is_image_extension("mp4")
+        && !is_video_extension("jpg")
+}
+
+/// Dual-oracle residual: family sizes fixed product catalog.
+#[must_use]
+pub fn family_size_product_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11 && VIDEO_EXTENSIONS.len() == 12
+}
+
+#[cfg(test)]
+mod wave71_tests {
+    use super::*;
+
+    #[test]
+    fn wave71_extension_head_tail_membership_dual_oracle() {
+        assert_eq!(image_head_tail_shell(), ("jpg", "raw"));
+        assert_eq!(video_head_tail_shell(), ("mp4", "divx"));
+        assert!(common_media_membership_shell());
+        assert!(family_size_product_shell());
+        assert!(extension_families_disjoint());
+        assert!(is_media_extension("heic"));
+        assert!(!is_media_extension("docx"));
+    }
+}
