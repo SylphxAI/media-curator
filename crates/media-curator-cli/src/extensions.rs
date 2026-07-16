@@ -2879,3 +2879,74 @@ mod wave111_tests {
         assert!(wave110_jpeg_png_shell());
     }
 }
+// ── wave112 pure residual dens: extension jpeg-png heic-webp webm-mp4 no-ext family-sizes dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: jpeg/png image membership dual-oracle.
+#[must_use]
+pub fn wave112_jpeg_png_shell() -> bool {
+    is_image_extension("jpeg")
+        && is_image_extension("PNG")
+        && extension_kind("jpeg") == Some("image")
+        && extension_kind("png") == Some("image")
+        && is_media_extension("jpg")
+        && !is_video_extension("png")
+}
+
+/// Dual-oracle residual: heic/webp image membership dual-oracle.
+#[must_use]
+pub fn wave112_heic_webp_shell() -> bool {
+    is_image_extension("heic")
+        && is_image_extension("WEBP")
+        && extension_kind("heic") == Some("image")
+        && extension_kind("webp") == Some("image")
+        && is_media_extension("heif")
+        && !is_video_extension("webp")
+}
+
+/// Dual-oracle residual: webm/mp4 video membership dual-oracle.
+#[must_use]
+pub fn wave112_webm_mp4_shell() -> bool {
+    is_video_extension("webm")
+        && is_video_extension("MP4")
+        && extension_kind("webm") == Some("video")
+        && extension_kind("mp4") == Some("video")
+        && is_media_extension("m4v")
+        && !is_image_extension("mp4")
+}
+
+/// Dual-oracle residual: no extension / unsupported path dual-oracle.
+#[must_use]
+pub fn wave112_no_ext_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("README")).is_none()
+        && extension_of(Path::new("/tmp/noext")).is_none()
+        && extension_of(Path::new("notes.txt")).is_none()
+        && !is_media_extension("txt")
+}
+
+/// Dual-oracle residual: family sizes dual-oracle.
+#[must_use]
+pub fn wave112_family_sizes_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len() == 23
+        && IMAGE_EXTENSIONS[0] == "jpg"
+        && VIDEO_EXTENSIONS[0] == "mp4"
+}
+
+#[cfg(test)]
+mod wave112_tests {
+    use super::*;
+
+    #[test]
+    fn wave112_extension_jpeg_png_heic_webp_webm_mp4_no_ext_family_sizes_dual_oracle() {
+        assert!(wave112_jpeg_png_shell());
+        assert!(wave112_heic_webp_shell());
+        assert!(wave112_webm_mp4_shell());
+        assert!(wave112_no_ext_shell());
+        assert!(wave112_family_sizes_shell());
+        assert!(wave111_gif_bmp_shell());
+    }
+}
