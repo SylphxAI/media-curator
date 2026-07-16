@@ -3739,3 +3739,69 @@ mod wave124_tests {
         assert!(wave123_jpeg_image_shell());
     }
 }
+// ── wave125 pure residual dens: extension webp-image mkv-video raw multi-dot union-size dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: webp image family dual-oracle.
+#[must_use]
+pub fn wave125_webp_image_shell() -> bool {
+    is_image_extension("webp")
+        && is_image_extension("WEBP")
+        && extension_kind("webp") == Some("image")
+        && is_media_extension("webp")
+        && !is_video_extension("webp")
+}
+
+/// Dual-oracle residual: mkv video family dual-oracle.
+#[must_use]
+pub fn wave125_mkv_video_shell() -> bool {
+    is_video_extension("mkv")
+        && is_video_extension("MKV")
+        && extension_kind("mkv") == Some("video")
+        && is_media_extension("mkv")
+        && !is_image_extension("mkv")
+}
+
+/// Dual-oracle residual: raw image membership dual-oracle.
+#[must_use]
+pub fn wave125_raw_image_shell() -> bool {
+    is_image_extension("raw")
+        && is_image_extension("RAW")
+        && is_media_extension("raw")
+        && extension_kind("raw") == Some("image")
+        && IMAGE_EXTENSIONS.contains(&"raw")
+}
+
+/// Dual-oracle residual: multi-dot path extension dual-oracle.
+#[must_use]
+pub fn wave125_multi_dot_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("archive.tar.png")) == Some("png".to_string())
+        && extension_of(Path::new("clip.final.MKV")) == Some("mkv".to_string())
+        && extension_of(Path::new("noext")).is_none()
+}
+
+/// Dual-oracle residual: image/video union size dual-oracle.
+#[must_use]
+pub fn wave125_union_size_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && all_supported_extensions().len() == IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len()
+        && IMAGE_EXTENSIONS.contains(&"webp")
+        && VIDEO_EXTENSIONS.contains(&"mkv")
+}
+
+#[cfg(test)]
+mod wave125_tests {
+    use super::*;
+
+    #[test]
+    fn wave125_extension_webp_mkv_raw_multidot_union_dual_oracle() {
+        assert!(wave125_webp_image_shell());
+        assert!(wave125_mkv_video_shell());
+        assert!(wave125_raw_image_shell());
+        assert!(wave125_multi_dot_path_shell());
+        assert!(wave125_union_size_shell());
+        assert!(wave124_gif_image_shell());
+    }
+}
