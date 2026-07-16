@@ -1397,3 +1397,79 @@ mod wave90_tests {
         assert!(wave89_disjoint_union_shell());
     }
 }
+
+// ── wave91 pure residual dens: extension heif gif mov bare disjoint dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: heif/gif image membership + kind.
+#[must_use]
+pub fn wave91_heif_gif_shell() -> bool {
+    is_image_extension("heif")
+        && is_image_extension("GIF")
+        && extension_kind("heif") == Some("image")
+        && is_media_extension("gif")
+        && !is_video_extension("heif")
+}
+
+/// Dual-oracle residual: mov/avi video membership + kind.
+#[must_use]
+pub fn wave91_mov_avi_shell() -> bool {
+    is_video_extension("mov")
+        && is_video_extension("AVI")
+        && extension_kind("mov") == Some("video")
+        && is_media_extension("avi")
+        && !is_image_extension("mov")
+}
+
+/// Dual-oracle residual: bare filename / no extension unsupported.
+#[must_use]
+pub fn wave91_bare_unsupported_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("README")).is_none()
+        && extension_of(Path::new("notes.txt")).is_none()
+        && !is_media_extension("txt")
+        && !is_media_extension("pdf")
+        && extension_kind("docx").is_none()
+}
+
+/// Dual-oracle residual: image/video families disjoint + union size.
+#[must_use]
+pub fn wave91_disjoint_union_shell() -> bool {
+    IMAGE_EXTENSIONS
+        .iter()
+        .all(|e| !VIDEO_EXTENSIONS.contains(e))
+        && VIDEO_EXTENSIONS
+            .iter()
+            .all(|e| !IMAGE_EXTENSIONS.contains(e))
+        && IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len()
+            == all_supported_extensions().len()
+        && IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+}
+
+/// Dual-oracle residual: raw/tiff image path extract dual-oracle.
+#[must_use]
+pub fn wave91_raw_tiff_path_shell() -> bool {
+    use std::path::Path;
+    is_image_extension("raw")
+        && is_image_extension("TIFF")
+        && extension_of(Path::new("scan.TIFF")) == Some("tiff".to_string())
+        && extension_of(Path::new("shot.RAW")) == Some("raw".to_string())
+        && extension_kind("tiff") == Some("image")
+}
+
+#[cfg(test)]
+mod wave91_tests {
+    use super::*;
+
+    #[test]
+    fn wave91_extension_heif_gif_mov_bare_disjoint_dual_oracle() {
+        assert!(wave91_heif_gif_shell());
+        assert!(wave91_mov_avi_shell());
+        assert!(wave91_bare_unsupported_shell());
+        assert!(wave91_disjoint_union_shell());
+        assert!(wave91_raw_tiff_path_shell());
+        assert!(wave90_family_size_unsupported_shell());
+    }
+}
