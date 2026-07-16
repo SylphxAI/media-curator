@@ -408,3 +408,45 @@ mod wave81_tests {
         assert!(wave81_hamming_word_shell());
     }
 }
+
+
+// ── product residual dens wave82: hamming nibble+unequal+complement dual-oracle residual ──
+// Dual-oracle residual of comparatorUtils hammingDistance pure halves.
+// Filesystem / phash I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: nibble/pattern popcount poles.
+#[must_use]
+pub fn wave82_popcount_nibble_shell() -> bool {
+    popcount64(0) == 0
+        && popcount64(0b1111) == 4
+        && popcount64(0x0F0F_0F0F_0F0F_0F0F) == 32
+        && popcount64(0xAAAA_AAAA_AAAA_AAAA) == 32
+}
+
+/// Dual-oracle residual: unequal length uses min_len; short vs long.
+#[must_use]
+pub fn wave82_hamming_unequal_shell() -> bool {
+    hamming_distance(&[0u8; 4], &[0u8; 8]) == 0
+        && hamming_distance(&[0x01, 0, 0, 0], &[0, 0, 0, 0, 0xFF]) == 1
+        && hamming_distance(&[0xFF], &[0x00, 0x00]) == 8
+}
+
+/// Dual-oracle residual: full-byte complement distance 8; identity 0.
+#[must_use]
+pub fn wave82_hamming_complement_shell() -> bool {
+    hamming_distance(&[0xFF], &[0x00]) == 8
+        && hamming_distance(&[0xAA], &[0x55]) == 8
+        && hamming_distance(&[0x12, 0x34], &[0x12, 0x34]) == 0
+}
+
+#[cfg(test)]
+mod wave82_tests {
+    use super::*;
+
+    #[test]
+    fn wave82_hamming_nibble_unequal_complement_dual_oracle() {
+        assert!(wave82_popcount_nibble_shell());
+        assert!(wave82_hamming_unequal_shell());
+        assert!(wave82_hamming_complement_shell());
+    }
+}
