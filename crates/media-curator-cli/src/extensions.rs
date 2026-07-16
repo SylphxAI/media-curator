@@ -3467,3 +3467,69 @@ mod wave120_tests {
         assert!(wave119_tiff_image_shell());
     }
 }
+// ── wave121 pure residual dens: extension heic-image avi-video dotted-ext reject-pdf catalog-lens dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: heic image family dual-oracle.
+#[must_use]
+pub fn wave121_heic_image_shell() -> bool {
+    is_image_extension("heic")
+        && extension_kind("heic") == Some("image")
+        && is_media_extension("HEIC")
+        && !is_video_extension("heic")
+}
+
+/// Dual-oracle residual: avi video family dual-oracle.
+#[must_use]
+pub fn wave121_avi_video_shell() -> bool {
+    is_video_extension("avi")
+        && extension_kind("avi") == Some("video")
+        && is_media_extension("AVI")
+        && !is_image_extension("avi")
+}
+
+/// Dual-oracle residual: dotted multi-ext last segment dual-oracle.
+#[must_use]
+pub fn wave121_dotted_ext_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("archive.tar.jpg")).as_deref() == Some("jpg")
+        && extension_of(Path::new("clip.final.MP4")).as_deref() == Some("mp4")
+}
+
+/// Dual-oracle residual: reject non-media dual-oracle.
+#[must_use]
+pub fn wave121_reject_pdf_shell() -> bool {
+    !is_media_extension("pdf")
+        && !is_image_extension("pdf")
+        && !is_video_extension("pdf")
+        && extension_kind("pdf").is_none()
+        && {
+            use std::path::Path;
+            extension_of(Path::new("doc.pdf")).is_none()
+        }
+}
+
+/// Dual-oracle residual: catalog lens dual-oracle.
+#[must_use]
+pub fn wave121_catalog_lens_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && IMAGE_EXTENSIONS.contains(&"heic")
+        && VIDEO_EXTENSIONS.contains(&"avi")
+        && !IMAGE_EXTENSIONS.contains(&"mp4")
+}
+
+#[cfg(test)]
+mod wave121_tests {
+    use super::*;
+
+    #[test]
+    fn wave121_extension_heic_avi_dotted_pdf_catalog_dual_oracle() {
+        assert!(wave121_heic_image_shell());
+        assert!(wave121_avi_video_shell());
+        assert!(wave121_dotted_ext_shell());
+        assert!(wave121_reject_pdf_shell());
+        assert!(wave121_catalog_lens_shell());
+        assert!(wave120_webp_image_shell());
+    }
+}
