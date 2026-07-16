@@ -2325,3 +2325,71 @@ mod wave103_tests {
         assert!(wave102_jpg_gif_shell());
     }
 }
+// ── wave104 pure residual dens: extension jpeg-heic mov-avi path-probe casefold disjoint dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: jpeg/heic image membership dual-oracle.
+#[must_use]
+pub fn wave104_jpeg_heic_shell() -> bool {
+    is_image_extension("jpeg")
+        && is_image_extension("HEIC")
+        && extension_kind("jpeg") == Some("image")
+        && extension_kind("heic") == Some("image")
+        && is_media_extension("heic")
+        && !is_video_extension("jpeg")
+}
+
+/// Dual-oracle residual: mov/avi video membership dual-oracle.
+#[must_use]
+pub fn wave104_mov_avi_shell() -> bool {
+    is_video_extension("mov")
+        && is_video_extension("AVI")
+        && extension_kind("mov") == Some("video")
+        && extension_kind("avi") == Some("video")
+        && is_media_extension("avi")
+        && !is_image_extension("mov")
+}
+
+/// Dual-oracle residual: path probe dual-oracle.
+#[must_use]
+pub fn wave104_path_probe_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("photo.JPEG")) == Some("jpeg".to_string())
+        && extension_of(Path::new("clip.Mov")) == Some("mov".to_string())
+        && extension_of(Path::new("archive.zip")).is_none()
+}
+
+/// Dual-oracle residual: casefold membership dual-oracle.
+#[must_use]
+pub fn wave104_casefold_shell() -> bool {
+    is_image_extension("PnG")
+        && is_video_extension("Mp4")
+        && is_media_extension("WEBP")
+        && extension_kind("TIFF") == Some("image")
+        && extension_kind("WEBM") == Some("video")
+}
+
+/// Dual-oracle residual: image/video families disjoint dual-oracle.
+#[must_use]
+pub fn wave104_disjoint_shell() -> bool {
+    extension_families_disjoint()
+        && all_supported_count_matches_families()
+        && IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len() == 23
+        && all_supported_extensions().len() == 23
+}
+
+#[cfg(test)]
+mod wave104_tests {
+    use super::*;
+
+    #[test]
+    fn wave104_extension_jpeg_heic_mov_avi_path_probe_casefold_disjoint_dual_oracle() {
+        assert!(wave104_jpeg_heic_shell());
+        assert!(wave104_mov_avi_shell());
+        assert!(wave104_path_probe_shell());
+        assert!(wave104_casefold_shell());
+        assert!(wave104_disjoint_shell());
+        assert!(wave102_jpg_gif_shell());
+    }
+}
