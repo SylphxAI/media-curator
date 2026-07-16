@@ -276,3 +276,64 @@ mod wave71_tests {
         assert!(!is_media_extension("docx"));
     }
 }
+
+// ── wave72 pure residual dens: extension case/path multi-dot dual-oracle residual ──
+// Dual-oracle residual of extension_of case + multi-dot path pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: uppercase extension accepted via lowercase normalize.
+#[must_use]
+pub fn uppercase_extension_membership_shell() -> bool {
+    is_image_extension("JPG")
+        && is_image_extension("HeIc")
+        && is_video_extension("MP4")
+        && is_video_extension("WebM")
+        && is_media_extension("TIFF")
+}
+
+/// Dual-oracle residual: multi-dot path uses last extension.
+#[must_use]
+pub fn multi_dot_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("archive.tar.jpg")).as_deref() == Some("jpg")
+        && extension_of(Path::new("clip.final.MP4")).as_deref() == Some("mp4")
+}
+
+/// Dual-oracle residual: unsupported path extension is None.
+#[must_use]
+pub fn unsupported_path_none_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("notes.pdf")).is_none()
+        && extension_of(Path::new("README")).is_none()
+        && extension_kind("pdf").is_none()
+}
+
+/// Dual-oracle residual: kind labels closed set.
+#[must_use]
+pub fn kind_labels_closed_shell() -> bool {
+    extension_kind("png") == Some("image")
+        && extension_kind("mkv") == Some("video")
+        && extension_kind("docx").is_none()
+}
+
+/// Dual-oracle residual: all_supported size equals family union.
+#[must_use]
+pub fn all_supported_size_shell() -> bool {
+    all_supported_extensions().len() == IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len()
+}
+
+#[cfg(test)]
+mod wave72_tests {
+    use super::*;
+
+    #[test]
+    fn wave72_extension_case_path_multi_dot_dual_oracle() {
+        assert!(uppercase_extension_membership_shell());
+        assert!(multi_dot_path_shell());
+        assert!(unsupported_path_none_shell());
+        assert!(kind_labels_closed_shell());
+        assert!(all_supported_size_shell());
+        assert!(family_size_product_shell());
+        assert_eq!(image_head_tail_shell(), ("jpg", "raw"));
+    }
+}
