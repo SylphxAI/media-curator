@@ -174,3 +174,55 @@ mod wave69_tests {
     }
 }
 
+
+// ── wave70 pure residual dens: extension family union + path extract dual-oracle residual ──
+// Dual-oracle residual of utils ALL_SUPPORTED + image/video partition pure halves.
+// Filesystem walk / transfer I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: image+video count equals all_supported size.
+#[must_use]
+pub fn extension_family_union_size_shell() -> bool {
+    let all = all_supported_extensions();
+    IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len() == all.len()
+        && IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len() == 23
+}
+
+/// Dual-oracle residual: families are disjoint.
+#[must_use]
+pub fn extension_families_disjoint() -> bool {
+    IMAGE_EXTENSIONS.iter().all(|e| !VIDEO_EXTENSIONS.contains(e))
+}
+
+/// Dual-oracle residual: path extension extract for known media.
+#[must_use]
+pub fn extension_of_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("/a/b/Photo.JPG")).as_deref() == Some("jpg")
+        && extension_of(Path::new("clip.MP4")).as_deref() == Some("mp4")
+        && extension_of(Path::new("notes.txt")).is_none()
+        && extension_of(Path::new("noext")).is_none()
+}
+
+/// Dual-oracle residual: kind partition covers all supported.
+#[must_use]
+pub fn kind_covers_supported_shell() -> bool {
+    IMAGE_EXTENSIONS.iter().all(|e| extension_kind(e) == Some("image"))
+        && VIDEO_EXTENSIONS.iter().all(|e| extension_kind(e) == Some("video"))
+}
+
+#[cfg(test)]
+mod wave70_tests {
+    use super::*;
+
+    #[test]
+    fn wave70_extension_union_path_dual_oracle() {
+        assert!(extension_family_union_size_shell());
+        assert!(extension_families_disjoint());
+        assert!(extension_of_path_shell());
+        assert!(kind_covers_supported_shell());
+        assert_eq!(IMAGE_EXTENSIONS.len(), 11);
+        assert_eq!(VIDEO_EXTENSIONS.len(), 12);
+        assert!(is_media_extension("webp"));
+        assert!(!is_media_extension("pdf"));
+    }
+}
