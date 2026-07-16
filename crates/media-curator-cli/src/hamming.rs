@@ -45,3 +45,49 @@ mod tests {
         assert_eq!(hamming_distance(&hash, &hash), 0);
     }
 }
+
+
+// ── product residual dens wave74: hamming distance+popcount dual-oracle residual ──
+// Dual-oracle residual of comparatorUtils hammingDistance pure halves.
+// Filesystem / phash I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: popcount zero/all-bits/single-bit.
+#[must_use]
+pub fn wave74_popcount_shell() -> bool {
+    popcount64(0) == 0
+        && popcount64(1) == 1
+        && popcount64(0xFFFF_FFFF_FFFF_FFFF) == 64
+        && popcount64(0b1010) == 2
+}
+
+/// Dual-oracle residual: identical hashes distance 0; single-bit flip distance 1.
+#[must_use]
+pub fn wave74_hamming_identity_flip_shell() -> bool {
+    let a = [0u8; 8];
+    let mut b = [0u8; 8];
+    b[0] = 1;
+    hamming_distance(&a, &a) == 0
+        && hamming_distance(&a, &b) == 1
+        && hamming_distance(&[0xFF; 8], &[0xFF; 8]) == 0
+}
+
+/// Dual-oracle residual: unequal length uses min_len common prefix.
+#[must_use]
+pub fn wave74_hamming_min_len_shell() -> bool {
+    let short = [0u8; 4];
+    let long = [0u8; 8];
+    hamming_distance(&short, &long) == 0
+        && hamming_distance(&[0x01, 0, 0, 0], &[0, 0, 0, 0]) == 1
+}
+
+#[cfg(test)]
+mod wave74_tests {
+    use super::*;
+
+    #[test]
+    fn wave74_hamming_distance_popcount_dual_oracle() {
+        assert!(wave74_popcount_shell());
+        assert!(wave74_hamming_identity_flip_shell());
+        assert!(wave74_hamming_min_len_shell());
+    }
+}
