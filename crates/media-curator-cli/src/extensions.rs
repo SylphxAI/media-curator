@@ -2119,3 +2119,72 @@ mod wave100_tests {
         assert!(wave99_tiff_bmp_shell());
     }
 }
+// ── wave101 pure residual dens: extension png-webp mp4-webm multi-dot all-supported uppercase dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: png/webp image membership dual-oracle.
+#[must_use]
+pub fn wave101_png_webp_shell() -> bool {
+    is_image_extension("png")
+        && is_image_extension("WEBP")
+        && extension_kind("png") == Some("image")
+        && extension_kind("webp") == Some("image")
+        && is_media_extension("png")
+        && !is_video_extension("webp")
+}
+
+/// Dual-oracle residual: mp4/webm video membership dual-oracle.
+#[must_use]
+pub fn wave101_mp4_webm_shell() -> bool {
+    is_video_extension("mp4")
+        && is_video_extension("WEBM")
+        && extension_kind("mp4") == Some("video")
+        && extension_kind("webm") == Some("video")
+        && is_media_extension("webm")
+        && !is_image_extension("mp4")
+}
+
+/// Dual-oracle residual: multi-dot path last extension dual-oracle.
+#[must_use]
+pub fn wave101_multi_dot_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("photo.final.PNG")) == Some("png".to_string())
+        && extension_of(Path::new("clip.draft.MP4")) == Some("mp4".to_string())
+        && extension_of(Path::new("archive.tar.gz")).is_none()
+        && extension_of(Path::new("/a/b/c.WEBM")) == Some("webm".to_string())
+}
+
+/// Dual-oracle residual: all supported size dual-oracle.
+#[must_use]
+pub fn wave101_all_supported_shell() -> bool {
+    all_supported_extensions().len() == 23
+        && IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len() == 23
+        && all_supported_count_matches_families()
+        && extension_family_union_size_shell()
+}
+
+/// Dual-oracle residual: uppercase membership dual-oracle.
+#[must_use]
+pub fn wave101_uppercase_shell() -> bool {
+    is_image_extension("JPG")
+        && is_video_extension("MOV")
+        && extension_kind("GIF") == Some("image")
+        && extension_kind("MKV") == Some("video")
+        && uppercase_extension_membership_shell()
+}
+
+#[cfg(test)]
+mod wave101_tests {
+    use super::*;
+
+    #[test]
+    fn wave101_extension_png_webp_mp4_webm_multi_dot_all_supported_uppercase_dual_oracle() {
+        assert!(wave101_png_webp_shell());
+        assert!(wave101_mp4_webm_shell());
+        assert!(wave101_multi_dot_shell());
+        assert!(wave101_all_supported_shell());
+        assert!(wave101_uppercase_shell());
+        assert!(wave100_heic_jpeg_shell());
+    }
+}
