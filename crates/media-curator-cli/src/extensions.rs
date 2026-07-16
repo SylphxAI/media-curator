@@ -4007,3 +4007,70 @@ mod wave128_tests {
         assert!(wave127_webp_image_shell());
     }
 }
+// ── wave129 pure residual dens: extension heic webm png bare family dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: heic image family dual-oracle.
+#[must_use]
+pub fn wave129_heic_image_shell() -> bool {
+    is_image_extension("heic")
+        && is_image_extension("HEIC")
+        && extension_kind("heic") == Some("image")
+        && is_media_extension("heic")
+        && !is_video_extension("heic")
+}
+
+/// Dual-oracle residual: webm video family dual-oracle.
+#[must_use]
+pub fn wave129_webm_video_shell() -> bool {
+    is_video_extension("webm")
+        && is_video_extension("WEBM")
+        && extension_kind("webm") == Some("video")
+        && is_media_extension("webm")
+        && !is_image_extension("webm")
+}
+
+/// Dual-oracle residual: png image membership dual-oracle.
+#[must_use]
+pub fn wave129_png_image_shell() -> bool {
+    is_image_extension("png")
+        && is_image_extension("PNG")
+        && extension_kind("png") == Some("image")
+        && IMAGE_EXTENSIONS.contains(&"png")
+        && is_media_extension("png")
+}
+
+/// Dual-oracle residual: bare name unsupported dual-oracle.
+#[must_use]
+pub fn wave129_bare_name_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("README")).is_none()
+        && extension_of(Path::new("Makefile")).is_none()
+        && extension_of(Path::new("photo.JPG")) == Some("jpg".to_string())
+        && !is_media_extension("md")
+}
+
+/// Dual-oracle residual: family disjoint sizes dual-oracle.
+#[must_use]
+pub fn wave129_family_disjoint_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && IMAGE_EXTENSIONS.iter().all(|e| !VIDEO_EXTENSIONS.contains(e))
+        && VIDEO_EXTENSIONS.iter().all(|e| !IMAGE_EXTENSIONS.contains(e))
+        && all_supported_extensions().len() == 23
+}
+
+#[cfg(test)]
+mod wave129_tests {
+    use super::*;
+
+    #[test]
+    fn wave129_extension_heic_webm_png_bare_family_dual_oracle() {
+        assert!(wave129_heic_image_shell());
+        assert!(wave129_webm_video_shell());
+        assert!(wave129_png_image_shell());
+        assert!(wave129_bare_name_shell());
+        assert!(wave129_family_disjoint_shell());
+        assert!(wave128_jpg_image_shell());
+    }
+}
