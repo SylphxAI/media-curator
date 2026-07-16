@@ -102,3 +102,75 @@ mod wave62_tests {
         }
     }
 }
+
+// ── wave69 pure residual dens: extension family size ladder dual-oracle residual ──
+// Dual-oracle residual of image/video extension family sizes pure half.
+// Filesystem walk I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: family size shell (image, video, total).
+#[must_use]
+pub fn extension_family_size_shell() -> [usize; 3] {
+    [
+        IMAGE_EXTENSIONS.len(),
+        VIDEO_EXTENSIONS.len(),
+        IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len(),
+    ]
+}
+
+/// Dual-oracle residual: kind probe ladder.
+#[must_use]
+pub fn extension_kind_probe_ladder() -> [Option<&'static str>; 4] {
+    [
+        extension_kind("jpeg"),
+        extension_kind("mov"),
+        extension_kind("heic"),
+        extension_kind("pdf"),
+    ]
+}
+
+/// Dual-oracle residual: case-insensitive media probes.
+#[must_use]
+pub fn extension_case_probe_ok() -> bool {
+    is_image_extension("JPG")
+        && is_image_extension("Png")
+        && is_video_extension("MP4")
+        && is_video_extension("MkV")
+        && is_media_extension("WEBP")
+        && !is_media_extension("PDF")
+}
+
+/// Dual-oracle residual: families ⊆ all_supported.
+#[must_use]
+pub fn families_subset_of_all_supported() -> bool {
+    let all = all_supported_extensions();
+    IMAGE_EXTENSIONS
+        .iter()
+        .chain(VIDEO_EXTENSIONS.iter())
+        .all(|e| all.contains(e))
+}
+
+/// Dual-oracle residual: all_supported count matches family sum.
+#[must_use]
+pub fn all_supported_count_matches_families() -> bool {
+    all_supported_extensions().len() == IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len()
+}
+
+#[cfg(test)]
+mod wave69_tests {
+    use super::*;
+
+    #[test]
+    fn wave69_extension_family_size_ladder_dual_oracle() {
+        assert_eq!(extension_family_size_shell(), [11, 12, 23]);
+        assert_eq!(
+            extension_kind_probe_ladder(),
+            [Some("image"), Some("video"), Some("image"), None]
+        );
+        assert!(extension_case_probe_ok());
+        assert!(families_subset_of_all_supported());
+        assert!(all_supported_count_matches_families());
+        assert!(!is_image_extension("mp4"));
+        assert!(!is_video_extension("png"));
+    }
+}
+
