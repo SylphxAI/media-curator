@@ -1,6 +1,6 @@
 {
   "corpusVersion": 1,
-  "slice": "cli/metadata-extraction|cli/discovery-gather|cli/perceptual-hash-lsh",
+  "slice": "cli/metadata-extraction|cli/discovery-gather|cli/perceptual-hash-lsh|cli/deduplication-engine|cli/transfer-reporting",
   "cases": [
     {
       "id": "file-stats-sample-a.txt",
@@ -79,9 +79,7 @@
       "slice": "cli/discovery-gather",
       "domain": "pipeline",
       "input": {
-        "sourceDirs": [
-          "fixtures/discovery/basic"
-        ],
+        "sourceDirs": ["fixtures/discovery/basic"],
         "concurrency": 1
       },
       "output": {
@@ -204,15 +202,10 @@
         "clusters": [
           {
             "phashHex": "aabb",
-            "paths": [
-              "a.jpg",
-              "b.jpg"
-            ]
+            "paths": ["a.jpg", "b.jpg"]
           }
         ],
-        "singletons": [
-          "c.jpg"
-        ],
+        "singletons": ["c.jpg"],
         "missingPhash": []
       }
     },
@@ -233,11 +226,183 @@
       },
       "output": {
         "clusters": [],
-        "singletons": [
-          "y.png"
+        "singletons": ["y.png"],
+        "missingPhash": ["x.png"]
+      }
+    },
+    {
+      "id": "lsh-keys-valid-16",
+      "slice": "cli/deduplication-engine",
+      "domain": "pipeline",
+      "input": {
+        "op": "lshKeys",
+        "phashHex": "0123456789abcdef"
+      },
+      "output": {
+        "keys": ["0123", "4567", "89ab", "cdef"]
+      }
+    },
+    {
+      "id": "lsh-keys-invalid-len",
+      "slice": "cli/deduplication-engine",
+      "domain": "pipeline",
+      "input": {
+        "op": "lshKeys",
+        "phashHex": "aabb"
+      },
+      "output": {
+        "keys": null
+      }
+    },
+    {
+      "id": "adaptive-threshold-image-image",
+      "slice": "cli/deduplication-engine",
+      "domain": "pipeline",
+      "input": {
+        "op": "adaptiveThreshold",
+        "duration1": 0,
+        "duration2": 0,
+        "imageSimilarityThreshold": 0.9,
+        "imageVideoSimilarityThreshold": 0.8,
+        "videoSimilarityThreshold": 0.7
+      },
+      "output": {
+        "threshold": 0.9
+      }
+    },
+    {
+      "id": "adaptive-threshold-image-video",
+      "slice": "cli/deduplication-engine",
+      "domain": "pipeline",
+      "input": {
+        "op": "adaptiveThreshold",
+        "duration1": 0,
+        "duration2": 12.5,
+        "imageSimilarityThreshold": 0.9,
+        "imageVideoSimilarityThreshold": 0.8,
+        "videoSimilarityThreshold": 0.7
+      },
+      "output": {
+        "threshold": 0.8
+      }
+    },
+    {
+      "id": "adaptive-threshold-video-video",
+      "slice": "cli/deduplication-engine",
+      "domain": "pipeline",
+      "input": {
+        "op": "adaptiveThreshold",
+        "duration1": 3,
+        "duration2": 5,
+        "imageSimilarityThreshold": 0.9,
+        "imageVideoSimilarityThreshold": 0.8,
+        "videoSimilarityThreshold": 0.7
+      },
+      "output": {
+        "threshold": 0.7
+      }
+    },
+    {
+      "id": "merge-clusters-overlap",
+      "slice": "cli/deduplication-engine",
+      "domain": "pipeline",
+      "input": {
+        "op": "mergeClusters",
+        "clusters": [["a", "b"], ["b", "c"], ["d"]]
+      },
+      "output": {
+        "clusters": [["a", "b", "c"], ["d"]]
+      }
+    },
+    {
+      "id": "merge-clusters-disjoint",
+      "slice": "cli/deduplication-engine",
+      "domain": "pipeline",
+      "input": {
+        "op": "mergeClusters",
+        "clusters": [["x"], ["y", "z"]]
+      },
+      "output": {
+        "clusters": [["x"], ["y", "z"]]
+      }
+    },
+    {
+      "id": "transfer-plan-full",
+      "slice": "cli/transfer-reporting",
+      "domain": "pipeline",
+      "input": {
+        "uniqueFiles": ["/in/a.jpg", "/in/b.jpg"],
+        "duplicateSets": [
+          {
+            "bestFile": "/in/a.jpg",
+            "duplicates": ["/in/a-copy.jpg"]
+          }
         ],
-        "missingPhash": [
-          "x.png"
+        "errorFiles": ["/in/bad.dat"],
+        "hasDuplicateDir": true,
+        "hasErrorDir": true
+      },
+      "output": {
+        "targetCount": 2,
+        "duplicateCount": 1,
+        "errorCount": 1,
+        "skipCount": 0,
+        "actions": [
+          {
+            "sourcePath": "/in/a-copy.jpg",
+            "bucket": "duplicate",
+            "relativeKey": "a/a-copy.jpg"
+          },
+          {
+            "sourcePath": "/in/a.jpg",
+            "bucket": "target",
+            "relativeKey": "a.jpg"
+          },
+          {
+            "sourcePath": "/in/b.jpg",
+            "bucket": "target",
+            "relativeKey": "b.jpg"
+          },
+          {
+            "sourcePath": "/in/bad.dat",
+            "bucket": "error",
+            "relativeKey": "bad.dat"
+          }
+        ]
+      }
+    },
+    {
+      "id": "transfer-plan-skip-missing-dirs",
+      "slice": "cli/transfer-reporting",
+      "domain": "pipeline",
+      "input": {
+        "uniqueFiles": [],
+        "duplicateSets": [
+          {
+            "bestFile": "best.png",
+            "duplicates": ["dup.png"]
+          }
+        ],
+        "errorFiles": ["err.bin"],
+        "hasDuplicateDir": false,
+        "hasErrorDir": false
+      },
+      "output": {
+        "targetCount": 0,
+        "duplicateCount": 0,
+        "errorCount": 0,
+        "skipCount": 2,
+        "actions": [
+          {
+            "sourcePath": "dup.png",
+            "bucket": "skip",
+            "relativeKey": ""
+          },
+          {
+            "sourcePath": "err.bin",
+            "bucket": "skip",
+            "relativeKey": ""
+          }
         ]
       }
     }

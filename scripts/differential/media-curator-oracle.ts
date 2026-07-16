@@ -2,6 +2,7 @@
 /**
  * Media Curator frozen TS oracle for bounded differential parity (rej-010).
  * Slices: cli/metadata-extraction | cli/discovery-gather | cli/perceptual-hash-lsh
+ *          | cli/deduplication-engine | cli/transfer-reporting
  */
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
@@ -144,6 +145,71 @@ function runCase(testCase: (typeof corpus.cases)[number]) {
       };
     }
     case 'cli/deduplication-engine': {
+      const op = (testCase.input.op as string | undefined) ?? 'exactDup';
+      if (op === 'lshKeys') {
+        const phashHex = String(testCase.input.phashHex ?? '').trim();
+        if (phashHex.length !== 16 || !/^[0-9a-fA-F]+$/.test(phashHex)) {
+          return { keys: null };
+        }
+        return {
+          keys: [
+            phashHex.slice(0, 4),
+            phashHex.slice(4, 8),
+            phashHex.slice(8, 12),
+            phashHex.slice(12, 16),
+          ],
+        };
+      }
+      if (op === 'adaptiveThreshold') {
+        const d1 = Number(testCase.input.duration1 ?? 0);
+        const d2 = Number(testCase.input.duration2 ?? 0);
+        const img = Number(testCase.input.imageSimilarityThreshold);
+        const imgVid = Number(testCase.input.imageVideoSimilarityThreshold);
+        const vid = Number(testCase.input.videoSimilarityThreshold);
+        const isImage1 = d1 === 0;
+        const isImage2 = d2 === 0;
+        let threshold: number;
+        if (isImage1 && isImage2) threshold = img;
+        else if (isImage1 || isImage2) threshold = imgVid;
+        else threshold = vid;
+        return { threshold };
+      }
+      if (op === 'mergeClusters') {
+        const clusters = testCase.input.clusters as string[][];
+        // TS mergeAndDeduplicateClusters semantics via union-find for stable oracle.
+        const parent = new Map<string, string>();
+        const find = (x: string): string => {
+          const p = parent.get(x) ?? x;
+          if (p === x) return p;
+          const root = find(p);
+          parent.set(x, root);
+          return root;
+        };
+        const union = (a: string, b: string) => {
+          const ra = find(a);
+          const rb = find(b);
+          if (ra !== rb) {
+            if (ra < rb) parent.set(rb, ra);
+            else parent.set(ra, rb);
+          }
+        };
+        for (const cluster of clusters) {
+          if (cluster.length === 0) continue;
+          for (const el of cluster) parent.set(el, parent.get(el) ?? el);
+          for (let i = 1; i < cluster.length; i++)
+            union(cluster[0]!, cluster[i]!);
+        }
+        const groups = new Map<string, string[]>();
+        for (const el of parent.keys()) {
+          const root = find(el);
+          const list = groups.get(root) ?? [];
+          list.push(el);
+          groups.set(root, list);
+        }
+        const merged = [...groups.values()].map((g) => g.sort());
+        merged.sort((a, b) => a[0]!.localeCompare(b[0]!));
+        return { clusters: merged };
+      }
       // Exact pHash cluster step (TS deduplicateFilesFn step 1) — oracle for Rust SSOT.
       const entries = testCase.input.entries as Array<{
         path: string;
@@ -176,6 +242,81 @@ function runCase(testCase: (typeof corpus.cases)[number]) {
       singletons.sort();
       missingPhash.sort();
       return { clusters, singletons, missingPhash };
+    }
+    case 'cli/transfer-reporting': {
+      const uniqueFiles = (testCase.input.uniqueFiles as string[]) ?? [];
+      const duplicateSets =
+        (testCase.input.duplicateSets as Array<{
+          bestFile: string;
+          duplicates: string[];
+        }>) ?? [];
+      const errorFiles = (testCase.input.errorFiles as string[]) ?? [];
+      const hasDuplicateDir = Boolean(testCase.input.hasDuplicateDir);
+      const hasErrorDir = Boolean(testCase.input.hasErrorDir);
+      const basename = (path: string) => {
+        const parts = path.split(/[/\\]/);
+        return parts[parts.length - 1] ?? path;
+      };
+      const stem = (path: string) => {
+        const base = basename(path);
+        const i = base.lastIndexOf('.');
+        return i > 0 ? base.slice(0, i) : base;
+      };
+      type Action = {
+        sourcePath: string;
+        bucket: string;
+        relativeKey: string;
+      };
+      const actions: Action[] = [];
+      const seen = new Set<string>();
+      for (const path of uniqueFiles) {
+        if (seen.has(path)) continue;
+        seen.add(path);
+        actions.push({
+          sourcePath: path,
+          bucket: 'target',
+          relativeKey: basename(path),
+        });
+      }
+      for (const set of duplicateSets) {
+        const folder = stem(set.bestFile);
+        for (const dup of set.duplicates) {
+          if (seen.has(dup)) continue;
+          seen.add(dup);
+          if (hasDuplicateDir) {
+            actions.push({
+              sourcePath: dup,
+              bucket: 'duplicate',
+              relativeKey: `${folder}/${basename(dup)}`,
+            });
+          } else {
+            actions.push({ sourcePath: dup, bucket: 'skip', relativeKey: '' });
+          }
+        }
+      }
+      for (const path of errorFiles) {
+        if (seen.has(path)) continue;
+        seen.add(path);
+        if (hasErrorDir) {
+          actions.push({
+            sourcePath: path,
+            bucket: 'error',
+            relativeKey: basename(path),
+          });
+        } else {
+          actions.push({ sourcePath: path, bucket: 'skip', relativeKey: '' });
+        }
+      }
+      actions.sort((a, b) => a.sourcePath.localeCompare(b.sourcePath));
+      const count = (bucket: string) =>
+        actions.filter((a) => a.bucket === bucket).length;
+      return {
+        targetCount: count('target'),
+        duplicateCount: count('duplicate'),
+        errorCount: count('error'),
+        skipCount: count('skip'),
+        actions,
+      };
     }
     default:
       throw new Error(`unsupported slice: ${testCase.slice}`);

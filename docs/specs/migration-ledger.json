@@ -19,9 +19,7 @@
   ],
   "reauditRef": "adversarial-2026-07-15-media-curator",
   "verificationRef": "verification/media-curator-differential-green.json",
-  "inventorySource": [
-    "manual"
-  ],
+  "inventorySource": ["manual"],
   "inScopeBoundary": {
     "includeGlobs": [
       "index.ts",
@@ -163,7 +161,9 @@
       "state": "rust_impl",
       "tsSurface": "src/deduplicator.ts; src/fileProcessor.ts",
       "parityTest": "crates/media-curator-cli/tests/media_curator_differential.rs#cli_deduplication_engine_exact_dup_differential_matches_ts_oracle",
-      "notes": "Exact pHash clustering pure core in crates/media-curator-cli/src/dedup.rs + exact-dup CLI + differential 2 cases. Full pipeline (LSH similarity, DB, transfer) remains TS residual."
+      "notes": "Exact pHash clustering + LSH keys + adaptive threshold + cluster merge pure cores in crates/media-curator-cli/src/dedup.rs; dual-oracle dens (9 cases). DB LSH query / full pipeline residual TS.",
+      "rustSurface": "crates/media-curator-cli/src/dedup.rs; crates/media-curator-cli/src/main.rs#exact-dup",
+      "differentialTest": "crates/media-curator-cli/tests/media_curator_differential.rs#cli_deduplication_engine_exact_dup_differential_matches_ts_oracle; scripts/run-media-curator-differential.sh --slice cli/deduplication-engine"
     },
     {
       "id": "cli/cache-persistence",
@@ -178,10 +178,12 @@
       "id": "cli/transfer-reporting",
       "domain": "pipeline",
       "weight": 4,
-      "state": "ts_only",
+      "state": "rust_impl",
       "tsSurface": "src/transfer.ts; src/services/FileTransferService.ts; src/reporting/CliReporter.ts",
-      "parityTest": "tests/transfer.test.ts; tests/transfer.integration.test.ts",
-      "notes": ""
+      "parityTest": "crates/media-curator-cli/tests/media_curator_differential.rs#cli_transfer_reporting_differential_matches_ts_oracle",
+      "notes": "Pure transfer destination planner (bucket routing) landed; dual-oracle 2 cases. FS IO, path format templating (date/RND), and CliReporter remain TS residual.",
+      "rustSurface": "crates/media-curator-cli/src/transfer.rs",
+      "differentialTest": "crates/media-curator-cli/tests/media_curator_differential.rs#cli_transfer_reporting_differential_matches_ts_oracle; scripts/run-media-curator-differential.sh --slice cli/transfer-reporting"
     },
     {
       "id": "cli/npm-entry",
@@ -240,15 +242,15 @@
   ],
   "summary": {
     "total": 9,
-    "ts_only": 3,
+    "ts_only": 2,
     "contracted": 0,
-    "rust_impl": 1,
+    "rust_impl": 2,
     "parity_proven": 0,
     "authority_rust": 0,
     "ts_deleted": 5,
     "completion_progress": 0.5556,
     "authority_progress": 0.5556,
-    "weighted_progress": 0.5556,
+    "weighted_progress": 0.5833,
     "adversarial_2026_07_15": {
       "action": "admit_ts_deleted",
       "slices": [
@@ -267,7 +269,14 @@
       "verificationRef": "verification/media-curator-differential-green.json",
       "notes": "Rust default authority + native pack + 14-case differential; residual dedup/cache/transfer/proto remain ts_only"
     },
-    "lastMutation": "ADVERSARIAL-EXACT-DUP-RUST-IMPL"
+    "lastMutation": "PARTIAL-TS-DELETED-DENS-TRANSFER-DEDUP",
+    "partial_ts_deleted_dens_2026_07_16": {
+      "action": "rust_impl dens",
+      "advanced": ["cli/transfer-reporting"],
+      "deepened": ["cli/deduplication-engine"],
+      "residual_ts_only": ["cli/cache-persistence", "contracts/proto-ssot"],
+      "notes": "No ts_deleted flips (deletion/parity evidence not claimed). Inventory verified still requires full ts_deleted."
+    }
   },
   "promotionHold": {
     "active": false,

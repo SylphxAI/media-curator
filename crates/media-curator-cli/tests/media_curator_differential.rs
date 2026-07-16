@@ -115,30 +115,128 @@ fn compare_case(case: &OracleCase) {
             json!({ "distance": hamming_distance(&hash1, &hash2) })
         }
         "cli/deduplication-engine" => {
-            use media_curator_cli::dedup::cluster_exact_by_phash;
-            let entries = case.input["entries"]
+            use media_curator_cli::dedup::{
+                adaptive_threshold, cluster_exact_by_phash, generate_lsh_keys,
+                merge_and_deduplicate_clusters,
+            };
+            let op = case
+                .input
+                .get("op")
+                .and_then(Value::as_str)
+                .unwrap_or("exactDup");
+            match op {
+                "lshKeys" => {
+                    let hex = case.input["phashHex"].as_str().expect("phashHex");
+                    match generate_lsh_keys(hex) {
+                        Some(keys) => json!({ "keys": keys }),
+                        None => json!({ "keys": Value::Null }),
+                    }
+                }
+                "adaptiveThreshold" => {
+                    let threshold = adaptive_threshold(
+                        case.input["duration1"].as_f64().unwrap_or(0.0),
+                        case.input["duration2"].as_f64().unwrap_or(0.0),
+                        case.input["imageSimilarityThreshold"]
+                            .as_f64()
+                            .expect("imageSimilarityThreshold"),
+                        case.input["imageVideoSimilarityThreshold"]
+                            .as_f64()
+                            .expect("imageVideoSimilarityThreshold"),
+                        case.input["videoSimilarityThreshold"]
+                            .as_f64()
+                            .expect("videoSimilarityThreshold"),
+                    );
+                    json!({ "threshold": threshold })
+                }
+                "mergeClusters" => {
+                    let clusters: Vec<Vec<String>> = case.input["clusters"]
+                        .as_array()
+                        .expect("clusters")
+                        .iter()
+                        .map(|c| {
+                            c.as_array()
+                                .expect("cluster")
+                                .iter()
+                                .map(|v| v.as_str().expect("path").to_string())
+                                .collect()
+                        })
+                        .collect();
+                    let merged = merge_and_deduplicate_clusters(&clusters);
+                    json!({ "clusters": merged })
+                }
+                _ => {
+                    let entries = case.input["entries"]
+                        .as_array()
+                        .expect("entries")
+                        .iter()
+                        .map(|entry| {
+                            let path = entry["path"].as_str().expect("path").to_string();
+                            let phash = entry
+                                .get("phashHex")
+                                .and_then(Value::as_str)
+                                .map(str::trim)
+                                .filter(|value| !value.is_empty())
+                                .map(str::to_string);
+                            (path, phash)
+                        })
+                        .collect::<Vec<_>>();
+                    let result = cluster_exact_by_phash(&entries);
+                    json!({
+                        "clusters": result.clusters.iter().map(|cluster| json!({
+                            "phashHex": cluster.phash_hex,
+                            "paths": cluster.paths,
+                        })).collect::<Vec<_>>(),
+                        "singletons": result.singletons,
+                        "missingPhash": result.missing_phash,
+                    })
+                }
+            }
+        }
+        "cli/transfer-reporting" => {
+            use media_curator_cli::transfer::{plan_transfer_destinations, DupSetInput};
+            let unique: Vec<String> = case.input["uniqueFiles"]
                 .as_array()
-                .expect("entries")
+                .expect("uniqueFiles")
                 .iter()
-                .map(|entry| {
-                    let path = entry["path"].as_str().expect("path").to_string();
-                    let phash = entry
-                        .get("phashHex")
-                        .and_then(Value::as_str)
-                        .map(str::trim)
-                        .filter(|value| !value.is_empty())
-                        .map(str::to_string);
-                    (path, phash)
+                .map(|v| v.as_str().expect("path").to_string())
+                .collect();
+            let sets: Vec<DupSetInput> = case.input["duplicateSets"]
+                .as_array()
+                .expect("duplicateSets")
+                .iter()
+                .map(|s| DupSetInput {
+                    best_file: s["bestFile"].as_str().expect("bestFile").to_string(),
+                    duplicates: s["duplicates"]
+                        .as_array()
+                        .expect("duplicates")
+                        .iter()
+                        .map(|v| v.as_str().expect("dup").to_string())
+                        .collect(),
                 })
-                .collect::<Vec<_>>();
-            let result = cluster_exact_by_phash(&entries);
+                .collect();
+            let errors: Vec<String> = case.input["errorFiles"]
+                .as_array()
+                .expect("errorFiles")
+                .iter()
+                .map(|v| v.as_str().expect("path").to_string())
+                .collect();
+            let plan = plan_transfer_destinations(
+                &unique,
+                &sets,
+                &errors,
+                case.input["hasDuplicateDir"].as_bool().unwrap_or(false),
+                case.input["hasErrorDir"].as_bool().unwrap_or(false),
+            );
             json!({
-                "clusters": result.clusters.iter().map(|cluster| json!({
-                    "phashHex": cluster.phash_hex,
-                    "paths": cluster.paths,
+                "targetCount": plan.target_count,
+                "duplicateCount": plan.duplicate_count,
+                "errorCount": plan.error_count,
+                "skipCount": plan.skip_count,
+                "actions": plan.actions.iter().map(|a| json!({
+                    "sourcePath": a.source_path,
+                    "bucket": a.bucket,
+                    "relativeKey": a.relative_key,
                 })).collect::<Vec<_>>(),
-                "singletons": result.singletons,
-                "missingPhash": result.missing_phash,
             })
         }
         other => panic!("unsupported slice {other} in case {}", case.id),
@@ -172,6 +270,11 @@ fn cli_perceptual_hash_lsh_differential_matches_ts_oracle() {
 #[test]
 fn cli_deduplication_engine_exact_dup_differential_matches_ts_oracle() {
     run_slice("cli/deduplication-engine");
+}
+
+#[test]
+fn cli_transfer_reporting_differential_matches_ts_oracle() {
+    run_slice("cli/transfer-reporting");
 }
 
 #[test]

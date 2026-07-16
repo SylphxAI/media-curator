@@ -5,6 +5,7 @@ pub mod extensions;
 pub mod file_stats;
 pub mod hamming;
 pub mod dedup;
+pub mod transfer;
 
 use serde::Serialize;
 

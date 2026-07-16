@@ -34,7 +34,12 @@ export function rustCliDelegationEnabled(): boolean {
   if (legacy === '1' || legacy === 'true' || legacy === 'yes') {
     return true;
   }
-  if (legacy === '0' || legacy === 'false' || legacy === 'no' || legacy === 'ts') {
+  if (
+    legacy === '0' ||
+    legacy === 'false' ||
+    legacy === 'no' ||
+    legacy === 'ts'
+  ) {
     return false;
   }
 
@@ -132,9 +137,9 @@ export function discoverViaRust(
 }
 
 export function hammingViaRust(hash1Hex: string, hash2Hex: string): number {
-  const parsed = JSON.parse(
-    runRustCli(['hamming', hash1Hex, hash2Hex]),
-  ) as { distance: number };
+  const parsed = JSON.parse(runRustCli(['hamming', hash1Hex, hash2Hex])) as {
+    distance: number;
+  };
   if (typeof parsed.distance !== 'number') {
     throw new Error('media-curator-cli hamming returned unexpected shape.');
   }

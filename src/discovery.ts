@@ -5,10 +5,7 @@ import chalk from 'chalk';
 import { ALL_SUPPORTED_EXTENSIONS, getFileTypeByExt } from './utils';
 import { CliReporter } from './reporting/CliReporter';
 import { FileSystemError, safeTryAsync } from './errors';
-import {
-  discoverViaRust,
-  rustCliDelegationEnabled,
-} from './external/rustCli';
+import { discoverViaRust, rustCliDelegationEnabled } from './external/rustCli';
 
 /**
  * TS parity baseline for discovery. Used only when MEDIA_CURATOR_RUST is
