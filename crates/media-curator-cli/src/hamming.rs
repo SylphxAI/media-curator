@@ -496,3 +496,46 @@ mod wave83_tests {
         assert!(wave83_hamming_empty_shell());
     }
 }
+
+
+// ── product residual dens wave84: hamming nibble+unequal+single-bit dual-oracle residual ──
+// Dual-oracle residual of comparatorUtils hammingDistance pure halves.
+// Filesystem / phash I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: nibble popcount patterns.
+#[must_use]
+pub fn wave84_popcount_nibble_shell() -> bool {
+    popcount64(0x0F) == 4
+        && popcount64(0xF0) == 4
+        && popcount64(0xFF) == 8
+        && popcount64(0) == 0
+}
+
+/// Dual-oracle residual: unequal length uses min_len.
+#[must_use]
+pub fn wave84_hamming_unequal_shell() -> bool {
+    hamming_distance(&[0xFF], &[0x00, 0xFF]) == 8
+        && hamming_distance(&[0x00, 0xFF], &[0xFF]) == 8
+        && hamming_distance(&[0x0F], &[0xF0]) == 8
+}
+
+/// Dual-oracle residual: single-bit flip distance 1; identity 0.
+#[must_use]
+pub fn wave84_hamming_single_bit_shell() -> bool {
+    hamming_distance(&[0b0000_0001], &[0b0000_0000]) == 1
+        && hamming_distance(&[0b1000_0000], &[0b0000_0000]) == 1
+        && hamming_distance(&[0xAA], &[0xAA]) == 0
+        && hamming_distance(&[0xAA], &[0x55]) == 8
+}
+
+#[cfg(test)]
+mod wave84_tests {
+    use super::*;
+
+    #[test]
+    fn wave84_hamming_nibble_unequal_single_dual_oracle() {
+        assert!(wave84_popcount_nibble_shell());
+        assert!(wave84_hamming_unequal_shell());
+        assert!(wave84_hamming_single_bit_shell());
+    }
+}
