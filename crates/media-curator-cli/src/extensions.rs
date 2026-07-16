@@ -1544,3 +1544,75 @@ mod wave92_tests {
         assert!(wave91_disjoint_union_shell());
     }
 }
+
+// ── wave93 pure residual dens: extension gif webp mov avi unsupported multi-dot dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: gif/webp image membership + kind.
+#[must_use]
+pub fn wave93_gif_webp_shell() -> bool {
+    is_image_extension("gif")
+        && is_image_extension("WEBP")
+        && extension_kind("gif") == Some("image")
+        && extension_kind("webp") == Some("image")
+        && is_media_extension("gif")
+        && !is_video_extension("webp")
+}
+
+/// Dual-oracle residual: mov/avi video membership + kind.
+#[must_use]
+pub fn wave93_mov_avi_shell() -> bool {
+    is_video_extension("mov")
+        && is_video_extension("AVI")
+        && extension_kind("mov") == Some("video")
+        && extension_kind("avi") == Some("video")
+        && is_media_extension("m4v")
+        && !is_image_extension("mov")
+}
+
+/// Dual-oracle residual: unsupported bare + path dual-oracle.
+#[must_use]
+pub fn wave93_unsupported_shell() -> bool {
+    use std::path::Path;
+    !is_media_extension("pdf")
+        && !is_image_extension("txt")
+        && !is_video_extension("doc")
+        && extension_kind("pdf").is_none()
+        && extension_of(Path::new("readme.md")).is_none()
+}
+
+/// Dual-oracle residual: multi-dot path last extension dual-oracle.
+#[must_use]
+pub fn wave93_multi_dot_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("archive.tar.JPG")) == Some("jpg".to_string())
+        && extension_of(Path::new("clip.final.MOV")) == Some("mov".to_string())
+        && extension_of(Path::new("a.b.c.webm")) == Some("webm".to_string())
+}
+
+/// Dual-oracle residual: family disjoint + union size dual-oracle.
+#[must_use]
+pub fn wave93_disjoint_union_shell() -> bool {
+    IMAGE_EXTENSIONS.iter().all(|e| !VIDEO_EXTENSIONS.contains(e))
+        && VIDEO_EXTENSIONS.iter().all(|e| !IMAGE_EXTENSIONS.contains(e))
+        && all_supported_extensions().len()
+            == IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len()
+        && IMAGE_EXTENSIONS[0] == "jpg"
+        && VIDEO_EXTENSIONS[0] == "mp4"
+}
+
+#[cfg(test)]
+mod wave93_tests {
+    use super::*;
+
+    #[test]
+    fn wave93_extension_gif_webp_mov_avi_unsupported_multi_dot_dual_oracle() {
+        assert!(wave93_gif_webp_shell());
+        assert!(wave93_mov_avi_shell());
+        assert!(wave93_unsupported_shell());
+        assert!(wave93_multi_dot_shell());
+        assert!(wave93_disjoint_union_shell());
+        assert!(wave92_family_sizes_shell());
+    }
+}
