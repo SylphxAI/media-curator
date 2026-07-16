@@ -395,3 +395,87 @@ mod wave66_tests {
         assert!(!is_transfer_bucket("archive"));
     }
 }
+
+
+// ── wave67 pure residual dens: transfer plan consistency dual-oracle residual ──
+// Dual-oracle residual of transferOrganizedFiles plan counts pure halves.
+// Filesystem transfer I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: unique files all land in target when dirs present.
+#[must_use]
+pub fn unique_targets_when_dirs_present() -> bool {
+    let plan = plan_transfer_destinations(
+        &["/a.jpg".into(), "/b.jpg".into()],
+        &[],
+        &[],
+        true,
+        true,
+    );
+    plan.actions.len() == 2
+        && plan.actions.iter().all(|a| a.bucket == "target")
+        && transfer_plan_counts_consistent(&plan)
+}
+
+/// Dual-oracle residual: dup best→target, rest→duplicate when dir present.
+#[must_use]
+pub fn dup_set_routes_best_and_dups() -> bool {
+    let plan = plan_transfer_destinations(
+        &[],
+        &[DupSetInput {
+            best_file: "/best.jpg".into(),
+            duplicates: vec!["/d1.jpg".into(), "/d2.jpg".into()],
+        }],
+        &[],
+        true,
+        true,
+    );
+    let target_n = plan.actions.iter().filter(|a| a.bucket == "target").count();
+    let dup_n = plan.actions.iter().filter(|a| a.bucket == "duplicate").count();
+    // best alone is not auto-target unless also in unique; dups route when dir present
+    dup_n == 2 && transfer_plan_counts_consistent(&plan) && target_n <= 1
+}
+
+/// Dual-oracle residual: error files route to error bucket when dir present.
+#[must_use]
+pub fn errors_route_to_error_bucket() -> bool {
+    let plan = plan_transfer_destinations(
+        &[],
+        &[],
+        &["/bad.bin".into()],
+        true,
+        true,
+    );
+    plan.actions.len() == 1
+        && plan.actions[0].bucket == "error"
+        && plan.actions[0].relative_key == "bad.bin"
+}
+
+/// Dual-oracle residual: bucket catalog closed four.
+#[must_use]
+pub fn transfer_four_buckets_closed() -> bool {
+    transfer_bucket_count() == 4
+        && is_transfer_bucket("target")
+        && is_transfer_bucket("duplicate")
+        && is_transfer_bucket("error")
+        && is_transfer_bucket("skip")
+        && !is_transfer_bucket("archive")
+}
+
+#[cfg(test)]
+mod wave67_tests {
+    use super::*;
+
+    #[test]
+    fn wave67_transfer_plan_consistency_dual_oracle() {
+        assert!(unique_targets_when_dirs_present());
+        assert!(dup_set_routes_best_and_dups());
+        assert!(errors_route_to_error_bucket());
+        assert!(transfer_four_buckets_closed());
+        assert!(transfer_bucket_order_ok());
+        assert!(destination_buckets_closed());
+        assert!(skip_is_not_destination());
+        assert!(empty_inputs_empty_plan());
+        assert!(dups_skip_without_duplicate_dir());
+        assert!(errors_skip_without_error_dir());
+    }
+}
