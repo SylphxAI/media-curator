@@ -363,3 +363,48 @@ mod wave80_tests {
         assert!(wave80_hamming_complement_shell());
     }
 }
+
+
+// ── product residual dens wave81: hamming full64+multibyte+empty dual-oracle residual ──
+// Dual-oracle residual of comparatorUtils hammingDistance pure halves.
+// Filesystem / phash I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: full 64-bit popcount + empty buffers.
+#[must_use]
+pub fn wave81_popcount_full_empty_shell() -> bool {
+    popcount64(0xFFFF_FFFF_FFFF_FFFF) == 64
+        && popcount64(1) == 1
+        && hamming_distance(&[], &[]) == 0
+        && hamming_distance(&[], &[0xFF]) == 0
+}
+
+/// Dual-oracle residual: multi-byte single-bit flips sum.
+#[must_use]
+pub fn wave81_hamming_multibyte_shell() -> bool {
+    hamming_distance(&[0x01, 0x00, 0x00], &[0x00, 0x00, 0x00]) == 1
+        && hamming_distance(&[0x01, 0x01], &[0x00, 0x00]) == 2
+        && hamming_distance(&[0xFF, 0xFF], &[0x00, 0x00]) == 16
+}
+
+/// Dual-oracle residual: 8-byte word xor distance identity.
+#[must_use]
+pub fn wave81_hamming_word_shell() -> bool {
+    let a = [0u8; 8];
+    let mut b = [0u8; 8];
+    b[0] = 0x01;
+    hamming_distance(&a, &a) == 0
+        && hamming_distance(&a, &b) == 1
+        && hamming_distance(&[0xAA; 8], &[0xAA; 8]) == 0
+}
+
+#[cfg(test)]
+mod wave81_tests {
+    use super::*;
+
+    #[test]
+    fn wave81_hamming_full_multi_word_dual_oracle() {
+        assert!(wave81_popcount_full_empty_shell());
+        assert!(wave81_hamming_multibyte_shell());
+        assert!(wave81_hamming_word_shell());
+    }
+}
