@@ -2742,3 +2742,72 @@ mod wave109_tests {
         assert!(wave107_gif_bmp_shell());
     }
 }
+// ── wave110 pure residual dens: extension jpeg-png mp4-webm heic-heif path-extract family-sum dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: jpeg/png image membership dual-oracle.
+#[must_use]
+pub fn wave110_jpeg_png_shell() -> bool {
+    is_image_extension("jpeg")
+        && is_image_extension("PNG")
+        && extension_kind("jpeg") == Some("image")
+        && extension_kind("png") == Some("image")
+        && is_media_extension("jpg")
+        && !is_video_extension("jpeg")
+}
+
+/// Dual-oracle residual: mp4/webm video membership dual-oracle.
+#[must_use]
+pub fn wave110_mp4_webm_shell() -> bool {
+    is_video_extension("mp4")
+        && is_video_extension("WEBM")
+        && extension_kind("mp4") == Some("video")
+        && extension_kind("webm") == Some("video")
+        && is_media_extension("m4v")
+        && !is_image_extension("mp4")
+}
+
+/// Dual-oracle residual: heic/heif image membership dual-oracle.
+#[must_use]
+pub fn wave110_heic_heif_shell() -> bool {
+    is_image_extension("heic")
+        && is_image_extension("HEIF")
+        && extension_kind("heic") == Some("image")
+        && extension_kind("heif") == Some("image")
+        && is_media_extension("heif")
+}
+
+/// Dual-oracle residual: path extract dual-oracle.
+#[must_use]
+pub fn wave110_path_extract_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("shot.PNG")) == Some("png".to_string())
+        && extension_of(Path::new("/tmp/clip.mp4")) == Some("mp4".to_string())
+        && extension_of(Path::new("a.b.webm")) == Some("webm".to_string())
+        && extension_of(Path::new("noext")).is_none()
+}
+
+/// Dual-oracle residual: family sum dual-oracle.
+#[must_use]
+pub fn wave110_family_sum_shell() -> bool {
+    IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len() == 23
+        && IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && all_supported_extensions().len() == 23
+}
+
+#[cfg(test)]
+mod wave110_tests {
+    use super::*;
+
+    #[test]
+    fn wave110_extension_jpeg_png_mp4_webm_heic_heif_path_extract_family_sum_dual_oracle() {
+        assert!(wave110_jpeg_png_shell());
+        assert!(wave110_mp4_webm_shell());
+        assert!(wave110_heic_heif_shell());
+        assert!(wave110_path_extract_shell());
+        assert!(wave110_family_sum_shell());
+        assert!(wave109_raw_tif_shell());
+    }
+}
