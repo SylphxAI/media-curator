@@ -4482,3 +4482,71 @@ mod wave135_tests {
         assert!(wave134_jpeg_image_shell());
     }
 }
+// ── wave136 pure residual dens: extension jpeg mp4 gif mov reject dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: jpeg image family dual-oracle.
+#[must_use]
+pub fn wave136_jpeg_image_shell() -> bool {
+    is_image_extension("jpeg")
+        && is_image_extension("JPEG")
+        && extension_kind("jpeg") == Some("image")
+        && is_media_extension("jpeg")
+        && IMAGE_EXTENSIONS.contains(&"jpeg")
+}
+
+/// Dual-oracle residual: mp4 video family dual-oracle.
+#[must_use]
+pub fn wave136_mp4_video_shell() -> bool {
+    is_video_extension("mp4")
+        && is_video_extension("MP4")
+        && extension_kind("mp4") == Some("video")
+        && is_media_extension("mp4")
+        && VIDEO_EXTENSIONS.contains(&"mp4")
+}
+
+/// Dual-oracle residual: gif image family dual-oracle.
+#[must_use]
+pub fn wave136_gif_image_shell() -> bool {
+    is_image_extension("gif")
+        && is_image_extension("GIF")
+        && extension_kind("gif") == Some("image")
+        && !is_video_extension("gif")
+        && IMAGE_EXTENSIONS.contains(&"gif")
+}
+
+/// Dual-oracle residual: mov path dual-oracle.
+#[must_use]
+pub fn wave136_mov_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("clip.mov")) == Some("mov".to_string())
+        && extension_of(Path::new("CLIP.MOV")) == Some("mov".to_string())
+        && is_video_extension("mov")
+        && extension_kind("mov") == Some("video")
+}
+
+/// Dual-oracle residual: reject unsupported dual-oracle.
+#[must_use]
+pub fn wave136_reject_ext_shell() -> bool {
+    use std::path::Path;
+    !is_media_extension("pdf")
+        && !is_media_extension("txt")
+        && extension_kind("pdf").is_none()
+        && extension_of(Path::new("notes.txt")).is_none()
+        && extension_of(Path::new("archive.zip")).is_none()
+}
+
+#[cfg(test)]
+mod wave136_tests {
+    use super::*;
+
+    #[test]
+    fn wave136_extension_jpeg_mp4_gif_mov_reject_dual_oracle() {
+        assert!(wave136_jpeg_image_shell());
+        assert!(wave136_mp4_video_shell());
+        assert!(wave136_gif_image_shell());
+        assert!(wave136_mov_path_shell());
+        assert!(wave136_reject_ext_shell());
+        assert!(wave135_png_image_shell());
+    }
+}
