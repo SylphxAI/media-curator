@@ -1978,3 +1978,72 @@ mod wave98_tests {
         assert!(wave97_gif_webp_shell());
     }
 }
+// ── wave99 pure residual dens: extension tiff bmp mkv webm nested-path sizes dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: tiff/bmp image membership dual-oracle.
+#[must_use]
+pub fn wave99_tiff_bmp_shell() -> bool {
+    is_image_extension("tiff")
+        && is_image_extension("BMP")
+        && extension_kind("tif") == Some("image")
+        && extension_kind("bmp") == Some("image")
+        && is_media_extension("raw")
+        && !is_video_extension("tiff")
+}
+
+/// Dual-oracle residual: mkv/webm video family dual-oracle.
+#[must_use]
+pub fn wave99_mkv_webm_shell() -> bool {
+    is_video_extension("mkv")
+        && is_video_extension("WEBM")
+        && extension_kind("mkv") == Some("video")
+        && extension_kind("webm") == Some("video")
+        && is_media_extension("m4v")
+        && !is_image_extension("mkv")
+}
+
+/// Dual-oracle residual: nested path extract dual-oracle.
+#[must_use]
+pub fn wave99_nested_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("/data/album/nested/Photo.TIFF")) == Some("tiff".to_string())
+        && extension_of(Path::new("clips/final.WebM")) == Some("webm".to_string())
+        && extension_of(Path::new("a/b/c.d.mp4")) == Some("mp4".to_string())
+}
+
+/// Dual-oracle residual: family sizes dual-oracle.
+#[must_use]
+pub fn wave99_family_sizes_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len() == 23
+        && all_supported_extensions().len() == 23
+}
+
+/// Dual-oracle residual: unsupported reject dual-oracle.
+#[must_use]
+pub fn wave99_unsupported_shell() -> bool {
+    use std::path::Path;
+    !is_media_extension("pdf")
+        && !is_media_extension("txt")
+        && extension_kind("docx") == None
+        && extension_of(Path::new("report.pdf")) == None
+        && extension_of(Path::new("archive.tar.gz")).is_none()
+}
+
+#[cfg(test)]
+mod wave99_tests {
+    use super::*;
+
+    #[test]
+    fn wave99_extension_tiff_bmp_mkv_webm_nested_path_sizes_dual_oracle() {
+        assert!(wave99_tiff_bmp_shell());
+        assert!(wave99_mkv_webm_shell());
+        assert!(wave99_nested_path_shell());
+        assert!(wave99_family_sizes_shell());
+        assert!(wave99_unsupported_shell());
+        assert!(wave98_jpg_png_shell());
+    }
+}
