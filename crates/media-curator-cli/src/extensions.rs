@@ -4414,3 +4414,71 @@ mod wave134_tests {
         assert!(wave133_heic_image_shell());
     }
 }
+// ── wave135 pure residual dens: extension png webm heic multi bare dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: png image family dual-oracle.
+#[must_use]
+pub fn wave135_png_image_shell() -> bool {
+    is_image_extension("png")
+        && is_image_extension("PNG")
+        && extension_kind("png") == Some("image")
+        && is_media_extension("png")
+        && IMAGE_EXTENSIONS.contains(&"png")
+}
+
+/// Dual-oracle residual: webm video family dual-oracle.
+#[must_use]
+pub fn wave135_webm_video_shell() -> bool {
+    is_video_extension("webm")
+        && is_video_extension("WEBM")
+        && extension_kind("webm") == Some("video")
+        && is_media_extension("webm")
+        && VIDEO_EXTENSIONS.contains(&"webm")
+}
+
+/// Dual-oracle residual: heic case dual-oracle.
+#[must_use]
+pub fn wave135_heic_case_shell() -> bool {
+    use std::path::Path;
+    is_image_extension("heic")
+        && is_image_extension("HEIC")
+        && extension_of(Path::new("shot.HEIC")) == Some("heic".to_string())
+        && extension_kind("heic") == Some("image")
+        && !is_video_extension("heic")
+}
+
+/// Dual-oracle residual: multi-dot path dual-oracle.
+#[must_use]
+pub fn wave135_multi_dot_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("archive.backup.mp4")) == Some("mp4".to_string())
+        && extension_of(Path::new("photo.final.JPEG")) == Some("jpeg".to_string())
+        && extension_of(Path::new("x.y.z.webp")) == Some("webp".to_string())
+}
+
+/// Dual-oracle residual: bare name unsupported dual-oracle.
+#[must_use]
+pub fn wave135_bare_unsupported_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("README")).is_none()
+        && extension_of(Path::new("Makefile")).is_none()
+        && !is_media_extension("rs")
+        && extension_kind("rs").is_none()
+        && !is_image_extension("exe")
+}
+
+#[cfg(test)]
+mod wave135_tests {
+    use super::*;
+
+    #[test]
+    fn wave135_extension_png_webm_heic_multi_bare_dual_oracle() {
+        assert!(wave135_png_image_shell());
+        assert!(wave135_webm_video_shell());
+        assert!(wave135_heic_case_shell());
+        assert!(wave135_multi_dot_shell());
+        assert!(wave135_bare_unsupported_shell());
+        assert!(wave134_jpeg_image_shell());
+    }
+}
