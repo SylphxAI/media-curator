@@ -850,3 +850,67 @@ mod wave81_tests {
         assert!(wave80_head_tail_shell());
     }
 }
+
+
+// ── wave83 pure residual dens: extension bare path kind partition dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: bare path + multi-dot last extension wins.
+#[must_use]
+pub fn wave83_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("photo.JPG")) == Some("jpg".to_string())
+        && extension_of(Path::new("archive.tar.mp4")) == Some("mp4".to_string())
+        && extension_of(Path::new("README")) == None
+        && extension_of(Path::new("notes.txt")) == None
+}
+
+/// Dual-oracle residual: raw/divx kind partition.
+#[must_use]
+pub fn wave83_kind_partition_shell() -> bool {
+    extension_kind("raw") == Some("image")
+        && extension_kind("divx") == Some("video")
+        && extension_kind("RAW") == Some("image")
+        && extension_kind("pdf") == None
+}
+
+/// Dual-oracle residual: empty/unsupported not media.
+#[must_use]
+pub fn wave83_empty_not_media_shell() -> bool {
+    !is_media_extension("")
+        && !is_media_extension("docx")
+        && !is_image_extension("mp4")
+        && !is_video_extension("png")
+}
+
+/// Dual-oracle residual: family sizes closed.
+#[must_use]
+pub fn wave83_family_sizes_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && all_supported_extensions().len() == 23
+}
+
+/// Dual-oracle residual: case membership dual-oracle.
+#[must_use]
+pub fn wave83_case_membership_shell() -> bool {
+    is_image_extension("HeIc")
+        && is_video_extension("WebM")
+        && is_media_extension("TIFF")
+        && extension_kind("MOV") == Some("video")
+}
+
+#[cfg(test)]
+mod wave83_tests {
+    use super::*;
+
+    #[test]
+    fn wave83_extension_bare_path_kind_partition_dual_oracle() {
+        assert!(wave83_path_shell());
+        assert!(wave83_kind_partition_shell());
+        assert!(wave83_empty_not_media_shell());
+        assert!(wave83_family_sizes_shell());
+        assert!(wave83_case_membership_shell());
+    }
+}
