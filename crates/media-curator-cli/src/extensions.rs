@@ -3273,3 +3273,71 @@ mod wave117_tests {
         assert!(wave116_families_disjoint_shell());
     }
 }
+// ── wave118 pure residual dens: extension raw-divx bare-name kind-partition case-path media-union dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: raw image and divx video dual-oracle.
+#[must_use]
+pub fn wave118_raw_divx_shell() -> bool {
+    is_image_extension("raw")
+        && is_video_extension("divx")
+        && extension_kind("raw") == Some("image")
+        && extension_kind("divx") == Some("video")
+        && is_media_extension("raw")
+        && is_media_extension("divx")
+}
+
+/// Dual-oracle residual: bare filename has no extension dual-oracle.
+#[must_use]
+pub fn wave118_bare_name_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("README")).is_none()
+        && extension_of(Path::new("Makefile")).is_none()
+        && extension_kind("").is_none()
+}
+
+/// Dual-oracle residual: kind partition image vs video dual-oracle.
+#[must_use]
+pub fn wave118_kind_partition_shell() -> bool {
+    extension_kind("png") == Some("image")
+        && extension_kind("jpeg") == Some("image")
+        && extension_kind("mov") == Some("video")
+        && extension_kind("webm") == Some("video")
+        && extension_kind("pdf").is_none()
+}
+
+/// Dual-oracle residual: case-insensitive path extract dual-oracle.
+#[must_use]
+pub fn wave118_case_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("Shot.HEIC")).as_deref() == Some("heic")
+        && extension_of(Path::new("clip.MkV")).as_deref() == Some("mkv")
+        && is_image_extension("HEIC")
+        && is_video_extension("MKV")
+}
+
+/// Dual-oracle residual: media union equals family sizes dual-oracle.
+#[must_use]
+pub fn wave118_media_union_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && all_supported_extensions().len() == IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len()
+        && is_media_extension("webp")
+        && is_media_extension("3gp")
+        && !is_media_extension("pdf")
+}
+
+#[cfg(test)]
+mod wave118_tests {
+    use super::*;
+
+    #[test]
+    fn wave118_extension_raw_divx_bare_kind_case_union_dual_oracle() {
+        assert!(wave118_raw_divx_shell());
+        assert!(wave118_bare_name_shell());
+        assert!(wave118_kind_partition_shell());
+        assert!(wave118_case_path_shell());
+        assert!(wave118_media_union_shell());
+        assert!(wave117_upper_membership_shell());
+    }
+}
