@@ -3533,3 +3533,70 @@ mod wave121_tests {
         assert!(wave120_webp_image_shell());
     }
 }
+// ── wave122 pure residual dens: extension png-image webm-video bare-stem reject-txt union dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: png image family dual-oracle.
+#[must_use]
+pub fn wave122_png_image_shell() -> bool {
+    is_image_extension("png")
+        && extension_kind("png") == Some("image")
+        && is_media_extension("PNG")
+        && !is_video_extension("png")
+}
+
+/// Dual-oracle residual: webm video family dual-oracle.
+#[must_use]
+pub fn wave122_webm_video_shell() -> bool {
+    is_video_extension("webm")
+        && extension_kind("webm") == Some("video")
+        && is_media_extension("WEBM")
+        && !is_image_extension("webm")
+}
+
+/// Dual-oracle residual: bare stem path has no extension dual-oracle.
+#[must_use]
+pub fn wave122_bare_stem_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("README")).is_none()
+        && extension_of(Path::new("Makefile")).is_none()
+}
+
+/// Dual-oracle residual: reject non-media txt dual-oracle.
+#[must_use]
+pub fn wave122_reject_txt_shell() -> bool {
+    !is_media_extension("txt")
+        && !is_image_extension("txt")
+        && !is_video_extension("txt")
+        && extension_kind("txt").is_none()
+        && {
+            use std::path::Path;
+            extension_of(Path::new("notes.txt")).is_none()
+        }
+}
+
+/// Dual-oracle residual: family union sizes dual-oracle.
+#[must_use]
+pub fn wave122_union_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && IMAGE_EXTENSIONS.contains(&"png")
+        && VIDEO_EXTENSIONS.contains(&"webm")
+        && !VIDEO_EXTENSIONS.contains(&"png")
+        && all_supported_extensions().len() == 23
+}
+
+#[cfg(test)]
+mod wave122_tests {
+    use super::*;
+
+    #[test]
+    fn wave122_extension_png_webm_bare_txt_union_dual_oracle() {
+        assert!(wave122_png_image_shell());
+        assert!(wave122_webm_video_shell());
+        assert!(wave122_bare_stem_shell());
+        assert!(wave122_reject_txt_shell());
+        assert!(wave122_union_shell());
+        assert!(wave121_heic_image_shell());
+    }
+}
