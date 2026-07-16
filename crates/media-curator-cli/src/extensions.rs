@@ -3019,3 +3019,74 @@ mod wave113_tests {
         assert!(wave111_gif_bmp_shell());
     }
 }
+// ── wave114 pure residual dens: extension jpeg-png heic-webp webm-mp4 no-ext family-sizes dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: jpeg/png image membership dual-oracle.
+#[must_use]
+pub fn wave114_jpeg_png_shell() -> bool {
+    is_image_extension("jpeg")
+        && is_image_extension("PNG")
+        && extension_kind("jpeg") == Some("image")
+        && extension_kind("png") == Some("image")
+        && is_media_extension("jpg")
+        && !is_video_extension("png")
+}
+
+/// Dual-oracle residual: heic/webp image membership dual-oracle.
+#[must_use]
+pub fn wave114_heic_webp_shell() -> bool {
+    is_image_extension("heic")
+        && is_image_extension("WEBP")
+        && extension_kind("heif") == Some("image")
+        && extension_kind("webp") == Some("image")
+        && is_media_extension("heic")
+        && !is_video_extension("webp")
+}
+
+/// Dual-oracle residual: webm/mp4 video membership dual-oracle.
+#[must_use]
+pub fn wave114_webm_mp4_shell() -> bool {
+    is_video_extension("webm")
+        && is_video_extension("MP4")
+        && extension_kind("webm") == Some("video")
+        && extension_kind("mp4") == Some("video")
+        && is_media_extension("webm")
+        && !is_image_extension("mp4")
+}
+
+/// Dual-oracle residual: no extension path dual-oracle.
+#[must_use]
+pub fn wave114_no_ext_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("README")).is_none()
+        && extension_of(Path::new("/tmp/noext")).is_none()
+        && !is_media_extension("")
+        && extension_kind("").is_none()
+}
+
+/// Dual-oracle residual: family sizes dual-oracle.
+#[must_use]
+pub fn wave114_family_sizes_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len() == 23
+        && is_media_extension("raw")
+        && is_media_extension("mkv")
+}
+
+#[cfg(test)]
+mod wave114_tests {
+    use super::*;
+
+    #[test]
+    fn wave114_extension_jpeg_png_heic_webp_webm_mp4_no_ext_family_sizes_dual_oracle() {
+        assert!(wave114_jpeg_png_shell());
+        assert!(wave114_heic_webp_shell());
+        assert!(wave114_webm_mp4_shell());
+        assert!(wave114_no_ext_shell());
+        assert!(wave114_family_sizes_shell());
+        assert!(wave111_gif_bmp_shell());
+    }
+}
