@@ -2811,3 +2811,71 @@ mod wave110_tests {
         assert!(wave109_raw_tif_shell());
     }
 }
+// ── wave111 pure residual dens: extension gif-bmp mov-mkv case-path unsupported-pdf family-disjoint dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: gif/bmp image membership dual-oracle.
+#[must_use]
+pub fn wave111_gif_bmp_shell() -> bool {
+    is_image_extension("gif")
+        && is_image_extension("BMP")
+        && extension_kind("gif") == Some("image")
+        && extension_kind("bmp") == Some("image")
+        && is_media_extension("gif")
+        && !is_video_extension("bmp")
+}
+
+/// Dual-oracle residual: mov/mkv video membership dual-oracle.
+#[must_use]
+pub fn wave111_mov_mkv_shell() -> bool {
+    is_video_extension("mov")
+        && is_video_extension("MKV")
+        && extension_kind("mov") == Some("video")
+        && extension_kind("mkv") == Some("video")
+        && is_media_extension("avi")
+        && !is_image_extension("mov")
+}
+
+/// Dual-oracle residual: case path extract dual-oracle.
+#[must_use]
+pub fn wave111_case_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("clip.GIF")) == Some("gif".to_string())
+        && extension_of(Path::new("/tmp/A.MOV")) == Some("mov".to_string())
+        && extension_of(Path::new("x.Y.BMP")) == Some("bmp".to_string())
+}
+
+/// Dual-oracle residual: unsupported pdf dual-oracle.
+#[must_use]
+pub fn wave111_unsupported_pdf_shell() -> bool {
+    use std::path::Path;
+    !is_media_extension("pdf")
+        && extension_kind("pdf").is_none()
+        && extension_of(Path::new("doc.pdf")).is_none()
+        && !is_image_extension("txt")
+}
+
+/// Dual-oracle residual: image/video families disjoint dual-oracle.
+#[must_use]
+pub fn wave111_family_disjoint_shell() -> bool {
+    IMAGE_EXTENSIONS.iter().all(|e| !is_video_extension(e))
+        && VIDEO_EXTENSIONS.iter().all(|e| !is_image_extension(e))
+        && IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+}
+
+#[cfg(test)]
+mod wave111_tests {
+    use super::*;
+
+    #[test]
+    fn wave111_extension_gif_bmp_mov_mkv_case_path_unsupported_pdf_family_disjoint_dual_oracle() {
+        assert!(wave111_gif_bmp_shell());
+        assert!(wave111_mov_mkv_shell());
+        assert!(wave111_case_path_shell());
+        assert!(wave111_unsupported_pdf_shell());
+        assert!(wave111_family_disjoint_shell());
+        assert!(wave110_jpeg_png_shell());
+    }
+}
