@@ -3805,3 +3805,68 @@ mod wave125_tests {
         assert!(wave124_gif_image_shell());
     }
 }
+// ── wave126 pure residual dens: extension jpg mp4 pdf heic path dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: jpg image family dual-oracle.
+#[must_use]
+pub fn wave126_jpg_image_shell() -> bool {
+    is_image_extension("jpg")
+        && is_image_extension("JPEG")
+        && extension_kind("jpg") == Some("image")
+        && is_media_extension("jpeg")
+        && !is_video_extension("jpg")
+}
+
+/// Dual-oracle residual: mp4 video family dual-oracle.
+#[must_use]
+pub fn wave126_mp4_video_shell() -> bool {
+    is_video_extension("mp4")
+        && is_video_extension("MP4")
+        && extension_kind("mp4") == Some("video")
+        && is_media_extension("mp4")
+        && !is_image_extension("mp4")
+}
+
+/// Dual-oracle residual: pdf reject dual-oracle.
+#[must_use]
+pub fn wave126_pdf_reject_shell() -> bool {
+    !is_image_extension("pdf")
+        && !is_video_extension("pdf")
+        && !is_media_extension("pdf")
+        && extension_kind("pdf").is_none()
+}
+
+/// Dual-oracle residual: heic image membership dual-oracle.
+#[must_use]
+pub fn wave126_heic_image_shell() -> bool {
+    is_image_extension("heic")
+        && is_image_extension("HEIF")
+        && extension_kind("heif") == Some("image")
+        && IMAGE_EXTENSIONS.contains(&"heic")
+        && IMAGE_EXTENSIONS.contains(&"heif")
+}
+
+/// Dual-oracle residual: path extension of jpg dual-oracle.
+#[must_use]
+pub fn wave126_path_jpg_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("photo.JPG")) == Some("jpg".to_string())
+        && extension_of(Path::new("clip.mp4")) == Some("mp4".to_string())
+        && extension_of(Path::new("notes.pdf")).is_none()
+}
+
+#[cfg(test)]
+mod wave126_tests {
+    use super::*;
+
+    #[test]
+    fn wave126_extension_jpg_mp4_pdf_heic_path_dual_oracle() {
+        assert!(wave126_jpg_image_shell());
+        assert!(wave126_mp4_video_shell());
+        assert!(wave126_pdf_reject_shell());
+        assert!(wave126_heic_image_shell());
+        assert!(wave126_path_jpg_shell());
+        assert!(wave125_webp_image_shell());
+    }
+}
