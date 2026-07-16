@@ -4143,3 +4143,70 @@ mod wave130_tests {
         assert!(wave129_heic_image_shell());
     }
 }
+// ── wave131 pure residual dens: extension jpeg mov gif empty family dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: jpeg image alias dual-oracle.
+#[must_use]
+pub fn wave131_jpeg_image_shell() -> bool {
+    is_image_extension("jpeg")
+        && is_image_extension("JPEG")
+        && extension_kind("jpeg") == Some("image")
+        && is_media_extension("jpeg")
+        && !is_video_extension("jpeg")
+}
+
+/// Dual-oracle residual: mov video family dual-oracle.
+#[must_use]
+pub fn wave131_mov_video_shell() -> bool {
+    is_video_extension("mov")
+        && is_video_extension("MOV")
+        && extension_kind("mov") == Some("video")
+        && is_media_extension("mov")
+        && !is_image_extension("mov")
+}
+
+/// Dual-oracle residual: gif image membership dual-oracle.
+#[must_use]
+pub fn wave131_gif_image_shell() -> bool {
+    is_image_extension("gif")
+        && is_image_extension("GIF")
+        && extension_kind("gif") == Some("image")
+        && IMAGE_EXTENSIONS.contains(&"gif")
+        && is_media_extension("gif")
+}
+
+/// Dual-oracle residual: empty/no extension reject dual-oracle.
+#[must_use]
+pub fn wave131_empty_ext_shell() -> bool {
+    use std::path::Path;
+    !is_media_extension("")
+        && extension_kind("").is_none()
+        && extension_of(Path::new("README")).is_none()
+        && extension_of(Path::new("noext")).is_none()
+}
+
+/// Dual-oracle residual: family size dual-oracle.
+#[must_use]
+pub fn wave131_family_size_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len() == 23
+        && IMAGE_EXTENSIONS[0] == "jpg"
+        && VIDEO_EXTENSIONS[0] == "mp4"
+}
+
+#[cfg(test)]
+mod wave131_tests {
+    use super::*;
+
+    #[test]
+    fn wave131_extension_jpeg_mov_gif_empty_family_dual_oracle() {
+        assert!(wave131_jpeg_image_shell());
+        assert!(wave131_mov_video_shell());
+        assert!(wave131_gif_image_shell());
+        assert!(wave131_empty_ext_shell());
+        assert!(wave131_family_size_shell());
+        assert!(wave130_jpg_image_shell());
+    }
+}
