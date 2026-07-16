@@ -2462,3 +2462,75 @@ mod wave105_tests {
         assert!(wave104_jpeg_heic_shell());
     }
 }
+// ── wave106 pure residual dens: extension jpeg-heic mov-webm bare-ext-case path-none head-tail dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: jpeg/heic image membership dual-oracle.
+#[must_use]
+pub fn wave106_jpeg_heic_shell() -> bool {
+    is_image_extension("jpeg")
+        && is_image_extension("HEIC")
+        && extension_kind("jpeg") == Some("image")
+        && extension_kind("heic") == Some("image")
+        && is_media_extension("heif")
+        && !is_video_extension("jpeg")
+}
+
+/// Dual-oracle residual: mov/webm video membership dual-oracle.
+#[must_use]
+pub fn wave106_mov_webm_shell() -> bool {
+    is_video_extension("mov")
+        && is_video_extension("WEBM")
+        && extension_kind("mov") == Some("video")
+        && extension_kind("webm") == Some("video")
+        && is_media_extension("m4v")
+        && !is_image_extension("mov")
+}
+
+/// Dual-oracle residual: bare extension case dual-oracle.
+#[must_use]
+pub fn wave106_bare_ext_case_shell() -> bool {
+    is_image_extension("JPG")
+        && is_image_extension("Raw")
+        && is_video_extension("AVI")
+        && is_video_extension("Flv")
+        && extension_kind("TIFF") == Some("image")
+        && extension_kind("MPEG") == Some("video")
+}
+
+/// Dual-oracle residual: path none dual-oracle.
+#[must_use]
+pub fn wave106_path_none_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("README")).is_none()
+        && extension_of(Path::new("notes.md")).is_none()
+        && extension_of(Path::new("archive.tar.gz")).is_none()
+        && extension_of(Path::new("photo.JPG")) == Some("jpg".to_string())
+}
+
+/// Dual-oracle residual: family head-tail dual-oracle.
+#[must_use]
+pub fn wave106_head_tail_shell() -> bool {
+    IMAGE_EXTENSIONS[0] == "jpg"
+        && IMAGE_EXTENSIONS.last() == Some(&"raw")
+        && VIDEO_EXTENSIONS[0] == "mp4"
+        && VIDEO_EXTENSIONS.last() == Some(&"divx")
+        && IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+}
+
+#[cfg(test)]
+mod wave106_tests {
+    use super::*;
+
+    #[test]
+    fn wave106_extension_jpeg_heic_mov_webm_bare_ext_case_path_none_head_tail_dual_oracle() {
+        assert!(wave106_jpeg_heic_shell());
+        assert!(wave106_mov_webm_shell());
+        assert!(wave106_bare_ext_case_shell());
+        assert!(wave106_path_none_shell());
+        assert!(wave106_head_tail_shell());
+        assert!(wave105_png_webp_shell());
+    }
+}
