@@ -316,3 +316,82 @@ mod wave65_tests {
         assert!(is_destination_bucket("error"));
     }
 }
+
+// ── wave66 pure residual dens: transfer skip-when-no-dir dual-oracle residual ──
+// Dual-oracle residual of transferOrganizedFiles skip when dest dirs absent pure half.
+// Filesystem transfer I/O residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: without duplicate dir, dups land in skip.
+#[must_use]
+pub fn dups_skip_without_duplicate_dir() -> bool {
+    let plan = plan_transfer_destinations(
+        &[],
+        &[DupSetInput {
+            best_file: "/best.jpg".into(),
+            duplicates: vec!["/dup.jpg".into()],
+        }],
+        &[],
+        false,
+        true,
+    );
+    plan.skip_count == 1 && plan.duplicate_count == 0 && transfer_plan_counts_consistent(&plan)
+}
+
+/// Dual-oracle residual: without error dir, errors land in skip.
+#[must_use]
+pub fn errors_skip_without_error_dir() -> bool {
+    let plan = plan_transfer_destinations(&[], &[], &["/err.bin".into()], true, false);
+    plan.skip_count == 1 && plan.error_count == 0 && transfer_plan_counts_consistent(&plan)
+}
+
+/// Dual-oracle residual: bucket catalog order target→duplicate→error→skip.
+#[must_use]
+pub fn transfer_bucket_order_ok() -> bool {
+    TRANSFER_BUCKETS == ["target", "duplicate", "error", "skip"]
+}
+
+/// Dual-oracle residual: destination buckets are target/duplicate/error only.
+#[must_use]
+pub fn destination_buckets_closed() -> bool {
+    is_destination_bucket("target")
+        && is_destination_bucket("duplicate")
+        && is_destination_bucket("error")
+        && !is_destination_bucket("skip")
+}
+
+/// Dual-oracle residual: relative_key for target is basename pure half.
+#[must_use]
+pub fn target_relative_key_is_basename() -> bool {
+    let plan = plan_transfer_destinations(&["/dir/photo.jpg".into()], &[], &[], true, true);
+    plan.actions.len() == 1 && plan.actions[0].relative_key == "photo.jpg"
+}
+
+#[cfg(test)]
+mod wave66_tests {
+    use super::*;
+
+    #[test]
+    fn wave66_transfer_skip_when_no_dir_dual_oracle() {
+        assert!(dups_skip_without_duplicate_dir());
+        assert!(errors_skip_without_error_dir());
+        assert!(transfer_bucket_order_ok());
+        assert!(destination_buckets_closed());
+        assert!(target_relative_key_is_basename());
+        assert_eq!(transfer_bucket_count(), 4);
+        assert!(skip_is_not_destination());
+        assert!(empty_inputs_empty_plan());
+        let plan = plan_transfer_destinations(
+            &["/u.jpg".into()],
+            &[DupSetInput {
+                best_file: "/best.jpg".into(),
+                duplicates: vec!["/dup.jpg".into()],
+            }],
+            &["/err.bin".into()],
+            true,
+            true,
+        );
+        assert_eq!(transfer_plan_total(&plan), plan.actions.len());
+        assert!(is_transfer_bucket("target"));
+        assert!(!is_transfer_bucket("archive"));
+    }
+}
