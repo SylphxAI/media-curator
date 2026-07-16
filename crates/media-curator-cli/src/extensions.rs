@@ -3669,3 +3669,73 @@ mod wave123_tests {
         assert!(wave122_png_image_shell());
     }
 }
+// ── wave124 pure residual dens: extension gif-image mov-video heic reject-pdf kind-none dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: gif image family dual-oracle.
+#[must_use]
+pub fn wave124_gif_image_shell() -> bool {
+    is_image_extension("gif")
+        && is_image_extension("GIF")
+        && extension_kind("gif") == Some("image")
+        && is_media_extension("gif")
+        && !is_video_extension("gif")
+}
+
+/// Dual-oracle residual: mov video family dual-oracle.
+#[must_use]
+pub fn wave124_mov_video_shell() -> bool {
+    is_video_extension("mov")
+        && is_video_extension("MOV")
+        && extension_kind("mov") == Some("video")
+        && is_media_extension("mov")
+        && !is_image_extension("mov")
+}
+
+/// Dual-oracle residual: heic image membership dual-oracle.
+#[must_use]
+pub fn wave124_heic_image_shell() -> bool {
+    is_image_extension("heic")
+        && is_image_extension("heif")
+        && is_media_extension("HEIC")
+        && extension_kind("heic") == Some("image")
+        && IMAGE_EXTENSIONS.contains(&"heic")
+}
+
+/// Dual-oracle residual: reject non-media pdf dual-oracle.
+#[must_use]
+pub fn wave124_reject_pdf_shell() -> bool {
+    !is_media_extension("pdf")
+        && !is_image_extension("pdf")
+        && !is_video_extension("pdf")
+        && extension_kind("pdf").is_none()
+        && {
+            use std::path::Path;
+            extension_of(Path::new("doc.pdf")).is_none()
+        }
+}
+
+/// Dual-oracle residual: kind none for unknown dual-oracle.
+#[must_use]
+pub fn wave124_kind_none_shell() -> bool {
+    extension_kind("txt").is_none()
+        && extension_kind("json").is_none()
+        && extension_kind("docx").is_none()
+        && IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+}
+
+#[cfg(test)]
+mod wave124_tests {
+    use super::*;
+
+    #[test]
+    fn wave124_extension_gif_mov_heic_pdf_kind_dual_oracle() {
+        assert!(wave124_gif_image_shell());
+        assert!(wave124_mov_video_shell());
+        assert!(wave124_heic_image_shell());
+        assert!(wave124_reject_pdf_shell());
+        assert!(wave124_kind_none_shell());
+        assert!(wave123_jpeg_image_shell());
+    }
+}
