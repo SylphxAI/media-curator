@@ -648,3 +648,70 @@ mod wave78_tests {
         assert!(wave77_family_size_shell());
     }
 }
+
+
+// ── wave79 pure residual dens: extension heic mp4 family sizes dual-oracle residual ──
+// Dual-oracle residual of ALL_SUPPORTED_EXTENSIONS pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: heic/heif image membership case-insensitive.
+#[must_use]
+pub fn wave79_heic_shell() -> bool {
+    is_image_extension("heic")
+        && is_image_extension("HEIF")
+        && extension_kind("heic") == Some("image")
+        && extension_of(std::path::Path::new("shot.HEIC")) == Some("heic".into())
+}
+
+/// Dual-oracle residual: mp4 path + video kind.
+#[must_use]
+pub fn wave79_mp4_shell() -> bool {
+    is_video_extension("mp4")
+        && extension_kind("mp4") == Some("video")
+        && extension_of(std::path::Path::new("/tmp/clip.MP4")) == Some("mp4".into())
+        && !is_image_extension("mp4")
+}
+
+/// Dual-oracle residual: family sizes 11 image / 12 video.
+#[must_use]
+pub fn wave79_family_size_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && is_media_extension("png")
+        && is_media_extension("webm")
+}
+
+/// Dual-oracle residual: gif image + webm video partition.
+#[must_use]
+pub fn wave79_gif_webm_shell() -> bool {
+    is_image_extension("gif")
+        && is_video_extension("webm")
+        && !is_video_extension("gif")
+        && !is_image_extension("webm")
+        && extension_kind("gif") == Some("image")
+        && extension_kind("webm") == Some("video")
+}
+
+/// Dual-oracle residual: unsupported pdf/txt + bare none.
+#[must_use]
+pub fn wave79_unsupported_shell() -> bool {
+    !is_media_extension("pdf")
+        && !is_media_extension("txt")
+        && extension_kind("docx").is_none()
+        && extension_of(std::path::Path::new("notes")).is_none()
+}
+
+#[cfg(test)]
+mod wave79_tests {
+    use super::*;
+
+    #[test]
+    fn wave79_extension_heic_mp4_family_sizes_dual_oracle() {
+        assert!(wave79_heic_shell());
+        assert!(wave79_mp4_shell());
+        assert!(wave79_family_size_shell());
+        assert!(wave79_gif_webm_shell());
+        assert!(wave79_unsupported_shell());
+        assert!(wave78_webp_mov_shell());
+    }
+}
