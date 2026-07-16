@@ -3159,3 +3159,59 @@ mod wave115_tests {
         assert!(wave112_jpeg_png_shell());
     }
 }
+// ── wave116 pure residual dens: extension families-disjoint image-video-kind path-extract unsupported dual-oracle residual ──
+// Dual-oracle residual of extension pure halves. dens ≠ flip.
+
+/// Dual-oracle residual: image and video families disjoint dual-oracle.
+#[must_use]
+pub fn wave116_families_disjoint_shell() -> bool {
+    !IMAGE_EXTENSIONS.iter().any(|e| is_video_extension(e))
+        && !VIDEO_EXTENSIONS.iter().any(|e| is_image_extension(e))
+}
+
+/// Dual-oracle residual: kind probes dual-oracle.
+#[must_use]
+pub fn wave116_kind_probe_shell() -> bool {
+    extension_kind("jpg") == Some("image")
+        && extension_kind("mp4") == Some("video")
+        && extension_kind("pdf").is_none()
+}
+
+/// Dual-oracle residual: path extract lower dual-oracle.
+#[must_use]
+pub fn wave116_path_extract_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("a/B.JPG")) == Some("jpg".into())
+        && extension_of(Path::new("x.mp4")) == Some("mp4".into())
+}
+
+/// Dual-oracle residual: media membership dual-oracle.
+#[must_use]
+pub fn wave116_media_membership_shell() -> bool {
+    is_media_extension("png")
+        && is_media_extension("mov")
+        && !is_media_extension("doc")
+}
+
+/// Dual-oracle residual: all_supported covers families dual-oracle.
+#[must_use]
+pub fn wave116_all_covers_shell() -> bool {
+    let all = all_supported_extensions();
+    IMAGE_EXTENSIONS.iter().all(|e| all.contains(e))
+        && VIDEO_EXTENSIONS.iter().all(|e| all.contains(e))
+}
+
+#[cfg(test)]
+mod wave116_tests {
+    use super::*;
+
+    #[test]
+    fn wave116_extension_families_kind_path_media_all_covers_dual_oracle() {
+        assert!(wave116_families_disjoint_shell());
+        assert!(wave116_kind_probe_shell());
+        assert!(wave116_path_extract_shell());
+        assert!(wave116_media_membership_shell());
+        assert!(wave116_all_covers_shell());
+        assert!(wave115_jpeg_png_shell());
+    }
+}
