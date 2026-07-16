@@ -1329,3 +1329,71 @@ mod wave89_tests {
         assert!(wave88_family_size_shell());
     }
 }
+
+// ── wave90 pure residual dens: extension webm mp4 case multi-dot kind dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: webm/mp4 video membership + kind.
+#[must_use]
+pub fn wave90_webm_mp4_shell() -> bool {
+    is_video_extension("webm")
+        && is_video_extension("MP4")
+        && extension_kind("webm") == Some("video")
+        && is_media_extension("mp4")
+        && !is_image_extension("webm")
+}
+
+/// Dual-oracle residual: case-insensitive jpg/png image family.
+#[must_use]
+pub fn wave90_case_jpg_shell() -> bool {
+    is_image_extension("JPG")
+        && is_image_extension("PnG")
+        && extension_kind("JPEG") == Some("image")
+        && is_media_extension("jpeg")
+        && !is_video_extension("jpg")
+}
+
+/// Dual-oracle residual: multi-dot path extension extract.
+#[must_use]
+pub fn wave90_multi_dot_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("archive.tar.webm")) == Some("webm".to_string())
+        && extension_of(Path::new("photo.backup.JPG")) == Some("jpg".to_string())
+        && extension_of(Path::new("clip.mp4")) == Some("mp4".to_string())
+}
+
+/// Dual-oracle residual: kind partition closed labels.
+#[must_use]
+pub fn wave90_kind_partition_shell() -> bool {
+    extension_kind("heic") == Some("image")
+        && extension_kind("mkv") == Some("video")
+        && extension_kind("pdf").is_none()
+        && IMAGE_EXTENSIONS.iter().all(|e| extension_kind(e) == Some("image"))
+        && VIDEO_EXTENSIONS.iter().all(|e| extension_kind(e) == Some("video"))
+}
+
+/// Dual-oracle residual: family sizes + unsupported pdf.
+#[must_use]
+pub fn wave90_family_size_unsupported_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && all_supported_extensions().len() == 23
+        && !is_media_extension("pdf")
+        && !is_media_extension("txt")
+}
+
+#[cfg(test)]
+mod wave90_tests {
+    use super::*;
+
+    #[test]
+    fn wave90_extension_webm_mp4_case_multi_dot_kind_dual_oracle() {
+        assert!(wave90_webm_mp4_shell());
+        assert!(wave90_case_jpg_shell());
+        assert!(wave90_multi_dot_path_shell());
+        assert!(wave90_kind_partition_shell());
+        assert!(wave90_family_size_unsupported_shell());
+        assert!(wave89_disjoint_union_shell());
+    }
+}
