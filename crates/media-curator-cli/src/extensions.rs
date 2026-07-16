@@ -524,3 +524,66 @@ mod wave76_tests {
         assert!(wave75_family_size_shell());
     }
 }
+
+
+// ── wave77 pure residual dens: extension heic mp4 case family dual-oracle residual ──
+// Dual-oracle residual of ALL_SUPPORTED_EXTENSIONS pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: HEIC image membership case-insensitive.
+#[must_use]
+pub fn wave77_heic_case_shell() -> bool {
+    is_image_extension("heic")
+        && is_image_extension("HEIC")
+        && is_media_extension("heif")
+        && !is_video_extension("heic")
+}
+
+/// Dual-oracle residual: MP4 video path extension.
+#[must_use]
+pub fn wave77_mp4_path_shell() -> bool {
+    extension_of(std::path::Path::new("clip.MP4")) == Some("mp4".into())
+        && is_video_extension("mp4")
+        && extension_kind("mp4") == Some("video")
+}
+
+/// Dual-oracle residual: family sizes 11 image + 12 video.
+#[must_use]
+pub fn wave77_family_size_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && all_supported_extensions().len() == 23
+}
+
+/// Dual-oracle residual: unsupported pdf/txt not media.
+#[must_use]
+pub fn wave77_unsupported_shell() -> bool {
+    !is_media_extension("pdf")
+        && !is_media_extension("txt")
+        && extension_kind("pdf").is_none()
+        && extension_of(std::path::Path::new("doc.pdf")).is_none()
+}
+
+/// Dual-oracle residual: head/tail of families.
+#[must_use]
+pub fn wave77_head_tail_shell() -> bool {
+    IMAGE_EXTENSIONS[0] == "jpg"
+        && IMAGE_EXTENSIONS[IMAGE_EXTENSIONS.len() - 1] == "raw"
+        && VIDEO_EXTENSIONS[0] == "mp4"
+        && VIDEO_EXTENSIONS[VIDEO_EXTENSIONS.len() - 1] == "divx"
+}
+
+#[cfg(test)]
+mod wave77_tests {
+    use super::*;
+
+    #[test]
+    fn wave77_extension_heic_mp4_case_family_dual_oracle() {
+        assert!(wave77_heic_case_shell());
+        assert!(wave77_mp4_path_shell());
+        assert!(wave77_family_size_shell());
+        assert!(wave77_unsupported_shell());
+        assert!(wave77_head_tail_shell());
+        assert!(wave76_kind_closed_shell());
+    }
+}
