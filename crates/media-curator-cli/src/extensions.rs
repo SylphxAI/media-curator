@@ -337,3 +337,66 @@ mod wave72_tests {
         assert_eq!(image_head_tail_shell(), ("jpg", "raw"));
     }
 }
+
+// ── wave73 pure residual dens: extension path bare + kind partition dual-oracle residual ──
+// Dual-oracle residual of extension_of bare path + kind partition pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: bare filename with image/video ext.
+#[must_use]
+pub fn bare_filename_extension_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("photo.HEIC")).as_deref() == Some("heic")
+        && extension_of(Path::new("clip.mkv")).as_deref() == Some("mkv")
+        && is_media_extension("heic")
+        && is_media_extension("mkv")
+}
+
+/// Dual-oracle residual: raw image membership + not video.
+#[must_use]
+pub fn raw_image_not_video_shell() -> bool {
+    is_image_extension("raw")
+        && is_image_extension("RAW")
+        && !is_video_extension("raw")
+        && extension_kind("raw") == Some("image")
+}
+
+/// Dual-oracle residual: divx video membership + not image.
+#[must_use]
+pub fn divx_video_not_image_shell() -> bool {
+    is_video_extension("divx")
+        && !is_image_extension("divx")
+        && extension_kind("divx") == Some("video")
+}
+
+/// Dual-oracle residual: families disjoint for every image ext.
+#[must_use]
+pub fn image_family_not_in_video_shell() -> bool {
+    IMAGE_EXTENSIONS.iter().all(|e| !is_video_extension(e))
+        && VIDEO_EXTENSIONS.iter().all(|e| !is_image_extension(e))
+}
+
+/// Dual-oracle residual: empty extension string not media.
+#[must_use]
+pub fn empty_extension_not_media_shell() -> bool {
+    !is_media_extension("")
+        && !is_image_extension("")
+        && !is_video_extension("")
+        && extension_kind("").is_none()
+}
+
+#[cfg(test)]
+mod wave73_tests {
+    use super::*;
+
+    #[test]
+    fn wave73_extension_path_kind_partition_dual_oracle() {
+        assert!(bare_filename_extension_shell());
+        assert!(raw_image_not_video_shell());
+        assert!(divx_video_not_image_shell());
+        assert!(image_family_not_in_video_shell());
+        assert!(empty_extension_not_media_shell());
+        assert!(family_size_product_shell());
+        assert!(all_supported_size_shell());
+    }
+}
