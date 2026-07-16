@@ -1761,3 +1761,75 @@ mod wave95_tests {
         assert!(wave94_jpg_png_shell());
     }
 }
+
+// ── wave96 pure residual dens: extension jpg png heic mp4 case empty dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: jpg/png image membership + kind.
+#[must_use]
+pub fn wave96_jpg_png_shell() -> bool {
+    is_image_extension("jpg")
+        && is_image_extension("PNG")
+        && extension_kind("jpg") == Some("image")
+        && extension_kind("png") == Some("image")
+        && is_media_extension("jpeg")
+        && !is_video_extension("jpg")
+}
+
+/// Dual-oracle residual: heic/mp4 family dual-oracle.
+#[must_use]
+pub fn wave96_heic_mp4_shell() -> bool {
+    is_image_extension("heic")
+        && is_video_extension("mp4")
+        && extension_kind("heic") == Some("image")
+        && extension_kind("MP4") == Some("video")
+        && is_media_extension("heif")
+        && is_media_extension("webm")
+}
+
+/// Dual-oracle residual: case fold dual-oracle.
+#[must_use]
+pub fn wave96_case_fold_shell() -> bool {
+    is_image_extension("JpG")
+        && is_video_extension("MkV")
+        && extension_kind("GIF") == Some("image")
+        && extension_kind("MOV") == Some("video")
+        && is_media_extension("WeBp")
+}
+
+/// Dual-oracle residual: empty/missing path extract dual-oracle.
+#[must_use]
+pub fn wave96_empty_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("")) == None
+        && extension_of(Path::new(".")) == None
+        && extension_of(Path::new("dir/")) == None
+        && extension_of(Path::new("photo.JPG")) == Some("jpg".to_string())
+}
+
+/// Dual-oracle residual: disjoint image/video membership dual-oracle.
+#[must_use]
+pub fn wave96_disjoint_shell() -> bool {
+    !IMAGE_EXTENSIONS.iter().any(|e| VIDEO_EXTENSIONS.contains(e))
+        && !VIDEO_EXTENSIONS.iter().any(|e| IMAGE_EXTENSIONS.contains(e))
+        && IMAGE_EXTENSIONS.contains(&"jpg")
+        && VIDEO_EXTENSIONS.contains(&"mp4")
+        && is_media_extension("jpg")
+        && is_media_extension("mp4")
+}
+
+#[cfg(test)]
+mod wave96_tests {
+    use super::*;
+
+    #[test]
+    fn wave96_extension_jpg_png_heic_mp4_case_empty_dual_oracle() {
+        assert!(wave96_jpg_png_shell());
+        assert!(wave96_heic_mp4_shell());
+        assert!(wave96_case_fold_shell());
+        assert!(wave96_empty_path_shell());
+        assert!(wave96_disjoint_shell());
+        assert!(wave95_gif_webp_shell());
+    }
+}
