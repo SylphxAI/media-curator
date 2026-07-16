@@ -2047,3 +2047,75 @@ mod wave99_tests {
         assert!(wave98_jpg_png_shell());
     }
 }
+// ── wave100 pure residual dens: extension heic-jpeg mov-avi bare-none families-disjoint head-tail dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: heic/jpeg image membership dual-oracle.
+#[must_use]
+pub fn wave100_heic_jpeg_shell() -> bool {
+    is_image_extension("heic")
+        && is_image_extension("JPEG")
+        && extension_kind("heif") == Some("image")
+        && extension_kind("jpeg") == Some("image")
+        && is_media_extension("heic")
+        && !is_video_extension("jpeg")
+}
+
+/// Dual-oracle residual: mov/avi video family dual-oracle.
+#[must_use]
+pub fn wave100_mov_avi_shell() -> bool {
+    is_video_extension("mov")
+        && is_video_extension("AVI")
+        && extension_kind("mov") == Some("video")
+        && extension_kind("avi") == Some("video")
+        && is_media_extension("divx")
+        && !is_image_extension("mov")
+}
+
+/// Dual-oracle residual: bare name / unsupported path none dual-oracle.
+#[must_use]
+pub fn wave100_bare_none_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("README")) == None
+        && extension_of(Path::new("archive.zip")) == None
+        && extension_of(Path::new(".hidden")) == None
+        && !is_media_extension("zip")
+        && extension_kind("exe") == None
+}
+
+/// Dual-oracle residual: families disjoint dual-oracle.
+#[must_use]
+pub fn wave100_families_disjoint_shell() -> bool {
+    IMAGE_EXTENSIONS.iter().all(|e| !is_video_extension(e))
+        && VIDEO_EXTENSIONS.iter().all(|e| !is_image_extension(e))
+        && extension_families_disjoint()
+        && IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+}
+
+/// Dual-oracle residual: head/tail catalog dual-oracle.
+#[must_use]
+pub fn wave100_head_tail_shell() -> bool {
+    image_head_tail_shell() == ("jpg", "raw")
+        && video_head_tail_shell() == ("mp4", "divx")
+        && IMAGE_EXTENSIONS.first() == Some(&"jpg")
+        && IMAGE_EXTENSIONS.last() == Some(&"raw")
+        && VIDEO_EXTENSIONS.first() == Some(&"mp4")
+        && VIDEO_EXTENSIONS.last() == Some(&"divx")
+}
+
+#[cfg(test)]
+mod wave100_tests {
+    use super::*;
+
+    #[test]
+    fn wave100_extension_heic_jpeg_mov_avi_bare_none_families_disjoint_head_tail_dual_oracle() {
+        assert!(wave100_heic_jpeg_shell());
+        assert!(wave100_mov_avi_shell());
+        assert!(wave100_bare_none_shell());
+        assert!(wave100_families_disjoint_shell());
+        assert!(wave100_head_tail_shell());
+        assert!(wave99_tiff_bmp_shell());
+    }
+}
