@@ -192,6 +192,41 @@ fn compare_case(case: &OracleCase) {
                 }
             }
         }
+        "cli/cache-persistence" => {
+            use media_curator_cli::cache_keys::{
+                metadata_lsh_keys, plan_default_cache_layout, SERIALIZE_MARKER_DATE,
+                SERIALIZE_MARKER_MSGPACK, SERIALIZE_MARKER_SHARED_ARRAY_BUFFER,
+            };
+            if case.input.get("markers").and_then(Value::as_bool) == Some(true) {
+                json!({
+                    "msgpack": SERIALIZE_MARKER_MSGPACK,
+                    "sharedArrayBuffer": SERIALIZE_MARKER_SHARED_ARRAY_BUFFER,
+                    "date": SERIALIZE_MARKER_DATE,
+                })
+            } else if case.input.get("phashHex").is_some() {
+                let keys = metadata_lsh_keys(case.input["phashHex"].as_str());
+                json!({
+                    "lshKeys": [
+                        keys[0],
+                        keys[1],
+                        keys[2],
+                        keys[3],
+                    ]
+                })
+            } else {
+                let plan = plan_default_cache_layout(
+                    case.input["jobName"].as_str().expect("jobName"),
+                    case.input["hashKey"].as_str().expect("hashKey"),
+                );
+                json!({
+                    "rootDir": plan.root_dir,
+                    "metadataPath": plan.metadata_path,
+                    "resultsDb": plan.results_db,
+                    "configDb": plan.config_db,
+                    "mutexKey": plan.mutex_key,
+                })
+            }
+        }
         "cli/transfer-reporting" => {
             use media_curator_cli::transfer::{plan_transfer_destinations, DupSetInput};
             let unique: Vec<String> = case.input["uniqueFiles"]
@@ -275,6 +310,11 @@ fn cli_deduplication_engine_exact_dup_differential_matches_ts_oracle() {
 #[test]
 fn cli_transfer_reporting_differential_matches_ts_oracle() {
     run_slice("cli/transfer-reporting");
+}
+
+#[test]
+fn cli_cache_persistence_differential_matches_ts_oracle() {
+    run_slice("cli/cache-persistence");
 }
 
 #[test]

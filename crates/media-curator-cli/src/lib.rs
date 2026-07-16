@@ -1,5 +1,6 @@
 //! media-curator-cli — ADR-168 production authority cores.
 
+pub mod cache_keys;
 pub mod discovery;
 pub mod extensions;
 pub mod file_stats;

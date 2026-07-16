@@ -2,7 +2,7 @@
 /**
  * Media Curator frozen TS oracle for bounded differential parity (rej-010).
  * Slices: cli/metadata-extraction | cli/discovery-gather | cli/perceptual-hash-lsh
- *          | cli/deduplication-engine | cli/transfer-reporting
+ *          | cli/deduplication-engine | cli/transfer-reporting | cli/cache-persistence
  */
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
@@ -316,6 +316,34 @@ function runCase(testCase: (typeof corpus.cases)[number]) {
         errorCount: count('error'),
         skipCount: count('skip'),
         actions,
+      };
+    }
+    case 'cli/cache-persistence': {
+      if (testCase.input.markers) {
+        return { msgpack: 0, sharedArrayBuffer: 1, date: 2 };
+      }
+      if ('phashHex' in testCase.input) {
+        const h = testCase.input.phashHex as string | null;
+        if (h && h.length === 16 && /^[0-9a-fA-F]+$/.test(h)) {
+          return {
+            lshKeys: [
+              h.slice(0, 4),
+              h.slice(4, 8),
+              h.slice(8, 12),
+              h.slice(12, 16),
+            ],
+          };
+        }
+        return { lshKeys: [null, null, null, null] };
+      }
+      const jobName = String(testCase.input.jobName ?? '');
+      const hashKey = String(testCase.input.hashKey ?? '');
+      return {
+        rootDir: '.mediadb',
+        metadataPath: '.mediadb/metadata.sqlite',
+        resultsDb: `${jobName}_results`,
+        configDb: `${jobName}_config`,
+        mutexKey: `${jobName}:${hashKey}`,
       };
     }
     default:

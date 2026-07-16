@@ -169,10 +169,12 @@
       "id": "cli/cache-persistence",
       "domain": "persistence",
       "weight": 4,
-      "state": "ts_only",
+      "state": "rust_impl",
       "tsSurface": "src/caching/LmdbCache.ts; src/services/MetadataDBService.ts",
-      "parityTest": "tests/caching/LmdbCache.integration.test.ts; tests/services/MetadataDBService.integration.test.ts",
-      "notes": ""
+      "parityTest": "crates/media-curator-cli/tests/media_curator_differential.rs#cli_cache_persistence_differential_matches_ts_oracle",
+      "notes": "Pure LMDB/SQLite naming + LSH band split + serialize markers (cache_keys.rs); dual-oracle 4 cases. LMDB/SQLite I/O residual TS.",
+      "rustSurface": "crates/media-curator-cli/src/cache_keys.rs",
+      "differentialTest": "crates/media-curator-cli/tests/media_curator_differential.rs#cli_cache_persistence_differential_matches_ts_oracle; scripts/run-media-curator-differential.sh --slice cli/cache-persistence"
     },
     {
       "id": "cli/transfer-reporting",
@@ -242,9 +244,9 @@
   ],
   "summary": {
     "total": 9,
-    "ts_only": 2,
+    "ts_only": 1,
     "contracted": 0,
-    "rust_impl": 2,
+    "rust_impl": 3,
     "parity_proven": 0,
     "authority_rust": 0,
     "ts_deleted": 5,
@@ -269,13 +271,25 @@
       "verificationRef": "verification/media-curator-differential-green.json",
       "notes": "Rust default authority + native pack + 14-case differential; residual dedup/cache/transfer/proto remain ts_only"
     },
-    "lastMutation": "PARTIAL-TS-DELETED-DENS-TRANSFER-DEDUP",
+    "lastMutation": "PHOTO-MEDIA2-RUST-IMPL-DENS",
     "partial_ts_deleted_dens_2026_07_16": {
       "action": "rust_impl dens",
       "advanced": ["cli/transfer-reporting"],
       "deepened": ["cli/deduplication-engine"],
       "residual_ts_only": ["cli/cache-persistence", "contracts/proto-ssot"],
       "notes": "No ts_deleted flips (deletion/parity evidence not claimed). Inventory verified still requires full ts_deleted."
+    },
+    "photo_media2_dens_2026_07_16": {
+      "action": "rust_impl dens",
+      "advanced": ["cli/cache-persistence"],
+      "already_rust_impl": [
+        "cli/deduplication-engine",
+        "cli/transfer-reporting"
+      ],
+      "residual_ts_only": ["contracts/proto-ssot"],
+      "ts_deleted_unchanged": 5,
+      "notes": "No ts_deleted flips. Inventory verified still blocked until full 9/9 ts_deleted.",
+      "at": "2026-07-16T04:11:55Z"
     }
   },
   "promotionHold": {

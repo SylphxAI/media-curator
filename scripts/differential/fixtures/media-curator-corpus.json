@@ -1,6 +1,6 @@
 {
   "corpusVersion": 1,
-  "slice": "cli/metadata-extraction|cli/discovery-gather|cli/perceptual-hash-lsh|cli/deduplication-engine|cli/transfer-reporting",
+  "slice": "cli/metadata-extraction|cli/discovery-gather|cli/perceptual-hash-lsh|cli/deduplication-engine|cli/transfer-reporting|cli/cache-persistence",
   "cases": [
     {
       "id": "file-stats-sample-a.txt",
@@ -404,6 +404,57 @@
             "relativeKey": ""
           }
         ]
+      }
+    },
+    {
+      "id": "cache-layout-default",
+      "slice": "cli/cache-persistence",
+      "domain": "pipeline",
+      "input": {
+        "jobName": "fileStats",
+        "hashKey": "abc123"
+      },
+      "output": {
+        "rootDir": ".mediadb",
+        "metadataPath": ".mediadb/metadata.sqlite",
+        "resultsDb": "fileStats_results",
+        "configDb": "fileStats_config",
+        "mutexKey": "fileStats:abc123"
+      }
+    },
+    {
+      "id": "cache-lsh-keys-valid",
+      "slice": "cli/cache-persistence",
+      "domain": "pipeline",
+      "input": {
+        "phashHex": "0123456789abcdef"
+      },
+      "output": {
+        "lshKeys": ["0123", "4567", "89ab", "cdef"]
+      }
+    },
+    {
+      "id": "cache-lsh-keys-invalid",
+      "slice": "cli/cache-persistence",
+      "domain": "pipeline",
+      "input": {
+        "phashHex": "short"
+      },
+      "output": {
+        "lshKeys": [null, null, null, null]
+      }
+    },
+    {
+      "id": "cache-serialize-markers",
+      "slice": "cli/cache-persistence",
+      "domain": "pipeline",
+      "input": {
+        "markers": true
+      },
+      "output": {
+        "msgpack": 0,
+        "sharedArrayBuffer": 1,
+        "date": 2
       }
     }
   ]
