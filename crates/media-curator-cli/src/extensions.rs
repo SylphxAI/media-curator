@@ -981,3 +981,72 @@ mod wave84_tests {
         assert!(wave83_family_sizes_shell());
     }
 }
+
+// ── wave85 pure residual dens: extension case webm unsupported path dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: case-insensitive image family membership.
+#[must_use]
+pub fn wave85_case_image_shell() -> bool {
+    is_image_extension("JPG")
+        && is_image_extension("HeIc")
+        && is_media_extension("PNG")
+        && !is_video_extension("png")
+        && extension_kind("jpeg") == Some("image")
+}
+
+/// Dual-oracle residual: webm/mp4 video kind + mov path.
+#[must_use]
+pub fn wave85_video_kind_shell() -> bool {
+    is_video_extension("webm")
+        && is_video_extension("MP4")
+        && extension_kind("mov") == Some("video")
+        && is_media_extension("mkv")
+        && !is_image_extension("mp4")
+}
+
+/// Dual-oracle residual: unsupported pdf/txt + empty.
+#[must_use]
+pub fn wave85_unsupported_shell() -> bool {
+    !is_media_extension("pdf")
+        && !is_media_extension("txt")
+        && extension_kind("docx").is_none()
+        && !is_image_extension("")
+        && !is_video_extension(" ")
+}
+
+/// Dual-oracle residual: family sizes + union membership.
+#[must_use]
+pub fn wave85_family_size_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && all_supported_extensions().len() == IMAGE_EXTENSIONS.len() + VIDEO_EXTENSIONS.len()
+        && IMAGE_EXTENSIONS[0] == "jpg"
+        && VIDEO_EXTENSIONS[0] == "mp4"
+}
+
+/// Dual-oracle residual: path extension_of head/tail dual-oracle.
+#[must_use]
+pub fn wave85_path_extension_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("a/b/photo.HEIC")) == Some("heic".to_string())
+        && extension_of(Path::new("clip.Mp4")) == Some("mp4".to_string())
+        && extension_of(Path::new("readme.txt")).is_none()
+        && extension_of(Path::new("noext")).is_none()
+}
+
+#[cfg(test)]
+mod wave85_tests {
+    use super::*;
+
+    #[test]
+    fn wave85_extension_case_webm_unsupported_path_dual_oracle() {
+        assert!(wave85_case_image_shell());
+        assert!(wave85_video_kind_shell());
+        assert!(wave85_unsupported_shell());
+        assert!(wave85_family_size_shell());
+        assert!(wave85_path_extension_shell());
+        assert!(wave84_union_empty_shell());
+    }
+}
