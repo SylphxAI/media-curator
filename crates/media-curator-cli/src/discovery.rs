@@ -395,3 +395,60 @@ mod wave68_tests {
         assert_eq!(opts.source_dirs.len(), 1);
     }
 }
+
+
+// ── wave70 pure residual dens: discovery clamp identity dual-oracle residual ──
+// Dual-oracle residual of discovery concurrency clamp identity pure half.
+// Filesystem walk I/O residual retained. dens ≠ flip.
+// product residual dens wave70
+
+/// Dual-oracle residual: clamp identity for min/default.
+#[must_use]
+pub fn discovery_clamp_identity() -> bool {
+    clamp_discovery_concurrency(MIN_DISCOVERY_CONCURRENCY) == MIN_DISCOVERY_CONCURRENCY
+        && clamp_discovery_concurrency(DEFAULT_DISCOVERY_CONCURRENCY)
+            == DEFAULT_DISCOVERY_CONCURRENCY
+}
+
+/// Dual-oracle residual: zero clamps to min.
+#[must_use]
+pub fn zero_clamps_to_min() -> bool {
+    clamp_discovery_concurrency(0) == MIN_DISCOVERY_CONCURRENCY
+}
+
+/// Dual-oracle residual: high concurrency preserved when above default.
+#[must_use]
+pub fn high_concurrency_preserved() -> bool {
+    clamp_discovery_concurrency(32) == 32 && clamp_discovery_concurrency(64) == 64
+}
+
+/// Dual-oracle residual: shell constants.
+#[must_use]
+pub fn discovery_constants_shell() -> (usize, usize) {
+    (MIN_DISCOVERY_CONCURRENCY, DEFAULT_DISCOVERY_CONCURRENCY)
+}
+
+/// Dual-oracle residual: default options concurrency matches default constant.
+#[must_use]
+pub fn default_options_shell_ok() -> bool {
+    let opts = discover_options_default(vec![std::path::PathBuf::from("/media")]);
+    opts.concurrency == DEFAULT_DISCOVERY_CONCURRENCY && opts.source_dirs.len() == 1
+}
+
+#[cfg(test)]
+mod wave70_tests {
+    use super::*;
+
+    #[test]
+    fn wave70_discovery_clamp_identity_dual_oracle() {
+        assert!(discovery_clamp_identity());
+        assert!(zero_clamps_to_min());
+        assert!(high_concurrency_preserved());
+        assert_eq!(discovery_constants_shell(), (1, 10));
+        assert!(default_options_shell_ok());
+        assert_eq!(discovery_clamp_ladder(), [1, 1, 10, 32, 64]);
+        assert!(default_is_tenfold_min());
+        assert!(min_concurrency_is_serial());
+        assert!(default_discovery_concurrency_is_ten());
+    }
+}
