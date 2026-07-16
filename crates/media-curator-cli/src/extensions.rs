@@ -1833,3 +1833,76 @@ mod wave96_tests {
         assert!(wave95_gif_webp_shell());
     }
 }
+
+// ── wave97 pure residual dens: extension gif webp mov avi unsupported multi-dot dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: gif/webp image membership dual-oracle.
+#[must_use]
+pub fn wave97_gif_webp_shell() -> bool {
+    is_image_extension("gif")
+        && is_image_extension("WEBP")
+        && extension_kind("gif") == Some("image")
+        && extension_kind("webp") == Some("image")
+        && is_media_extension("gif")
+        && !is_video_extension("webp")
+}
+
+/// Dual-oracle residual: mov/avi video membership dual-oracle.
+#[must_use]
+pub fn wave97_mov_avi_shell() -> bool {
+    is_video_extension("mov")
+        && is_video_extension("AVI")
+        && extension_kind("mov") == Some("video")
+        && extension_kind("avi") == Some("video")
+        && is_media_extension("m4v")
+        && !is_image_extension("mov")
+}
+
+/// Dual-oracle residual: unsupported extensions dual-oracle.
+#[must_use]
+pub fn wave97_unsupported_shell() -> bool {
+    !is_media_extension("txt")
+        && !is_media_extension("pdf")
+        && !is_image_extension("exe")
+        && !is_video_extension("docx")
+        && extension_kind("txt").is_none()
+        && extension_kind("").is_none()
+}
+
+/// Dual-oracle residual: multi-dot path extract dual-oracle.
+#[must_use]
+pub fn wave97_multi_dot_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("archive.tar.jpg")) == Some("jpg".to_string())
+        && extension_of(Path::new("clip.final.MOV")) == Some("mov".to_string())
+        && extension_of(Path::new("notes.txt")) == None
+        && extension_of(Path::new("photo.JPEG")) == Some("jpeg".to_string())
+}
+
+/// Dual-oracle residual: family head/tail sizes dual-oracle.
+#[must_use]
+pub fn wave97_family_sizes_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && IMAGE_EXTENSIONS.first() == Some(&"jpg")
+        && VIDEO_EXTENSIONS.first() == Some(&"mp4")
+        && IMAGE_EXTENSIONS.contains(&"gif")
+        && VIDEO_EXTENSIONS.contains(&"avi")
+}
+
+#[cfg(test)]
+mod wave97_tests {
+    use super::*;
+
+    #[test]
+    fn wave97_extension_gif_webp_mov_avi_unsupported_multi_dot_dual_oracle() {
+        assert!(wave97_gif_webp_shell());
+        assert!(wave97_mov_avi_shell());
+        assert!(wave97_unsupported_shell());
+        assert!(wave97_multi_dot_shell());
+        assert!(wave97_family_sizes_shell());
+        assert!(wave96_jpg_png_shell());
+    }
+}
