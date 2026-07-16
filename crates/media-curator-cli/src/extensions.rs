@@ -1190,3 +1190,73 @@ mod wave87_tests {
         assert!(wave85_family_size_shell());
     }
 }
+
+// ── wave88 pure residual dens: extension webm mp4 case family path dual-oracle residual ──
+// Dual-oracle residual of extension pure halves.
+// Filesystem walk residual retained. dens ≠ flip.
+
+/// Dual-oracle residual: webm/mp4 video + case kind.
+#[must_use]
+pub fn wave88_webm_mp4_shell() -> bool {
+    is_video_extension("webm")
+        && is_video_extension("MP4")
+        && extension_kind("m4v") == Some("video")
+        && is_media_extension("mkv")
+        && !is_image_extension("webm")
+}
+
+/// Dual-oracle residual: case image jpg/png + heic kind.
+#[must_use]
+pub fn wave88_case_image_shell() -> bool {
+    is_image_extension("JPG")
+        && is_image_extension("PnG")
+        && extension_kind("HEIC") == Some("image")
+        && is_media_extension("webp")
+        && !is_video_extension("png")
+}
+
+/// Dual-oracle residual: family sizes 11/12 + union 23.
+#[must_use]
+pub fn wave88_family_size_shell() -> bool {
+    IMAGE_EXTENSIONS.len() == 11
+        && VIDEO_EXTENSIONS.len() == 12
+        && all_supported_extensions().len() == 23
+        && IMAGE_EXTENSIONS[0] == "jpg"
+        && VIDEO_EXTENSIONS[0] == "mp4"
+}
+
+/// Dual-oracle residual: unsupported path + empty extension.
+#[must_use]
+pub fn wave88_unsupported_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("readme.txt")).is_none()
+        && extension_of(Path::new("Makefile")).is_none()
+        && !is_media_extension("txt")
+        && !is_media_extension("rs")
+        && extension_kind("zip").is_none()
+}
+
+/// Dual-oracle residual: multi-dot path + head/tail wire.
+#[must_use]
+pub fn wave88_multidot_path_shell() -> bool {
+    use std::path::Path;
+    extension_of(Path::new("shot.final.HEIC")) == Some("heic".to_string())
+        && extension_of(Path::new("clips/out.v1.WebM")) == Some("webm".to_string())
+        && IMAGE_EXTENSIONS[IMAGE_EXTENSIONS.len() - 1] == "raw"
+        && VIDEO_EXTENSIONS[VIDEO_EXTENSIONS.len() - 1] == "divx"
+}
+
+#[cfg(test)]
+mod wave88_tests {
+    use super::*;
+
+    #[test]
+    fn wave88_extension_webm_mp4_case_family_path_dual_oracle() {
+        assert!(wave88_webm_mp4_shell());
+        assert!(wave88_case_image_shell());
+        assert!(wave88_family_size_shell());
+        assert!(wave88_unsupported_shell());
+        assert!(wave88_multidot_path_shell());
+        assert!(wave87_disjoint_shell());
+    }
+}
