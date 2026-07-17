@@ -3,7 +3,7 @@
 # Media Curator 📸
 
 <p align="center">
-  <img src="docs/banner.png" alt="media-curator banner" width="100%" />
+  <img src="https://mark.sylphx.com/api/v1/banner?type=silk&theme=tokyonight&text=media+curator&desc=Intelligently+organizes+and+deduplicates+large+digital+photo+and+video+collectio&height=200&animation=rise&credit=0" alt="media-curator — Sylphx Mark banner" width="100%" />
 </p>
 
 **Intelligent media library management - LSH-based deduplication with blazing-fast processing**
