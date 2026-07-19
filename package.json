@@ -24,7 +24,7 @@
     "check-format": "prettier --check . --cache",
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --fix --cache",
-    "validate": "bun run check-format && bun run lint && bun run typecheck && bun run test && bun run check:no-ts-file-stats-backend && bun run check:native-packaging",
+    "validate": "bun run check-format && bun run lint && bun run typecheck && bun run test && bun run check:native-packaging",
     "typecheck": "tsc --noEmit",
     "asbuild": "asc assembly/index.ts --target debug --outFile build/index.wasm",
     "asbuild:release": "asc assembly/index.ts --target release --outFile build/index.wasm",
@@ -34,8 +34,6 @@
     "stage:rust": "bun scripts/stage-rust-cli.ts",
     "build:rust": "cargo build --release -p media-curator-cli && bun run stage:rust",
     "check:native-packaging": "bash scripts/check-native-packaging.sh",
-    "check:no-ts-file-stats-backend": "bash scripts/check-no-ts-file-stats-backend.sh",
-    "test:differential": "bash scripts/run-media-curator-differential.sh",
     "prepublishOnly": "bun run build:rust && bun run build && bun run check:native-packaging"
   },
   "author": "Sylphx <hi@sylphx.com> (https://sylphx.com)",

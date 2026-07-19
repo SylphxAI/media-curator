@@ -158,64 +158,62 @@ fn scan_directory(
         let _guard = SemaphoreGuard::new(semaphore);
 
         {
-            let mut locked = state.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+            let mut locked = state
+                .lock()
+                .unwrap_or_else(|poisoned| poisoned.into_inner());
             locked.dir_count += 1;
         }
 
         let entries = match fs::read_dir(dir_path) {
-        Ok(entries) => entries,
-        Err(error) => {
-            eprintln!("Error scanning directory {}: {error}", dir_path.display());
-            return;
-        }
-    };
-
-    let mut child_dirs = Vec::new();
-    for entry in entries {
-        let entry = match entry {
-            Ok(entry) => entry,
+            Ok(entries) => entries,
             Err(error) => {
-                eprintln!(
-                    "Error scanning directory {}: {error}",
-                    dir_path.display()
-                );
-                continue;
+                eprintln!("Error scanning directory {}: {error}", dir_path.display());
+                return;
             }
         };
 
-        let entry_path = entry.path();
-        let file_type = match entry.file_type() {
-            Ok(file_type) => file_type,
-            Err(error) => {
-                eprintln!(
-                    "Error scanning directory {}: {error}",
-                    dir_path.display()
-                );
+        let mut child_dirs = Vec::new();
+        for entry in entries {
+            let entry = match entry {
+                Ok(entry) => entry,
+                Err(error) => {
+                    eprintln!("Error scanning directory {}: {error}", dir_path.display());
+                    continue;
+                }
+            };
+
+            let entry_path = entry.path();
+            let file_type = match entry.file_type() {
+                Ok(file_type) => file_type,
+                Err(error) => {
+                    eprintln!("Error scanning directory {}: {error}", dir_path.display());
+                    continue;
+                }
+            };
+
+            if file_type.is_dir() {
+                child_dirs.push(entry_path);
                 continue;
             }
-        };
 
-        if file_type.is_dir() {
-            child_dirs.push(entry_path);
-            continue;
+            if !file_type.is_file() {
+                continue;
+            }
+
+            let Some(ext) = extension_of(&entry_path) else {
+                continue;
+            };
+
+            if !supported.contains(ext.as_str()) {
+                continue;
+            }
+
+            let mut locked = state
+                .lock()
+                .unwrap_or_else(|poisoned| poisoned.into_inner());
+            locked.all_files.push(entry_path);
+            locked.file_count += 1;
         }
-
-        if !file_type.is_file() {
-            continue;
-        }
-
-        let Some(ext) = extension_of(&entry_path) else {
-            continue;
-        };
-
-        if !supported.contains(ext.as_str()) {
-            continue;
-        }
-
-        let mut locked = state.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
-        locked.all_files.push(entry_path);
-        locked.file_count += 1;
-    }
 
         child_dirs
     };
@@ -237,11 +235,7 @@ fn scan_directory(
     }
 }
 
-fn group_by_extension(
-    all_files: &[PathBuf],
-    file_count: u64,
-    dir_count: u64,
-) -> DiscoveryMap {
+fn group_by_extension(all_files: &[PathBuf], file_count: u64, dir_count: u64) -> DiscoveryMap {
     let mut by_extension: BTreeMap<String, Vec<String>> = BTreeMap::new();
     for file in all_files {
         let Some(ext) = extension_of(file) else {
@@ -285,217 +279,5 @@ mod tests {
         assert_eq!(map.stats.dir_count, 2);
         assert_eq!(map.by_extension.len(), 1);
         assert!(map.by_extension.contains_key("jpg"));
-    }
-}
-// ── wave63 pure residual dens: discovery concurrency dual-oracle residual ──
-// Dual-oracle residual of `src/discovery.ts` default concurrency=10 pure half.
-// Filesystem walk I/O residual retained. dens ≠ flip.
-
-/// Dual-oracle residual: default discovery concurrency (TS default).
-pub const DEFAULT_DISCOVERY_CONCURRENCY: usize = 10;
-
-/// Dual-oracle residual: minimum concurrency (serial scan).
-pub const MIN_DISCOVERY_CONCURRENCY: usize = 1;
-
-/// Dual-oracle residual: clamp concurrency into product band.
-#[must_use]
-pub fn clamp_discovery_concurrency(n: usize) -> usize {
-    n.max(MIN_DISCOVERY_CONCURRENCY)
-}
-
-/// Dual-oracle residual: default concurrency is 10.
-#[must_use]
-pub fn default_discovery_concurrency_is_ten() -> bool {
-    DEFAULT_DISCOVERY_CONCURRENCY == 10
-}
-
-/// Dual-oracle residual: DiscoverOptions with product default concurrency.
-#[must_use]
-pub fn discover_options_default(source_dirs: Vec<std::path::PathBuf>) -> DiscoverOptions {
-    DiscoverOptions {
-        source_dirs,
-        concurrency: DEFAULT_DISCOVERY_CONCURRENCY,
-    }
-}
-
-#[cfg(test)]
-mod wave63_tests {
-    use super::*;
-
-    #[test]
-    fn wave63_discovery_concurrency_dual_oracle() {
-        assert_eq!(DEFAULT_DISCOVERY_CONCURRENCY, 10);
-        assert_eq!(MIN_DISCOVERY_CONCURRENCY, 1);
-        assert!(default_discovery_concurrency_is_ten());
-        assert_eq!(clamp_discovery_concurrency(0), 1);
-        assert_eq!(clamp_discovery_concurrency(10), 10);
-        assert_eq!(clamp_discovery_concurrency(32), 32);
-        let opts = discover_options_default(vec![]);
-        assert_eq!(opts.concurrency, 10);
-        assert!(opts.source_dirs.is_empty());
-    }
-}
-
-
-// ── wave68 pure residual dens: discovery concurrency clamp ladder dual-oracle residual ──
-// Dual-oracle residual of discovery concurrency clamp/default pure half.
-// Filesystem walk I/O residual retained. dens ≠ flip.
-// Complementary to concurrent LSH/cache wave68 dens.
-
-/// Dual-oracle residual: concurrency shell (min, default).
-#[must_use]
-pub fn discovery_concurrency_shell() -> (usize, usize) {
-    (MIN_DISCOVERY_CONCURRENCY, DEFAULT_DISCOVERY_CONCURRENCY)
-}
-
-/// Dual-oracle residual: clamp ladder for 0/1/10/32/64.
-#[must_use]
-pub fn discovery_clamp_ladder() -> [usize; 5] {
-    [
-        clamp_discovery_concurrency(0),
-        clamp_discovery_concurrency(1),
-        clamp_discovery_concurrency(10),
-        clamp_discovery_concurrency(32),
-        clamp_discovery_concurrency(64),
-    ]
-}
-
-/// Dual-oracle residual: default options carry default concurrency.
-#[must_use]
-pub fn default_options_concurrency_matches() -> bool {
-    discover_options_default(vec![]).concurrency == DEFAULT_DISCOVERY_CONCURRENCY
-}
-
-/// Dual-oracle residual: min is serial scan.
-#[must_use]
-pub fn min_concurrency_is_serial() -> bool {
-    MIN_DISCOVERY_CONCURRENCY == 1
-}
-
-/// Dual-oracle residual: default is tenfold min.
-#[must_use]
-pub fn default_is_tenfold_min() -> bool {
-    DEFAULT_DISCOVERY_CONCURRENCY == MIN_DISCOVERY_CONCURRENCY * 10
-}
-
-#[cfg(test)]
-mod wave68_tests {
-    use super::*;
-
-    #[test]
-    fn wave68_discovery_concurrency_clamp_ladder_dual_oracle() {
-        assert_eq!(discovery_concurrency_shell(), (1, 10));
-        assert_eq!(discovery_clamp_ladder(), [1, 1, 10, 32, 64]);
-        assert!(default_options_concurrency_matches());
-        assert!(min_concurrency_is_serial());
-        assert!(default_is_tenfold_min());
-        assert!(default_discovery_concurrency_is_ten());
-        let opts = discover_options_default(vec![std::path::PathBuf::from("/tmp")]);
-        assert_eq!(opts.concurrency, 10);
-        assert_eq!(opts.source_dirs.len(), 1);
-    }
-}
-
-
-// ── wave70 pure residual dens: discovery clamp identity dual-oracle residual ──
-// Dual-oracle residual of discovery concurrency clamp identity pure half.
-// Filesystem walk I/O residual retained. dens ≠ flip.
-// product residual dens wave70
-
-/// Dual-oracle residual: clamp identity for min/default.
-#[must_use]
-pub fn discovery_clamp_identity() -> bool {
-    clamp_discovery_concurrency(MIN_DISCOVERY_CONCURRENCY) == MIN_DISCOVERY_CONCURRENCY
-        && clamp_discovery_concurrency(DEFAULT_DISCOVERY_CONCURRENCY)
-            == DEFAULT_DISCOVERY_CONCURRENCY
-}
-
-/// Dual-oracle residual: zero clamps to min.
-#[must_use]
-pub fn zero_clamps_to_min() -> bool {
-    clamp_discovery_concurrency(0) == MIN_DISCOVERY_CONCURRENCY
-}
-
-/// Dual-oracle residual: high concurrency preserved when above default.
-#[must_use]
-pub fn high_concurrency_preserved() -> bool {
-    clamp_discovery_concurrency(32) == 32 && clamp_discovery_concurrency(64) == 64
-}
-
-/// Dual-oracle residual: shell constants.
-#[must_use]
-pub fn discovery_constants_shell() -> (usize, usize) {
-    (MIN_DISCOVERY_CONCURRENCY, DEFAULT_DISCOVERY_CONCURRENCY)
-}
-
-/// Dual-oracle residual: default options concurrency matches default constant.
-#[must_use]
-pub fn default_options_shell_ok() -> bool {
-    let opts = discover_options_default(vec![std::path::PathBuf::from("/media")]);
-    opts.concurrency == DEFAULT_DISCOVERY_CONCURRENCY && opts.source_dirs.len() == 1
-}
-
-#[cfg(test)]
-mod wave70_tests {
-    use super::*;
-
-    #[test]
-    fn wave70_discovery_clamp_identity_dual_oracle() {
-        assert!(discovery_clamp_identity());
-        assert!(zero_clamps_to_min());
-        assert!(high_concurrency_preserved());
-        assert_eq!(discovery_constants_shell(), (1, 10));
-        assert!(default_options_shell_ok());
-        assert_eq!(discovery_clamp_ladder(), [1, 1, 10, 32, 64]);
-        assert!(default_is_tenfold_min());
-        assert!(min_concurrency_is_serial());
-        assert!(default_discovery_concurrency_is_ten());
-    }
-}
-
-
-// ── product residual dens wave72: discovery concurrency band+default dual-oracle residual ──
-// Dual-oracle residual of clamp_discovery_concurrency / default options pure halves.
-// Filesystem walk I/O residual retained. dens ≠ flip.
-
-/// Dual-oracle residual: default/min concurrency constants.
-#[must_use]
-pub fn discovery_defaults_shell() -> bool {
-    DEFAULT_DISCOVERY_CONCURRENCY == 10
-        && MIN_DISCOVERY_CONCURRENCY == 1
-        && default_discovery_concurrency_is_ten()
-        && min_concurrency_is_serial()
-        && default_is_tenfold_min()
-}
-
-/// Dual-oracle residual: clamp under min and identity at default.
-#[must_use]
-pub fn discovery_clamp_under_default_shell() -> bool {
-    clamp_discovery_concurrency(0) == MIN_DISCOVERY_CONCURRENCY
-        && clamp_discovery_concurrency(1) == 1
-        && clamp_discovery_concurrency(DEFAULT_DISCOVERY_CONCURRENCY)
-            == DEFAULT_DISCOVERY_CONCURRENCY
-        && clamp_discovery_concurrency(64) == 64
-}
-
-/// Dual-oracle residual: default options carry concurrency 10.
-#[must_use]
-pub fn discovery_options_default_shell() -> bool {
-    let o = discover_options_default(vec![]);
-    o.concurrency == DEFAULT_DISCOVERY_CONCURRENCY && default_options_concurrency_matches()
-}
-
-#[cfg(test)]
-mod wave72_product_tests {
-    use super::*;
-
-    #[test]
-    fn wave72_discovery_concurrency_band_dual_oracle() {
-        assert!(discovery_defaults_shell());
-        assert!(discovery_clamp_under_default_shell());
-        assert!(discovery_options_default_shell());
-        assert_eq!(discovery_concurrency_shell(), (1, 10));
-        assert!(zero_clamps_to_min());
-        assert!(high_concurrency_preserved());
     }
 }

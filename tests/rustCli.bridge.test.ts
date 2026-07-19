@@ -5,7 +5,6 @@ import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import {
   healthViaRust,
   resolveRustCliBinary,
-  rustCliDelegationEnabled,
   fileStatsViaRust,
 } from '../src/external/rustCli';
 
@@ -29,18 +28,6 @@ afterEach(() => {
 });
 
 describe('rustCli bridge (ADR-168 production authority)', () => {
-  it('rustCliDelegationEnabled defaults to true when unset', () => {
-    delete process.env.MEDIA_CURATOR_RUST;
-    delete process.env.MEDIA_CURATOR_RUST_CLI;
-    expect(rustCliDelegationEnabled()).toBe(true);
-
-    process.env.MEDIA_CURATOR_RUST = 'ts';
-    expect(rustCliDelegationEnabled()).toBe(false);
-
-    process.env.MEDIA_CURATOR_RUST = '1';
-    expect(rustCliDelegationEnabled()).toBe(true);
-  });
-
   it('resolveRustCliBinary honors MEDIA_CURATOR_RUST_CLI_BIN override', () => {
     process.env.MEDIA_CURATOR_RUST_CLI_BIN = rustBinary;
     expect(resolveRustCliBinary()).toBe(rustBinary);

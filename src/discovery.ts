@@ -1,98 +1,8 @@
-import { readdir } from 'fs/promises';
-import path from 'path';
-import { Semaphore } from 'async-mutex';
 import chalk from 'chalk';
-import { ALL_SUPPORTED_EXTENSIONS, getFileTypeByExt } from './utils';
+import { getFileTypeByExt } from './utils';
 import { CliReporter } from './reporting/CliReporter';
-import { FileSystemError, safeTryAsync } from './errors';
-import { discoverViaRust, rustCliDelegationEnabled } from './external/rustCli';
-
-/**
- * TS parity baseline for discovery. Used only when MEDIA_CURATOR_RUST is
- * explicitly opted out (ts|0|false|no).
- */
-export async function discoverFilesFnTsCore(
-  sourceDirs: string[],
-  concurrency: number = 10,
-  reporter: CliReporter,
-): Promise<Map<string, string[]>> {
-  const allFiles: string[] = [];
-  let dirCount = 0;
-  let fileCount = 0;
-  const semaphore = new Semaphore(concurrency);
-  reporter.startSpinner('Discovering files...');
-
-  async function scanDirectory(dirPath: string): Promise<void> {
-    dirCount++;
-    const readDirResult = await safeTryAsync(
-      readdir(dirPath, { withFileTypes: true }),
-      (e) =>
-        new FileSystemError(
-          `Error scanning directory ${dirPath}: ${e instanceof Error ? e.message : String(e)}`,
-          {
-            cause: e instanceof Error ? e : undefined,
-            context: { path: dirPath, operation: 'readdir' },
-          },
-        ),
-    );
-
-    if (readDirResult.isErr()) {
-      reporter.logError(readDirResult.error.message);
-      reporter.updateSpinnerText(
-        `Processed ${dirCount} directories, found ${fileCount} files... (Error in ${dirPath})`,
-      );
-      return;
-    }
-
-    const entries = readDirResult.value;
-    const promises: Promise<void>[] = [];
-    for (const entry of entries) {
-      const entryPath = path.join(dirPath, entry.name);
-      if (entry.isDirectory()) {
-        promises.push(semaphore.runExclusive(() => scanDirectory(entryPath)));
-      } else if (
-        ALL_SUPPORTED_EXTENSIONS.has(
-          path.extname(entry.name).slice(1).toLowerCase(),
-        )
-      ) {
-        allFiles.push(entryPath);
-        fileCount++;
-      }
-    }
-    try {
-      await Promise.all(promises);
-    } catch (promiseAllError) {
-      reporter.logError(
-        `Error during concurrent directory scan under ${dirPath}:`,
-        promiseAllError instanceof Error ? promiseAllError : undefined,
-      );
-    }
-    reporter.updateSpinnerText(
-      `Processed ${dirCount} directories, found ${fileCount} files...`,
-    );
-  }
-
-  const initialScanPromises = sourceDirs.map((dirPath) =>
-    semaphore.runExclusive(() => scanDirectory(dirPath)),
-  );
-  await Promise.all(initialScanPromises);
-
-  reporter.stopSpinnerSuccess(
-    `Discovery completed: Found ${fileCount} files in ${dirCount} directories`,
-  );
-
-  const result = new Map<string, string[]>();
-  for (const file of allFiles) {
-    const ext = path.extname(file).slice(1).toLowerCase();
-    if (!result.has(ext)) {
-      result.set(ext, []);
-    }
-    result.get(ext)!.push(file);
-  }
-
-  logDiscoveryStats(reporter, result, fileCount);
-  return result;
-}
+import { FileSystemError } from './errors';
+import { discoverViaRust } from './external/rustCli';
 
 function logDiscoveryStats(
   reporter: CliReporter,
@@ -117,17 +27,13 @@ function logDiscoveryStats(
 }
 
 /**
- * Production discovery: Rust authority by default (fail-closed).
+ * Production discovery: Rust owns filesystem traversal; TypeScript presents it.
  */
 export async function discoverFilesFn(
   sourceDirs: string[],
   concurrency: number = 10,
   reporter: CliReporter,
 ): Promise<Map<string, string[]>> {
-  if (!rustCliDelegationEnabled()) {
-    return discoverFilesFnTsCore(sourceDirs, concurrency, reporter);
-  }
-
   reporter.startSpinner('Discovering files (Rust)...');
   try {
     const rust = discoverViaRust(sourceDirs, concurrency);

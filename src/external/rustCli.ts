@@ -24,32 +24,6 @@ export type RustDiscoveryMap = {
   stats: { fileCount: number; dirCount: number };
 };
 
-/**
- * Rust authority is the default (unset env).
- * Explicit opt-out: MEDIA_CURATOR_RUST=0|ts|false|no
- * Legacy alias: MEDIA_CURATOR_RUST_CLI=1|true|yes forces on.
- */
-export function rustCliDelegationEnabled(): boolean {
-  const legacy = process.env.MEDIA_CURATOR_RUST_CLI?.trim().toLowerCase();
-  if (legacy === '1' || legacy === 'true' || legacy === 'yes') {
-    return true;
-  }
-  if (
-    legacy === '0' ||
-    legacy === 'false' ||
-    legacy === 'no' ||
-    legacy === 'ts'
-  ) {
-    return false;
-  }
-
-  const flag = process.env.MEDIA_CURATOR_RUST?.trim().toLowerCase();
-  if (!flag) {
-    return true;
-  }
-  return !(flag === '0' || flag === 'false' || flag === 'no' || flag === 'ts');
-}
-
 export function resolveRustCliBinary(): string | null {
   const override =
     process.env.MEDIA_CURATOR_RUST_CLI_BIN?.trim() ||

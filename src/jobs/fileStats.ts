@@ -2,49 +2,13 @@ import { FileStats, FileStatsConfig } from '../types';
 import { LmdbCache } from '../caching/LmdbCache';
 import {
   getFileStats,
-  calculateFileHash,
   sharedArrayBufferToHex,
   hexToSharedArrayBuffer,
 } from '../utils';
-import {
-  fileStatsViaRust,
-  rustCliDelegationEnabled,
-} from '../external/rustCli';
+import { fileStatsViaRust } from '../external/rustCli';
 import { AppResult, ok, err, DatabaseError, FileSystemError } from '../errors';
 
 const JOB_NAME = 'fileStats';
-
-/**
- * TS parity baseline for file-stats (MD5 + size + dates). Used only when
- * MEDIA_CURATOR_RUST is explicitly opted out (ts|0|false|no).
- */
-export async function processFileStatsTsCore(
-  filePath: string,
-  config: FileStatsConfig,
-): Promise<AppResult<FileStats>> {
-  const statsResult = await getFileStats(filePath);
-  if (statsResult.isErr()) {
-    return err(statsResult.error);
-  }
-  const stats = statsResult.value;
-
-  const hashResult = await calculateFileHash(
-    filePath,
-    stats.size,
-    config.maxChunkSize,
-  );
-  if (hashResult.isErr()) {
-    return err(hashResult.error);
-  }
-  const hash = hashResult.value;
-
-  return ok({
-    hash,
-    size: stats.size,
-    createdAt: stats.birthtime,
-    modifiedAt: stats.mtime,
-  });
-}
 
 /**
  * Production file-stats: Rust MD5+size authority by default (fail-closed).
@@ -77,8 +41,7 @@ export async function processFileStats(
 
   let result: FileStats;
 
-  if (rustCliDelegationEnabled()) {
-    try {
+  try {
       const rust = fileStatsViaRust(filePath);
       const datesResult = await getFileStats(filePath);
       if (datesResult.isErr()) {
@@ -95,7 +58,7 @@ export async function processFileStats(
         createdAt: dates.birthtime,
         modifiedAt: dates.mtime,
       };
-    } catch (error) {
+  } catch (error) {
       return err(
         new FileSystemError(
           `Rust file-stats failed for ${filePath}: ${
@@ -107,13 +70,6 @@ export async function processFileStats(
           },
         ),
       );
-    }
-  } else {
-    const coreResult = await processFileStatsTsCore(filePath, config);
-    if (coreResult.isErr()) {
-      return err(coreResult.error);
-    }
-    result = coreResult.value;
   }
 
   const setResult = await cache.setCache(JOB_NAME, cacheKey, result, config);

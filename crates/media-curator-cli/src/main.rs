@@ -5,10 +5,10 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 use clap::{Parser, Subcommand};
+use media_curator_cli::dedup::cluster_exact_by_phash;
 use media_curator_cli::discovery::{discover_files_json, DiscoverOptions};
 use media_curator_cli::file_stats::file_stats_for_path;
 use media_curator_cli::hamming::hamming_distance;
-use media_curator_cli::dedup::cluster_exact_by_phash;
 use media_curator_cli::health_json;
 
 #[derive(Parser)]
@@ -51,7 +51,7 @@ enum Command {
     /// Exact-duplicate clusters by identical pHash hex (JSON lines on stdin or --entry path=hex).
     #[command(name = "exact-dup")]
     ExactDup {
-        /// Entry as path=phashHex (repeatable). Empty phash via path= 
+        /// Entry as path=phashHex (repeatable). Empty phash via path=
         #[arg(long = "entry")]
         entries: Vec<String>,
     },

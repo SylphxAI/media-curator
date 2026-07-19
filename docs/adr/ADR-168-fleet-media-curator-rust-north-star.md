@@ -13,8 +13,9 @@ SQLite/LMDB-backed state, compares similarity via LSH/WASM-assisted logic, and
 transfers files. The processing pipeline is the primary authority surface.
 
 Doctrine [ADR-167](https://github.com/SylphxAI/doctrine/blob/main/docs/adr/ADR-167-boundary-contract-stack-and-platform-pillars.md)
-requires Rust-first authority for CLI/tooling backends. A thin npm wrapper may remain
-for distribution; Rust owns the engine.
+uses Rust for performance-sensitive filesystem primitives and TypeScript for the
+CLI pipeline and ecosystem adapters. This is the terminal architecture boundary:
+language choice follows responsibility, not a repository-wide language rewrite.
 
 ## Decision
 
@@ -23,8 +24,9 @@ for distribution; Rust owns the engine.
 | Layer                   | North Star                                                         | Transitional (until sunset slice)     |
 | ----------------------- | ------------------------------------------------------------------ | ------------------------------------- |
 | Cross-boundary contract | Protobuf + Buf (`proto/media_curator/v1/`) for plugin/MCP surfaces | CLI flags as implicit contract        |
-| CLI engine              | Rust `crates/media-curator-cli`                                    | TypeScript CLI engine                 |
-| Distribution wrapper    | Thin npm package invoking Rust binary                              | existing npm entry                    |
+| CLI orchestration       | TypeScript pipeline                                                 | —                                     |
+| Native primitives       | Rust `crates/media-curator-cli`                                    | filesystem-heavy TypeScript code      |
+| Distribution            | npm package with staged Rust binary                                | —                                     |
 | WASM acceleration       | Rust-native SIMD where applicable                                  | TS/WASM worker during cutover         |
 | Persistence             | SQLite/LMDB via Rust (`media-curator-store`)                       | TS-backed cache format during cutover |
 
@@ -60,8 +62,8 @@ for distribution; Rust owns the engine.
 ## Consequences
 
 - New pipeline code defaults to `crates/media-curator-*`.
-- npm package becomes thin wrapper over Rust binary.
-- Fleet cutover registry: Rust CLI core is first milestone.
+- npm package ships the Rust binary used by native primitives.
+- No mutable migration ledger or dual implementation is retained after cutover.
 
 ## Validation
 
