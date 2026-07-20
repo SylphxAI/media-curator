@@ -22,8 +22,12 @@ pub fn hamming_distance(hash1: &[u8], hash2: &[u8]) -> u64 {
 
     for chunk in 0..common_chunks {
         let offset = chunk * 8;
-        let a = u64::from_le_bytes(hash1[offset..offset + 8].try_into().expect("chunk"));
-        let b = u64::from_le_bytes(hash2[offset..offset + 8].try_into().expect("chunk"));
+        let mut a_bytes = [0u8; 8];
+        let mut b_bytes = [0u8; 8];
+        a_bytes.copy_from_slice(&hash1[offset..offset + 8]);
+        b_bytes.copy_from_slice(&hash2[offset..offset + 8]);
+        let a = u64::from_le_bytes(a_bytes);
+        let b = u64::from_le_bytes(b_bytes);
         distance += u64::from(popcount64(a ^ b));
     }
 
