@@ -2,7 +2,7 @@
 //!
 //! Ports LMDB sub-db naming + mutex keys + pHash LSH band split from
 //! `src/caching/LmdbCache.ts` / `MetadataDBService.generateLshKeys` without
-//! opening LMDB/SQLite. dens ≠ flip.
+//! opening LMDB/SQLite. pure residual ≠ authority flip.
 
 use serde::Serialize;
 

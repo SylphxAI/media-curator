@@ -1,6 +1,6 @@
 # media-curator — local agent notes only
 
-Doctrine and fleet delivery law live in the **host always-on constitution**
+Doctrine and host delivery law live in the **host always-on constitution**
 (`~/.grok/AGENTS.md` / Doctrine template). This file must **not** restate,
 weaken, or fork that law (including PR-vs-direct-trunk delivery).
 
