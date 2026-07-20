@@ -42,34 +42,34 @@ export async function processFileStats(
   let result: FileStats;
 
   try {
-      const rust = fileStatsViaRust(filePath);
-      const datesResult = await getFileStats(filePath);
-      if (datesResult.isErr()) {
-        return err(datesResult.error);
-      }
-      const dates = datesResult.value;
-      const hashResult = hexToSharedArrayBuffer(rust.md5);
-      if (hashResult.isErr()) {
-        return err(hashResult.error);
-      }
-      result = {
-        hash: hashResult.value,
-        size: rust.size,
-        createdAt: dates.birthtime,
-        modifiedAt: dates.mtime,
-      };
+    const rust = fileStatsViaRust(filePath);
+    const datesResult = await getFileStats(filePath);
+    if (datesResult.isErr()) {
+      return err(datesResult.error);
+    }
+    const dates = datesResult.value;
+    const hashResult = hexToSharedArrayBuffer(rust.md5);
+    if (hashResult.isErr()) {
+      return err(hashResult.error);
+    }
+    result = {
+      hash: hashResult.value,
+      size: rust.size,
+      createdAt: dates.birthtime,
+      modifiedAt: dates.mtime,
+    };
   } catch (error) {
-      return err(
-        new FileSystemError(
-          `Rust file-stats failed for ${filePath}: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-          {
-            cause: error instanceof Error ? error : undefined,
-            context: { path: filePath, operation: 'fileStatsViaRust' },
-          },
-        ),
-      );
+    return err(
+      new FileSystemError(
+        `Rust file-stats failed for ${filePath}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        {
+          cause: error instanceof Error ? error : undefined,
+          context: { path: filePath, operation: 'fileStatsViaRust' },
+        },
+      ),
+    );
   }
 
   const setResult = await cache.setCache(JOB_NAME, cacheKey, result, config);
