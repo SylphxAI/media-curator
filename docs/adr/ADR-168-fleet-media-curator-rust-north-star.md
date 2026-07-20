@@ -24,7 +24,7 @@ language choice follows responsibility, not a repository-wide language rewrite.
 | Layer                   | North Star                                                         | Transitional (until sunset slice)     |
 | ----------------------- | ------------------------------------------------------------------ | ------------------------------------- |
 | Cross-boundary contract | Protobuf + Buf (`proto/media_curator/v1/`) for plugin/MCP surfaces | CLI flags as implicit contract        |
-| CLI orchestration       | TypeScript pipeline                                                 | —                                     |
+| CLI orchestration       | TypeScript pipeline                                                | —                                     |
 | Native primitives       | Rust `crates/media-curator-cli`                                    | filesystem-heavy TypeScript code      |
 | Distribution            | npm package with staged Rust binary                                | —                                     |
 | WASM acceleration       | Rust-native SIMD where applicable                                  | TS/WASM worker during cutover         |

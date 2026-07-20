@@ -99,6 +99,10 @@ export function discoverViaRust(
   sourceDirs: string[],
   concurrency: number = 4,
 ): RustDiscoveryMap {
+  // CLI requires --source; empty input is a valid no-op discovery.
+  if (sourceDirs.length === 0) {
+    return { byExtension: {}, stats: { fileCount: 0, dirCount: 0 } };
+  }
   const args = ['discover', '--concurrency', String(concurrency)];
   for (const dir of sourceDirs) {
     args.push('--source', dir);
