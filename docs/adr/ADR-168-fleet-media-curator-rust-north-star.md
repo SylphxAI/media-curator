@@ -1,9 +1,9 @@
-# ADR-168 — Fleet Media Curator Rust North Star architecture
+# ADR-168 — Portfolio Media Curator Rust North Star architecture
 
 - **Status:** Accepted
 - **Date:** 2026-07-09
 - **Relates to:** ADR-167 (SylphxAI/doctrine)
-- **Change class:** `required-future` for Media Curator; `advisory` for fleet
+- **Change class:** `required-future` for Media Curator; `advisory` for portfolio
 
 ## Context
 
@@ -57,7 +57,7 @@ language choice follows responsibility, not a repository-wide language rewrite.
 | ------------------------- | ------------------------------------------------ |
 | Permanent TS CLI engine   | Contradicts ADR-167 for tooling authority        |
 | Hosted SaaS pivot         | Violates PROJECT.md non-goals                    |
-| Skip Rust for "small CLI" | Tooling layer is in fleet cutover registry scope |
+| Skip Rust for "small CLI" | Tooling layer is in portfolio cutover registry scope |
 
 ## Consequences
 

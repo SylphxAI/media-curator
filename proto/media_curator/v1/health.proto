@@ -3,7 +3,7 @@ syntax = "proto3";
 package media_curator.v1;
 
 // Operational health contract for media-curator CLI / future MCP-plugin surfaces.
-// Aligns with ADR-168 fleet media-curator Rust north star (S0 proto SSOT).
+// Aligns with ADR-168 portfolio media-curator Rust north star (S0 proto SSOT).
 
 enum ServingStatus {
   SERVING_STATUS_UNSPECIFIED = 0;
