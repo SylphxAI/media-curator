@@ -13,7 +13,7 @@ on:
 jobs:
   rust:
     name: Rust CLI (ADR-168 S0)
-    runs-on: [self-hosted, sylphx-linux-standard]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
 
   changed-files:
     name: Detect affected surface
-    runs-on: [self-hosted, sylphx-linux-standard]
+    runs-on: ubuntu-latest
     outputs:
       product_changed: ${{ steps.classify.outputs.product_changed }}
 
@@ -92,7 +92,7 @@ jobs:
   validate:
     name: Validate Code & Run Tests
     needs: [changed-files, rust]
-    runs-on: [self-hosted, sylphx-linux-standard]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -145,7 +145,7 @@ jobs:
     name: Publish to npm
     needs: validate # Run only if validate job succeeds
     if: startsWith(github.ref, 'refs/tags/v') # Run only on tag push
-    runs-on: [self-hosted, sylphx-linux-standard]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -183,7 +183,7 @@ jobs:
     name: Create GitHub Release
     needs: publish # Run only if publish job succeeds
     if: startsWith(github.ref, 'refs/tags/v') # Run only on tag push
-    runs-on: [self-hosted, sylphx-linux-standard]
+    runs-on: ubuntu-latest
 
     permissions:
       contents: write # Needed to create releases

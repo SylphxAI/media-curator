@@ -1,8 +1,11 @@
 name: Release
 
+# Release is not tip product CI. Keep it tag-driven so main push cannot be
+# marked red by reusable-workflow startup failures or publish side effects.
 on:
   push:
-    branches: [main]
+    tags: ['v*.*.*']
+  workflow_dispatch:
 
 jobs:
   release:
@@ -10,5 +13,6 @@ jobs:
       actions: write
       contents: write
       pull-requests: write
+      id-token: write
     uses: SylphxAI/.github/.github/workflows/release.yml@main
     secrets: inherit
