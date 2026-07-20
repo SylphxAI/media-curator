@@ -133,7 +133,7 @@ jobs:
       - name: Run residual TypeScript tests (informational)
         if: needs.changed-files.outputs.product_changed == 'true'
         # Product authority is the Rust CLI job above (ADR-168). The historical
-        # TS suite still contains ESM mock breakage and 100% coverage dens after
+        # TS suite still contains ESM mock breakage and 100% coverage residual after
         # the native cutover; keep it visible but do not fail tip product CI.
         continue-on-error: true
         run: bun run test
