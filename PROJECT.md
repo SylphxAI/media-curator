@@ -10,8 +10,6 @@ requested destination structure.
 
 - Lifecycle: `active`
 - Layer: `tooling`
-- Doctrine source of truth: [SylphxAI/doctrine](https://github.com/SylphxAI/doctrine)
-- Machine manifest: `.doctrine/project.json`
 
 ## Goals
 

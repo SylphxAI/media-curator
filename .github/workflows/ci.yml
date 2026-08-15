@@ -90,7 +90,7 @@ jobs:
           changed_files="$(mktemp)"
           git diff --name-only "$base" "$head" > "$changed_files"
 
-          if grep -Ev '^(\.doctrine/project\.json|AGENTS\.md|PROJECT\.md|\.github/workflows/ci\.yml|Cargo\.toml|Cargo\.lock|crates/|docs/adr/ADR-168-.*|rust-toolchain\.toml|\.gitignore)$' "$changed_files"; then
+          if grep -Ev '^(AGENTS\.md|PROJECT\.md|\.github/workflows/ci\.yml|Cargo\.toml|Cargo\.lock|crates/|docs/adr/ADR-168-.*|rust-toolchain\.toml|\.gitignore)$' "$changed_files"; then
             echo "product_changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "product_changed=false" >> "$GITHUB_OUTPUT"
@@ -108,11 +108,9 @@ jobs:
       - name: Validate control plane files
         if: needs.changed-files.outputs.product_changed == 'false'
         run: |
-          test -f .doctrine/project.json
           test -f AGENTS.md
           test -f PROJECT.md
-          python3 -m json.tool .doctrine/project.json >/dev/null
-
+          
       - name: Setup Bun
         if: needs.changed-files.outputs.product_changed == 'true'
         uses: oven-sh/setup-bun@v2 # Use official setup-bun action
