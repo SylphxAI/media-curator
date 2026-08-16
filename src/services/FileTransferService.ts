@@ -16,7 +16,7 @@ import { processSingleFile } from '../fileProcessor';
 import { AppResult } from '../errors'; // Import AppResult for return type handling
 import { LmdbCache } from '../caching/LmdbCache';
 import { WorkerPool } from '../contexts/types';
-import { transferOrCopyFile as executeTransfer } from '../transferOps';
+import { transferOrCopyFile as executeTransfer } from '../transferOps.js';
 
 // @injectable() // REMOVED INVERSIFY
 export class FileTransferService {

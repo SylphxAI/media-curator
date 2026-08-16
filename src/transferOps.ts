@@ -1,7 +1,7 @@
 import { constants } from 'node:fs';
 import { copyFile, lstat, mkdir, unlink } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import { FileSystemError } from './errors';
+import { FileSystemError } from './errors.js';
 
 /**
  * Execute one file transfer and surface failures to the owning caller.
