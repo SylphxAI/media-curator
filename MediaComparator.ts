@@ -324,39 +324,36 @@ export class MediaComparator {
         );
 
         if (representativesResult.isErr()) {
-          // Decide how to handle error - log and skip cluster? Propagate?
-          console.error(
-            `Error selecting representatives for cluster: ${representativesResult.error.message}`,
-            clusterArray,
-          );
-          // Option: Skip this cluster
-          continue;
-          // Option: Propagate error (would require changing processResults signature further)
-          // return err(representativesResult.error);
+          return err(representativesResult.error);
         }
         const representatives = representativesResult.value;
-        // Ensure representatives is not empty before proceeding
-        if (representatives.length > 0) {
-          const representativeSet = new Set(representatives);
-          const duplicateSet = new Set(
-            clusterArray.filter((f) => !representativeSet.has(f)),
+        if (representatives.length === 0) {
+          return err(
+            new AppError(
+              `No representative could be selected for deduplication cluster`,
+              { context: { cluster: clusterArray } },
+            ),
           );
+        }
 
-          // Only add if there are actual duplicates
-          if (duplicateSet.size > 0 || representativeSet.size > 1) {
-            duplicateSets.push({
-              bestFile: representatives[0], // Assume first representative is 'best' for folder naming
-              representatives: representativeSet,
-              duplicates: duplicateSet,
-            });
-          } else {
-            // If only one representative and no duplicates, treat as unique
-            uniqueFiles.add(representatives[0]);
-          }
-        } else {
-          // Handle cases where no representative could be selected (should not happen ideally)
-          // Add all items as unique for safety? Or log an error?
-          cluster.forEach((item) => uniqueFiles.add(item));
+        const representativeSet = new Set(representatives);
+        // Every representative is a target file. Keeping only the first one
+        // silently drops valid media when a video cluster also retains unique
+        // high-quality image captures.
+        for (const representative of representativeSet) {
+          uniqueFiles.add(representative);
+        }
+
+        const duplicateSet = new Set(
+          clusterArray.filter((f) => !representativeSet.has(f)),
+        );
+
+        if (duplicateSet.size > 0 || representativeSet.size > 1) {
+          duplicateSets.push({
+            bestFile: representatives[0],
+            representatives: representativeSet,
+            duplicates: duplicateSet,
+          });
         }
       }
     }

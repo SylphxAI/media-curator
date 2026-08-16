@@ -191,6 +191,7 @@ async function main() {
   let exifTool: ExifTool | null = null; // Declare outside try
   let pool: Pool | null = null; // Use the imported Pool type
   let cache: LmdbCache | null = null; // Declare cache outside try
+  let dbService: MetadataDBService | null = null;
   let reporter: CliReporter | null = null; // Declare reporter outside try
   // Removed duplicate cache declaration
   try {
@@ -210,7 +211,7 @@ async function main() {
     }
     cache = cacheResult.value; // Assign inside try
     exifTool = new ExifTool({ maxProcs: options.concurrency }); // Assign inside try
-    const dbService = new MetadataDBService(); // Instantiate DB Service
+    dbService = new MetadataDBService(); // Instantiate DB Service
     // Instantiate WorkerPool
     pool = workerpool.pool(__dirname + '/worker/worker.js', {
       // Assign inside try
@@ -340,13 +341,10 @@ async function main() {
     );
   } catch (error) {
     reporter?.logError('An unexpected error occurred:', error as Error); // Use reporter, ensure error is Error type
+    throw error;
   } finally {
-    // Ensure DB connection is closed
-    // Need to access dbService instance created in try block
-    // This requires moving dbService instantiation outside or handling closure differently
-    // For now, assuming dbService might not be initialized if an early error occurred.
+    dbService?.close();
     await cache?.close(); // Close the cache DB
-    // await dbService?.close(); // Optional chaining - dbService is separate now
     // Ensure exifTool is ended gracefully
     await exifTool?.end();
     // Ensure workerPool is terminated

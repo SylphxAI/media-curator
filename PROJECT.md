@@ -42,6 +42,7 @@ filesystem paths outside user-supplied arguments.
 - CLI package: `package.json`
 - CLI entry point: `index.ts`
 - User docs: `README.md`
+- Product capability inventory: `docs/prd.md`
 - Architecture docs: `ARCHITECTURE.md`
 - CI/release workflows: `.github/workflows/ci.yml` and
   `.github/workflows/release.yml`

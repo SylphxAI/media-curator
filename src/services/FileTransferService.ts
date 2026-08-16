@@ -1,7 +1,6 @@
 import { ExifTool } from 'exiftool-vendored';
 // import { injectable } from "inversify"; // Removed unused 'inject' - REMOVED INVERSIFY
-import { mkdir, copyFile, rename, unlink } from 'fs/promises';
-import { join, basename, dirname, extname, parse, normalize } from 'path'; // Added normalize
+import { join, basename, extname, parse, normalize } from 'path'; // Added normalize
 import { existsSync } from 'fs';
 import crypto from 'crypto';
 import chalk from 'chalk';
@@ -17,6 +16,7 @@ import { processSingleFile } from '../fileProcessor';
 import { AppResult } from '../errors'; // Import AppResult for return type handling
 import { LmdbCache } from '../caching/LmdbCache';
 import { WorkerPool } from '../contexts/types';
+import { transferOrCopyFile as executeTransfer } from '../transferOps';
 
 // @injectable() // REMOVED INVERSIFY
 export class FileTransferService {
@@ -48,6 +48,18 @@ export class FileTransferService {
       },
       Presets.shades_classic,
     );
+    const transfer = async (
+      sourcePath: string,
+      targetPath: string,
+      isCopy: boolean,
+    ): Promise<void> => {
+      try {
+        await this.transferOrCopyFile(sourcePath, targetPath, isCopy);
+      } catch (error) {
+        multibar.stop();
+        throw error;
+      }
+    };
 
     // --- Transfer unique files ---
     const uniqueBar = multibar.create(deduplicationResult.uniqueFiles.size, 0, {
@@ -63,14 +75,8 @@ export class FileTransferService {
       );
 
       if (fileInfoResult.isErr()) {
-        console.warn(
-          chalk.yellow(
-            `Skipping unique file ${filePath} due to processing error:`,
-          ),
-          fileInfoResult.error,
-        );
-        uniqueBar.increment(); // Increment even if skipped
-        continue;
+        multibar.stop();
+        throw fileInfoResult.error;
       }
       const fileInfo = fileInfoResult.value; // Extract FileInfo on success
       const targetPath = this.generateTargetPath(
@@ -79,7 +85,7 @@ export class FileTransferService {
         fileInfo,
         filePath,
       );
-      await this.transferOrCopyFile(filePath, targetPath, !shouldMove);
+      await transfer(filePath, targetPath, !shouldMove);
       uniqueBar.increment();
     }
 
@@ -101,7 +107,7 @@ export class FileTransferService {
           const duplicateSetFolder = join(duplicateDir, duplicateFolderName);
 
           for (const duplicatePath of duplicateSet.duplicates) {
-            await this.transferOrCopyFile(
+            await transfer(
               duplicatePath,
               join(duplicateSetFolder, basename(duplicatePath)),
               !shouldMove, // Always copy/move duplicates based on flag
@@ -117,52 +123,6 @@ export class FileTransferService {
       } else {
         console.log(chalk.yellow('\nNo duplicate files to process.'));
       }
-    } else {
-      // If no duplicateDir, process representatives (best files)
-      const representativeCount = Array.from(
-        deduplicationResult.duplicateSets.values(),
-      ).reduce((sum, set) => sum + set.representatives.size, 0);
-
-      if (representativeCount > 0) {
-        const bestFileBar = multibar.create(representativeCount, 0, {
-          phase: 'Best File',
-        });
-        for (const duplicateSet of deduplicationResult.duplicateSets) {
-          for (const representativePath of duplicateSet.representatives) {
-            const fileInfoResult: AppResult<FileInfo> = await processSingleFile(
-              representativePath,
-              this.config,
-              this.cache,
-              this.exifTool,
-              this.workerPool,
-            );
-
-            if (fileInfoResult.isErr()) {
-              console.warn(
-                chalk.yellow(
-                  `Skipping representative file ${representativePath} due to processing error:`,
-                ),
-                fileInfoResult.error,
-              );
-              bestFileBar.increment(); // Increment even if skipped
-              continue;
-            }
-            const fileInfo = fileInfoResult.value; // Extract FileInfo on success
-            const targetPath = this.generateTargetPath(
-              format,
-              targetDir,
-              fileInfo,
-              representativePath,
-            );
-            await this.transferOrCopyFile(
-              representativePath,
-              targetPath,
-              !shouldMove,
-            );
-            bestFileBar.increment();
-          }
-        }
-      }
     }
 
     // --- Handle error files ---
@@ -175,7 +135,7 @@ export class FileTransferService {
       for (const errorFilePath of gatherFileInfoResult.errorFiles) {
         const targetPath = join(errorDir, basename(errorFilePath));
         // Use copy for error files regardless of move flag? Or follow flag? Following flag for now.
-        await this.transferOrCopyFile(errorFilePath, targetPath, !shouldMove);
+        await transfer(errorFilePath, targetPath, !shouldMove);
         errorBar.increment();
       }
       console.log(
@@ -194,38 +154,7 @@ export class FileTransferService {
     targetPath: string,
     isCopy: boolean,
   ): Promise<void> {
-    try {
-      await mkdir(dirname(targetPath), { recursive: true });
-      if (isCopy) {
-        await copyFile(sourcePath, targetPath);
-      } else {
-        try {
-          await rename(sourcePath, targetPath);
-        } catch (error) {
-          if (
-            error instanceof Error &&
-            'code' in error &&
-            error.code === 'EXDEV'
-          ) {
-            // Cross-device move, fallback to copy-then-delete
-            await copyFile(sourcePath, targetPath);
-            await unlink(sourcePath);
-          } else {
-            // Rethrow other rename errors
-            throw error;
-          }
-        }
-      }
-    } catch (error) {
-      console.error(
-        chalk.red(
-          `\nError ${isCopy ? 'copying' : 'moving'} file ${sourcePath} to ${targetPath}:`,
-        ),
-        error,
-      );
-      // Decide if we should throw or just log and continue
-      // For now, log and continue
-    }
+    await executeTransfer(sourcePath, targetPath, isCopy);
   }
 
   private generateTargetPath(
