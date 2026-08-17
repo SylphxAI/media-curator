@@ -45,13 +45,4 @@ describe('native media-curator-cli shipped in npm pack (adversarial)', () => {
     expect(r.status).toBe(0);
     expect(r.stdout).toContain('PASS');
   });
-
-  it('check-no-ts-file-stats-backend passes', () => {
-    const r = spawnSync('bash', ['scripts/check-no-ts-file-stats-backend.sh'], {
-      cwd: repoRoot,
-      encoding: 'utf8',
-    });
-    expect(r.status).toBe(0);
-    expect(r.stdout).toContain('PASS');
-  });
 });

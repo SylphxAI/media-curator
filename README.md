@@ -193,12 +193,37 @@ media-curator /media/photos /library/organized \
   --format "{D.YYYY}/{D.MM}/{NAME}{EXT}"
 ```
 
+### Review Before Applying
+
+Export a fingerprinted recommendation first when a person needs to review the
+destination and duplicate decisions before any media is changed:
+
+```bash
+media-curator /media/photos /library/organized \
+  -d /library/duplicates \
+  -e /library/errors \
+  --plan /private/media-curator-plan.json
+```
+
+Inspect the JSON plan, set `review.approved` to `true`, then apply it:
+
+```bash
+media-curator --apply-plan /private/media-curator-plan.json
+```
+
+The plan records each source, destination, recommendation reason, and Rust
+file fingerprint. Apply refuses unapproved plans, paths outside the declared
+roots, changed sources, and existing targets with different bytes. Progress is
+written to a sibling `.journal.json` file after each action, so a restarted
+apply resumes without replaying completed work. Plans contain absolute local
+paths; keep them private and do not commit them.
+
 ### Full Example
 
 Complete workflow with all options:
 
 ```bash
-media-curator /media/photos /media/downloads /library/organized \
+media-curator /media/photos /library/organized \
   -d /library/duplicates \
   -e /library/errors \
   --move \
@@ -216,19 +241,21 @@ media-curator /media/photos /media/downloads /library/organized \
 
 ### Core Arguments
 
-| Argument        | Required | Description                                    |
-| --------------- | -------- | ---------------------------------------------- |
-| `<source...>`   | ✅       | Source directories or files (multiple allowed) |
-| `<destination>` | ✅       | Destination directory for organized files      |
+| Argument        | Required | Description                               |
+| --------------- | -------- | ----------------------------------------- |
+| `<source>`      | ✅       | Source directory admitted in this run     |
+| `<destination>` | ✅       | Destination directory for organized files |
 
 ### Essential Options
 
-| Option                   | Default | Description                                |
-| ------------------------ | ------- | ------------------------------------------ |
-| `-d, --duplicate <path>` | None    | Directory for duplicate files              |
-| `-e, --error <path>`     | None    | Directory for files with processing errors |
-| `-m, --move`             | `false` | Move files instead of copying              |
-| `-v, --verbose`          | `false` | Enable detailed logging                    |
+| Option                   | Default | Description                                     |
+| ------------------------ | ------- | ----------------------------------------------- |
+| `-d, --duplicate <path>` | None    | Directory for duplicate files                   |
+| `-e, --error <path>`     | None    | Directory for files with processing errors      |
+| `-m, --move`             | `false` | Move files instead of copying                   |
+| `-v, --verbose`          | `false` | Enable detailed logging                         |
+| `--plan <path>`          | None    | Export a reviewable plan without changing media |
+| `--apply-plan <path>`    | None    | Apply an approved plan and resume its journal   |
 
 ### Deduplication Options
 
@@ -348,21 +375,29 @@ media-curator /media/photos /media/downloads /library/organized \
 
 ## 💡 Advanced Usage Examples
 
-### 1. Dry Run (Debug Mode)
+### 1. Reviewable Apply
 
-Test organization without moving files:
+Use the plan/apply split for a safe human decision before touching a library:
 
 ```bash
 media-curator /media/photos /library/organized \
-  --debug /tmp/curator_debug \
-  --format "{D.YYYY}-{D.MM}/{TYPE}/{NAME}{EXT}"
+  -d /library/duplicates \
+  --plan /tmp/curator-plan.json
+
+# Edit review.approved in /tmp/curator-plan.json after inspection.
+media-curator --apply-plan /tmp/curator-plan.json
 ```
 
-No files are moved/copied, but a report is generated showing:
+The exported plan shows:
 
-- What would happen
-- Potential duplicates
-- Metadata extraction results
+- the selected representatives that will be organized;
+- duplicate recommendations tied to their representative; and
+- files that failed admission and will be routed to the error directory.
+
+The apply journal is the recovery record. If a copy or move is interrupted,
+rerun `--apply-plan` to verify completed destinations and continue with pending
+actions. The legacy `--debug` option still produces duplicate-set HTML reports
+when the normal transfer path runs; it is not an approval or dry-run boundary.
 
 ### 2. High-Sensitivity Deduplication
 

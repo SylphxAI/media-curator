@@ -7,19 +7,19 @@ This guide walks you through the basic usage of MediaCurator (`media-curator`) t
 The basic command structure is:
 
 ```bash
-MediaCurator <source...> <destination> [options]
+MediaCurator <source> <destination> [options]
 ```
 
-- `<source...>`: Specify one or more source directories or even individual files that contain the media you want to process.
+- `<source>`: The source directory to admit into the library for this run.
 - `<destination>`: The main directory where your organized, unique media files will be placed.
 - `[options]`: Flags to customize the behavior, such as how files are named/structured (`--format`), how duplicates are handled (`-d`, `--move`), and processing sensitivity (e.g., `--image-similarity-threshold`).
 
 ## Example 1: Simple Organization (Copy Mode)
 
-Let's say you have photos and videos in `/media/incoming/photos` and `/media/incoming/videos`. You want to organize them into `/library/main_collection` based on the year and month they were created.
+Let's say you have photos in `/media/incoming/photos`. You want to organize them into `/library/main_collection` based on the year and month they were created.
 
 ```bash
-MediaCurator /media/incoming/photos /media/incoming/videos /library/main_collection --format "{D.YYYY}/{D.MM}/{NAME}{EXT}"
+MediaCurator /media/incoming/photos /library/main_collection --format "{D.YYYY}/{D.MM}/{NAME}{EXT}"
 ```
 
 **What happens?**
@@ -38,15 +38,42 @@ MediaCurator /media/incoming/photos /media/incoming/videos /library/main_collect
 - The `{D.YYYY}` and `{D.MM}` placeholders use the EXIF date if available, falling back to the file's creation date otherwise.
 - Duplicates (based on default settings) are skipped and not copied to the destination.
 
+## Review Before Applying
+
+For a first pass over a valuable library, export the recommendations before
+changing any media. The plan contains the selected organization actions,
+duplicate and error routing, the reason for each recommendation, and a Rust
+fingerprint of every source file.
+
+```bash
+MediaCurator /media/incoming/photos /library/main_collection \
+    --format "{D.YYYY}/{D.MM}/{NAME}{EXT}" \
+    -d /library/duplicates \
+    -e /library/errors \
+    --plan /private/media-curator-plan.json
+```
+
+Inspect the JSON plan and set `review.approved` to `true` only after the
+recommendations are accepted. Then apply it:
+
+```bash
+MediaCurator --apply-plan /private/media-curator-plan.json
+```
+
+Applying is fail-closed: it refuses an unapproved plan, a changed source, a
+path outside the declared roots, or a destination containing different bytes.
+Progress is recorded in a sibling `.journal.json` file, so rerunning
+`--apply-plan` safely resumes an interrupted copy or move.
+
 ## Example 2: Organizing and Moving Duplicates
 
-Now, let's organize the same sources, but this time we want to:
+Now, let's organize the same source, but this time we want to:
 
 - **Move** the unique files to the destination instead of copying them.
 - Move all identified **duplicates** to a separate `/library/duplicates` folder.
 
 ```bash
-MediaCurator /media/incoming/photos /media/incoming/videos /library/main_collection \
+MediaCurator /media/incoming/photos /library/main_collection \
     --format "{D.YYYY}/{D.MM}/{NAME}{EXT}" \
     -d /library/duplicates \
     --move

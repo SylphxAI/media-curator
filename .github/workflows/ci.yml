@@ -110,7 +110,7 @@ jobs:
         run: |
           test -f AGENTS.md
           test -f PROJECT.md
-          
+
       - name: Setup Bun
         if: needs.changed-files.outputs.product_changed == 'true'
         uses: oven-sh/setup-bun@v2 # Use official setup-bun action

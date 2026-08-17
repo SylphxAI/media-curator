@@ -1,7 +1,6 @@
 import { ExifTool } from 'exiftool-vendored';
 // import { injectable } from "inversify"; // Removed unused 'inject' - REMOVED INVERSIFY
-import { mkdir, copyFile, rename, unlink } from 'fs/promises';
-import { join, basename, dirname, extname, parse, normalize } from 'path'; // Added normalize
+import { join, basename, extname, parse, normalize, resolve } from 'path'; // Added normalize
 import { existsSync } from 'fs';
 import crypto from 'crypto';
 import chalk from 'chalk';
@@ -17,6 +16,22 @@ import { processSingleFile } from '../fileProcessor';
 import { AppResult } from '../errors'; // Import AppResult for return type handling
 import { LmdbCache } from '../caching/LmdbCache';
 import { WorkerPool } from '../contexts/types';
+import { transferOrCopyFile as executeTransfer } from '../transferOps.js';
+import {
+  fingerprintFile,
+  type OrganizationPlanAction,
+  type OrganizationPlanActionKind,
+  type OrganizationPlanFingerprint,
+} from '../organizationPlan.js';
+
+interface TransferAction {
+  kind: OrganizationPlanActionKind;
+  source: string;
+  target: string;
+  reason: string;
+  representative?: string;
+  fingerprint?: OrganizationPlanFingerprint;
+}
 
 // @injectable() // REMOVED INVERSIFY
 export class FileTransferService {
@@ -37,6 +52,15 @@ export class FileTransferService {
     format: string,
     shouldMove: boolean,
   ): Promise<void> {
+    const actions = await this.collectTransferActions(
+      gatherFileInfoResult,
+      deduplicationResult,
+      targetDir,
+      duplicateDir,
+      errorDir,
+      format,
+      false,
+    );
     const multibar = new MultiBar(
       {
         clearOnComplete: false,
@@ -48,136 +72,59 @@ export class FileTransferService {
       },
       Presets.shades_classic,
     );
-
-    // --- Transfer unique files ---
-    const uniqueBar = multibar.create(deduplicationResult.uniqueFiles.size, 0, {
-      phase: 'Unique  ',
-    });
-    for (const filePath of deduplicationResult.uniqueFiles) {
-      const fileInfoResult: AppResult<FileInfo> = await processSingleFile(
-        filePath,
-        this.config,
-        this.cache,
-        this.exifTool,
-        this.workerPool,
-      );
-
-      if (fileInfoResult.isErr()) {
-        console.warn(
-          chalk.yellow(
-            `Skipping unique file ${filePath} due to processing error:`,
-          ),
-          fileInfoResult.error,
-        );
-        uniqueBar.increment(); // Increment even if skipped
-        continue;
+    const transfer = async (
+      sourcePath: string,
+      targetPath: string,
+      isCopy: boolean,
+    ): Promise<void> => {
+      try {
+        await this.transferOrCopyFile(sourcePath, targetPath, isCopy);
+      } catch (error) {
+        multibar.stop();
+        throw error;
       }
-      const fileInfo = fileInfoResult.value; // Extract FileInfo on success
-      const targetPath = this.generateTargetPath(
-        format,
-        targetDir,
-        fileInfo,
-        filePath,
-      );
-      await this.transferOrCopyFile(filePath, targetPath, !shouldMove);
-      uniqueBar.increment();
-    }
+    };
 
-    // --- Handle duplicate files ---
-    if (duplicateDir) {
-      const duplicateCount = Array.from(
-        deduplicationResult.duplicateSets.values(),
-      ).reduce((sum, set) => sum + set.duplicates.size, 0);
-
-      if (duplicateCount > 0) {
-        const duplicateBar = multibar.create(duplicateCount, 0, {
-          phase: 'Duplicate',
-        });
-
-        for (const duplicateSet of deduplicationResult.duplicateSets) {
-          const bestFile = duplicateSet.bestFile;
-          // Create a subfolder named after the best file's base name
-          const duplicateFolderName = basename(bestFile, extname(bestFile));
-          const duplicateSetFolder = join(duplicateDir, duplicateFolderName);
-
-          for (const duplicatePath of duplicateSet.duplicates) {
-            await this.transferOrCopyFile(
-              duplicatePath,
-              join(duplicateSetFolder, basename(duplicatePath)),
-              !shouldMove, // Always copy/move duplicates based on flag
-            );
-            duplicateBar.increment();
-          }
-        }
-        console.log(
-          chalk.yellow(
-            `\nDuplicate files have been ${shouldMove ? 'moved' : 'copied'} to ${duplicateDir}`,
-          ),
-        );
-      } else {
-        console.log(chalk.yellow('\nNo duplicate files to process.'));
-      }
-    } else {
-      // If no duplicateDir, process representatives (best files)
-      const representativeCount = Array.from(
-        deduplicationResult.duplicateSets.values(),
-      ).reduce((sum, set) => sum + set.representatives.size, 0);
-
-      if (representativeCount > 0) {
-        const bestFileBar = multibar.create(representativeCount, 0, {
-          phase: 'Best File',
-        });
-        for (const duplicateSet of deduplicationResult.duplicateSets) {
-          for (const representativePath of duplicateSet.representatives) {
-            const fileInfoResult: AppResult<FileInfo> = await processSingleFile(
-              representativePath,
-              this.config,
-              this.cache,
-              this.exifTool,
-              this.workerPool,
-            );
-
-            if (fileInfoResult.isErr()) {
-              console.warn(
-                chalk.yellow(
-                  `Skipping representative file ${representativePath} due to processing error:`,
-                ),
-                fileInfoResult.error,
-              );
-              bestFileBar.increment(); // Increment even if skipped
-              continue;
-            }
-            const fileInfo = fileInfoResult.value; // Extract FileInfo on success
-            const targetPath = this.generateTargetPath(
-              format,
-              targetDir,
-              fileInfo,
-              representativePath,
-            );
-            await this.transferOrCopyFile(
-              representativePath,
-              targetPath,
-              !shouldMove,
-            );
-            bestFileBar.increment();
-          }
-        }
-      }
-    }
-
-    // --- Handle error files ---
-    if (errorDir && gatherFileInfoResult.errorFiles.length > 0) {
-      const errorBar = multibar.create(
-        gatherFileInfoResult.errorFiles.length,
+    const bars = {
+      organize: multibar.create(
+        actions.filter((action) => action.kind === 'organize').length,
+        0,
+        { phase: 'Unique  ' },
+      ),
+      duplicate: multibar.create(
+        actions.filter((action) => action.kind === 'duplicate').length,
+        0,
+        { phase: 'Duplicate' },
+      ),
+      error: multibar.create(
+        actions.filter((action) => action.kind === 'error').length,
         0,
         { phase: 'Error   ' },
+      ),
+    };
+
+    for (const action of actions) {
+      await transfer(action.source, action.target, !shouldMove);
+      bars[action.kind].increment();
+    }
+
+    const duplicateCount = actions.filter(
+      (action) => action.kind === 'duplicate',
+    ).length;
+    if (duplicateDir && duplicateCount > 0) {
+      console.log(
+        chalk.yellow(
+          `\nDuplicate files have been ${shouldMove ? 'moved' : 'copied'} to ${duplicateDir}`,
+        ),
       );
-      for (const errorFilePath of gatherFileInfoResult.errorFiles) {
-        const targetPath = join(errorDir, basename(errorFilePath));
-        // Use copy for error files regardless of move flag? Or follow flag? Following flag for now.
-        await this.transferOrCopyFile(errorFilePath, targetPath, !shouldMove);
-        errorBar.increment();
-      }
+    }
+    if (duplicateDir && duplicateCount === 0) {
+      console.log(chalk.yellow('\nNo duplicate files to process.'));
+    }
+    const errorCount = actions.filter(
+      (action) => action.kind === 'error',
+    ).length;
+    if (errorDir && errorCount > 0) {
       console.log(
         chalk.red(
           `\nError files have been ${shouldMove ? 'moved' : 'copied'} to ${errorDir}`,
@@ -189,43 +136,127 @@ export class FileTransferService {
     console.log(chalk.green('\nFile transfer completed'));
   }
 
+  async planOrganizedFiles(
+    gatherFileInfoResult: GatherFileInfoResult,
+    deduplicationResult: DeduplicationResult,
+    targetDir: string,
+    duplicateDir: string | undefined,
+    errorDir: string | undefined,
+    format: string,
+  ): Promise<OrganizationPlanAction[]> {
+    const actions = await this.collectTransferActions(
+      gatherFileInfoResult,
+      deduplicationResult,
+      targetDir,
+      duplicateDir,
+      errorDir,
+      format,
+      true,
+    );
+    return actions.map((action, index) => {
+      if (!action.fingerprint) {
+        throw new Error(`Missing fingerprint for planned action ${index + 1}`);
+      }
+      const plannedAction: OrganizationPlanAction = {
+        id: `${action.kind}-${String(index + 1).padStart(6, '0')}`,
+        kind: action.kind,
+        source: resolve(action.source),
+        target: resolve(action.target),
+        reason: action.reason,
+        fingerprint: action.fingerprint,
+      };
+      if (action.representative) {
+        plannedAction.representative = resolve(action.representative);
+      }
+      return plannedAction;
+    });
+  }
+
+  private async collectTransferActions(
+    gatherFileInfoResult: GatherFileInfoResult,
+    deduplicationResult: DeduplicationResult,
+    targetDir: string,
+    duplicateDir: string | undefined,
+    errorDir: string | undefined,
+    format: string,
+    includeFingerprints: boolean,
+  ): Promise<TransferAction[]> {
+    const actions: TransferAction[] = [];
+    const addAction = async (
+      action: Omit<TransferAction, 'fingerprint'>,
+    ): Promise<void> => {
+      const fingerprint = includeFingerprints
+        ? await fingerprintFile(action.source)
+        : undefined;
+      const transferAction: TransferAction = { ...action };
+      if (fingerprint) transferAction.fingerprint = fingerprint;
+      actions.push(transferAction);
+    };
+
+    for (const filePath of [...deduplicationResult.uniqueFiles].sort()) {
+      const fileInfoResult: AppResult<FileInfo> = await processSingleFile(
+        filePath,
+        this.config,
+        this.cache,
+        this.exifTool,
+        this.workerPool,
+      );
+      if (fileInfoResult.isErr()) {
+        throw fileInfoResult.error;
+      }
+      await addAction({
+        kind: 'organize',
+        source: filePath,
+        target: this.generateTargetPath(
+          format,
+          targetDir,
+          fileInfoResult.value,
+          filePath,
+        ),
+        reason: 'selected representative for the organized library',
+      });
+    }
+
+    if (duplicateDir) {
+      const duplicateSets = [...deduplicationResult.duplicateSets].sort(
+        (a, b) => String(a.bestFile).localeCompare(String(b.bestFile)),
+      );
+      for (const duplicateSet of duplicateSets) {
+        const bestFile = String(duplicateSet.bestFile);
+        const duplicateFolderName = basename(bestFile, extname(bestFile));
+        const duplicateSetFolder = join(duplicateDir, duplicateFolderName);
+        for (const duplicatePath of [...duplicateSet.duplicates].sort()) {
+          await addAction({
+            kind: 'duplicate',
+            source: duplicatePath,
+            target: join(duplicateSetFolder, basename(duplicatePath)),
+            reason: `duplicate of representative ${bestFile}`,
+            representative: bestFile,
+          });
+        }
+      }
+    }
+
+    if (errorDir) {
+      for (const errorFilePath of [...gatherFileInfoResult.errorFiles].sort()) {
+        await addAction({
+          kind: 'error',
+          source: errorFilePath,
+          target: join(errorDir, basename(errorFilePath)),
+          reason: 'processing error during library admission',
+        });
+      }
+    }
+
+    return actions;
+  }
+
   private async transferOrCopyFile(
     sourcePath: string,
     targetPath: string,
     isCopy: boolean,
   ): Promise<void> {
-    try {
-      await mkdir(dirname(targetPath), { recursive: true });
-      if (isCopy) {
-        await copyFile(sourcePath, targetPath);
-      } else {
-        try {
-          await rename(sourcePath, targetPath);
-        } catch (error) {
-          if (
-            error instanceof Error &&
-            'code' in error &&
-            error.code === 'EXDEV'
-          ) {
-            // Cross-device move, fallback to copy-then-delete
-            await copyFile(sourcePath, targetPath);
-            await unlink(sourcePath);
-          } else {
-            // Rethrow other rename errors
-            throw error;
-          }
-        }
-      }
-    } catch (error) {
-      console.error(
-        chalk.red(
-          `\nError ${isCopy ? 'copying' : 'moving'} file ${sourcePath} to ${targetPath}:`,
-        ),
-        error,
-      );
-      // Decide if we should throw or just log and continue
-      // For now, log and continue
-    }
+    await executeTransfer(sourcePath, targetPath, isCopy);
   }
 
   private generateTargetPath(
