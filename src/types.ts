@@ -57,6 +57,8 @@ export class ProgramOptions {
   error?: string;
   duplicate?: string;
   debug?: string;
+  plan?: string;
+  applyPlan?: string;
   concurrency: number;
   move: boolean;
   resolution: number;

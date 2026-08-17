@@ -18,7 +18,9 @@ MediaCurator's deduplication goes beyond basic filename or checksum comparisons.
 You have several command-line options to control the deduplication process:
 
 - `-d, --duplicate <path>`: **Crucial for managing duplicates.** Specifies a directory where identified duplicate files should be moved. If this option is _not_ provided, duplicates are identified internally but are **not moved or deleted** – they are simply ignored during the transfer phase (unless `--move` is also used, see below).
-- `--debug <path>`: **Highly recommended for review.** Saves detailed reports (usually text files) about the duplicate sets found to the specified directory. Each report lists the files considered duplicates of each other. Reviewing these reports _before_ using `-d` or `--move` is strongly advised.
+- `--debug <path>`: Saves detailed duplicate-set reports for the normal transfer path. These reports are useful diagnostics, but they are not an approval or dry-run boundary.
+- `--plan <path>`: **Recommended for review.** Exports the complete organization, duplicate, and error recommendations with a Rust fingerprint for every source file. No media is changed while the plan is written.
+- `--apply-plan <path>`: Applies an approved plan. The plan must have `review.approved` set to `true`; progress is kept in a sibling journal so an interrupted apply can be resumed.
 - `-m, --move`: Changes the file transfer behavior from copying to moving.
   - **Without `-d`:** Unique files are moved to the destination, duplicates are left untouched in the source (effectively deleting the unique file from the source). **Use with caution.**
   - **With `-d`:** Unique files are moved to the destination, and _all_ identified duplicates are moved to the `--duplicate` directory. This is the common way to isolate duplicates while organizing the unique files.
@@ -38,15 +40,15 @@ Selecting the right similarity threshold depends on your goal:
 
 **Recommended Workflow:**
 
-1.  **Initial Run with `--debug`:** Perform a run using your desired organization format and estimated thresholds, but **only use the `--debug <path>` option**. Do _not_ use `-d` or `--move` yet.
+1.  **Export a review plan:** Perform a run using your desired organization format and estimated thresholds with `--plan <path>`. Do _not_ use `--move` yet; the plan itself never changes media.
     ```bash
-    MediaCurator <source...> <destination> --format "..." --image-similarity-threshold 0.95 --debug /path/to/debug/reports
+    MediaCurator /path/to/source /path/to/destination --format "..." --image-similarity-threshold 0.95 --plan /path/to/curator-plan.json
     ```
-2.  **Review Debug Reports:** Carefully examine the reports generated in the debug directory. Check if the grouped files are indeed duplicates according to your criteria. Adjust thresholds if necessary based on the results.
-3.  **Execute with `-d` and/or `--move`:** Once you are confident with the settings and the potential duplicate groupings, perform the run again, this time adding the `-d <duplicate_path>` option (and potentially `--move` if desired) to actually separate the duplicates and organize the unique files.
+2.  **Review the plan:** Carefully inspect the action list, reasons, representatives, and fingerprints. Adjust thresholds and export a new plan if the recommendations are not acceptable. Set `review.approved` to `true` only when the plan is ready.
+3.  **Apply the approved plan:** Run `--apply-plan` to organize unique files and route duplicates/errors. If the process is interrupted, rerun the same command; the journal verifies completed destinations and continues with pending actions.
     ```bash
-    # Example: Move unique files, move duplicates to separate folder
-    MediaCurator <source...> <destination> --format "..." --image-similarity-threshold 0.95 -d /path/to/duplicates --move
+    MediaCurator --apply-plan /path/to/curator-plan.json
     ```
 
-This cautious approach ensures you don't accidentally move or misclassify files before verifying the results.
+The legacy `--debug` reports remain available for diagnostics when running the
+normal transfer path, but they do not replace the fingerprinted review gate.

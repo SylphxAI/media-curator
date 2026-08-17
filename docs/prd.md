@@ -22,18 +22,21 @@ or background sync process.
 | `media.organize` | Files land in the requested format/metadata tree | Silent data loss or unreported transfer failure |
 | `media.dedupe` | Exact and perceptual clusters retain every selected representative | Exact-hash-only behavior |
 | `media.transfer` | Copy/move creates a new destination exclusively; move removes the source only after the copy succeeds | Overwriting a target or reporting success after a failed transfer |
+| `media.review` | A human can inspect fingerprinted organize/duplicate/error recommendations before approving a resumable apply | Opaque ranking, automatic destructive approval, or a second scanner/writer |
 
 ## North-star evidence
 
-Correct organize/dedupe/transfer results on ground-truth fixtures. TS-vs-Rust
-parity theater and a second mutable store are anti-proxies, not success
-metrics.
+Correct organize/dedupe/transfer results on ground-truth fixtures, with a
+reviewable plan and journal for repeatable return visits. TS-vs-Rust parity
+theater and a second mutable store are anti-proxies, not success metrics.
 
 ## Boundaries
 
 - Operate only on source, destination, duplicate, and error roots supplied by
   the user.
 - Keep destructive `--move` behavior explicit, documented, and test-covered.
+- Export plans with source fingerprints and require explicit human approval
+  before applying them; resume only from the plan's per-action journal.
 - Do not add a hosted API, cloud storage, telemetry collector, or remote media
   index to local/static tooling.
 - Do not encode customer-specific organization policy into shared core logic.

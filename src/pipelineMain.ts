@@ -26,6 +26,11 @@ import { FileTransferService } from './services/FileTransferService';
 import { discoverFilesFn } from './discovery';
 import { MetadataDBService } from './services/MetadataDBService'; // Import DB service
 import { CliReporter } from './reporting/CliReporter'; // Import the new reporter
+import {
+  applyOrganizationPlan,
+  createOrganizationPlan,
+  writeOrganizationPlan,
+} from './organizationPlan.js';
 
 function exitHandler() {
   console.log(chalk.red('\nmedia-curator was interrupted'));
@@ -45,8 +50,8 @@ async function main() {
       'Intelligently curate, organize, and deduplicate your digital photo and video collection.',
     )
     .version('1.3.0')
-    .argument('<source>', 'Source directories to process')
-    .argument('<destination>', 'Destination directory for organized media')
+    .argument('[source]', 'Source directory to process')
+    .argument('[destination]', 'Destination directory for organized media')
     .option(
       '-e, --error <path>',
       "Directory for files that couldn't be processed",
@@ -138,6 +143,14 @@ async function main() {
     )
     .option('--verbose', 'Enable verbose logging', false) // Add verbose option
     .option(
+      '--plan <path>',
+      'Export a fingerprinted review plan and do not mutate media',
+    )
+    .option(
+      '--apply-plan <path>',
+      'Apply an approved plan and resume from its journal if interrupted',
+    )
+    .option(
       '--health',
       'Emit JSON health probe (delegates to Rust when MEDIA_CURATOR_RUST_CLI=1)',
     )
@@ -182,8 +195,27 @@ async function main() {
     )
     .parse(process.argv);
 
-  const [source, destination] = program.args as [string, string];
+  const [source, destination] = program.args as [
+    string | undefined,
+    string | undefined,
+  ];
   const options = program.opts<ProgramOptions>();
+
+  if (options.plan && options.applyPlan) {
+    throw new Error('--plan and --apply-plan cannot be used together');
+  }
+  if (options.applyPlan) {
+    const result = await applyOrganizationPlan(options.applyPlan);
+    console.log(
+      `Applied organization plan ${result.planId}: ${result.completedActions}/${result.totalActions} actions complete. Journal: ${result.journalPath}${result.resumed ? ' (resumed)' : ''}`,
+    );
+    return;
+  }
+  if (!source || !destination) {
+    throw new Error(
+      'source and destination are required unless --apply-plan is provided',
+    );
+  }
 
   // Removed DI initialization: await Context.ensureInitialized(options);
 
@@ -311,6 +343,34 @@ async function main() {
       throw deduplicationResult.error; // Rethrow to be caught by main try/catch
     }
     const deduplicationData = deduplicationResult.value; // Unwrap successful result
+    if (options.plan) {
+      reporter.logInfo('\nPreparing review plan (no media will be changed)...');
+      const actions = await fileTransferService.planOrganizedFiles(
+        gatherFileInfoResult,
+        deduplicationData,
+        destination,
+        options.duplicate,
+        options.error,
+        options.format,
+      );
+      const plan = createOrganizationPlan({
+        sourceRoots: [source],
+        destinationRoot: destination,
+        duplicateRoot: options.duplicate,
+        errorRoot: options.error,
+        format: options.format,
+        operation: options.move ? 'move' : 'copy',
+        actions,
+      });
+      const planPath = await writeOrganizationPlan(options.plan, plan);
+      reporter.logSuccess(
+        `Review plan exported to ${planPath}. Inspect it, set review.approved to true, then run --apply-plan ${planPath}.`,
+      );
+      reporter.logInfo(
+        `Recommendations: ${plan.summary.organize} organize, ${plan.summary.duplicate} duplicate, ${plan.summary.error} error actions.`,
+      );
+      return;
+    }
     // Stage 4: File Transfer
     reporter.logInfo('\nStage 4: Transferring files...'); // Use reporter
     // Use the standalone transfer function
