@@ -110,10 +110,16 @@ jobs:
         run: |
           test -f AGENTS.md
           test -f PROJECT.md
-          
+
       - name: Setup Bun
         if: needs.changed-files.outputs.product_changed == 'true'
-        uses: oven-sh/setup-bun@v2 # Use official setup-bun action
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+
+      - name: Assert Bun 1.4.0
+        if: needs.changed-files.outputs.product_changed == 'true'
+        run: test "$(bun --version)" = "1.4.0"
 
       - name: Set up Rust
         if: needs.changed-files.outputs.product_changed == 'true'
@@ -162,6 +168,11 @@ jobs:
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+
+      - name: Assert Bun 1.4.0
+        run: test "$(bun --version)" = "1.4.0"
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
