@@ -145,7 +145,7 @@ media-curator --help
 
 ### Prerequisites
 
-- **Node.js** ≥18.0.0 or **Bun** ≥0.5.0
+- **Bun** ≥1.4.0 for the company TypeScript toolchain (install, test, typecheck, bundler). Customer `npm install` remains an npm registry channel for the published package.
 - **FFmpeg** - For video processing
 - **ExifTool** - For metadata extraction (optional, bundled)
 
@@ -427,18 +427,18 @@ media-curator /massive_library /organized \
 
 ### Technology Stack
 
-| Component            | Technology                   | Purpose                |
-| -------------------- | ---------------------------- | ---------------------- |
-| **Language**         | TypeScript                   | Type-safe development  |
-| **Runtime**          | Node.js / Bun                | Execution environment  |
-| **Image Processing** | Sharp (libvips)              | Fast image operations  |
-| **Video Processing** | FFmpeg                       | Video frame extraction |
-| **Metadata**         | ExifTool                     | EXIF/GPS extraction    |
-| **Database**         | SQLite (better-sqlite3)      | Metadata + LSH storage |
-| **Cache**            | LMDB                         | Fast key-value cache   |
-| **Optimization**     | WebAssembly (AssemblyScript) | Hamming distance       |
-| **Concurrency**      | workerpool                   | Parallel processing    |
-| **Error Handling**   | neverthrow                   | Result types           |
+| Component            | Technology                   | Purpose                      |
+| -------------------- | ---------------------------- | ---------------------------- |
+| **Language**         | TypeScript                   | Type-safe development        |
+| **Runtime**          | Bun 1.4                      | Company TypeScript toolchain |
+| **Image Processing** | Sharp (libvips)              | Fast image operations        |
+| **Video Processing** | FFmpeg                       | Video frame extraction       |
+| **Metadata**         | ExifTool                     | EXIF/GPS extraction          |
+| **Database**         | SQLite (better-sqlite3)      | Metadata + LSH storage       |
+| **Cache**            | LMDB                         | Fast key-value cache         |
+| **Optimization**     | WebAssembly (AssemblyScript) | Hamming distance             |
+| **Concurrency**      | workerpool                   | Parallel processing          |
+| **Error Handling**   | neverthrow                   | Result types                 |
 
 ### Pipeline Architecture
 

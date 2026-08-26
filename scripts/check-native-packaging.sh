@@ -12,7 +12,7 @@ if ! grep -q 'bin/native/media-curator-cli' "$ROOT/src/external/rustCli.ts"; the
   echo "FAIL: rustCli.ts must resolve bin/native/media-curator-cli" >&2
   exit 1
 fi
-if ! node -e "const p=require('./package.json'); if(!Array.isArray(p.files)||!p.files.some(f=>String(f).includes('bin'))) process.exit(1)"; then
+if ! bun -e "const p=require('./package.json'); if(!Array.isArray(p.files)||!p.files.some(f=>String(f).includes('bin'))) process.exit(1)"; then
   echo "FAIL: package.json files must include bin/" >&2
   exit 1
 fi
