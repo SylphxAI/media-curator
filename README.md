@@ -434,7 +434,7 @@ media-curator /massive_library /organized \
 | **Image Processing** | Sharp (libvips)              | Fast image operations        |
 | **Video Processing** | FFmpeg                       | Video frame extraction       |
 | **Metadata**         | ExifTool                     | EXIF/GPS extraction          |
-| **Database**         | SQLite (better-sqlite3)      | Metadata + LSH storage       |
+| **Database**         | SQLite (bun:sqlite)          | Metadata + LSH storage       |
 | **Cache**            | LMDB                         | Fast key-value cache         |
 | **Optimization**     | WebAssembly (AssemblyScript) | Hamming distance             |
 | **Concurrency**      | workerpool                   | Parallel processing          |
@@ -664,7 +664,7 @@ Built with:
 
 - [Sharp](https://sharp.pixelplumbing.com/) - High-performance image processing (libvips)
 - [FFmpeg](https://ffmpeg.org/) - Video frame extraction
-- [SQLite](https://www.sqlite.org/) - Metadata storage (better-sqlite3)
+- [SQLite](https://www.sqlite.org/) - Metadata storage (bun:sqlite)
 - [LMDB](http://www.lmdb.tech/) - Fast key-value cache
 - [ExifTool](https://exiftool.org/) - Metadata extraction
 - [WebAssembly](https://webassembly.org/) - Optimized calculations

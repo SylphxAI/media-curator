@@ -1,4 +1,4 @@
-import Database, { Database as DB } from 'better-sqlite3';
+import { Database } from 'bun:sqlite';
 import { FileInfo } from '../types'; // Removed unused FileStats, Metadata, MediaInfo
 import { AppResult, ok, DatabaseError, safeTry } from '../errors'; // Removed unused err
 import { bufferToSharedArrayBuffer } from '../utils'; // Import buffer utility
@@ -29,8 +29,9 @@ export interface FileInfoRow {
 }
 
 export class MetadataDBService {
-  private db: DB;
+  private db: Database;
   private dbPath: string;
+  private closed = false;
 
   constructor(
     dbDirectory: string = '.mediadb',
@@ -51,7 +52,11 @@ export class MetadataDBService {
 
     this.dbPath = join(dbDirectory, dbFilename);
     try {
-      this.db = new Database(this.dbPath);
+      this.db = new Database(this.dbPath, {
+        create: true,
+        readwrite: true,
+        strict: true,
+      });
       this.initSchema();
       console.log(`SQLite metadata database opened at: ${this.dbPath}`);
     } catch (error) {
@@ -68,7 +73,7 @@ export class MetadataDBService {
 
   private initSchema(): void {
     // Use PRAGMA journal_mode=WAL for better concurrency
-    this.db.pragma('journal_mode = WAL');
+    this.db.exec('PRAGMA journal_mode = WAL');
 
     // Create the main table for file information
     this.db.exec(`
@@ -245,7 +250,25 @@ export class MetadataDBService {
 
     return safeTry(
       () => {
-        stmt.run(row);
+        stmt.run({
+          filePath: row.filePath,
+          contentHash: row.contentHash ?? null,
+          size: row.size ?? null,
+          createdAt: row.createdAt ?? null,
+          modifiedAt: row.modifiedAt ?? null,
+          imageWidth: row.imageWidth ?? null,
+          imageHeight: row.imageHeight ?? null,
+          gpsLatitude: row.gpsLatitude ?? null,
+          gpsLongitude: row.gpsLongitude ?? null,
+          cameraModel: row.cameraModel ?? null,
+          imageDate: row.imageDate ?? null,
+          mediaDuration: row.mediaDuration ?? null,
+          pHash: row.pHash ?? null,
+          lshKey1: row.lshKey1 ?? null,
+          lshKey2: row.lshKey2 ?? null,
+          lshKey3: row.lshKey3 ?? null,
+          lshKey4: row.lshKey4 ?? null,
+        });
       },
       (e) =>
         new DatabaseError(
@@ -449,8 +472,9 @@ export class MetadataDBService {
   public close(): AppResult<void> {
     return safeTry(
       () => {
-        if (this.db && this.db.open) {
+        if (!this.closed) {
           this.db.close();
+          this.closed = true;
           console.log(`SQLite metadata database closed: ${this.dbPath}`);
         }
       },

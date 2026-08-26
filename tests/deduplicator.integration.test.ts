@@ -133,7 +133,7 @@ async function populateDb(dbService: MetadataDBService, rows: FileInfoRow[]) {
   }
 }
 
-// Skip this entire suite when running in Bun due to better-sqlite3 native module issues
+// Skip this entire suite in Bun; residual TS tests stay informational (ADR-168).
 describe.skip('deduplicateFilesFn Integration Tests (Skipped in Bun)', () => {
   let dbService: MetadataDBService;
   let reporter: MockCliReporter;
