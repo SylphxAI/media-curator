@@ -347,6 +347,18 @@ describe('Utility Functions', () => {
       expect(result._unsafeUnwrap().imageDate).toEqual(date);
     });
 
+    it('should leave imageDate undefined when CreateDate is numeric', () => {
+      const yearLike = parseExifTagsToMetadata({ CreateDate: 2023 } as Tags);
+      expect(yearLike.isOk()).toBe(true);
+      expect(yearLike._unsafeUnwrap().imageDate).toBeUndefined();
+
+      const unixSeconds = parseExifTagsToMetadata({
+        CreateDate: 1_698_336_000,
+      } as Tags);
+      expect(unixSeconds.isOk()).toBe(true);
+      expect(unixSeconds._unsafeUnwrap().imageDate).toBeUndefined();
+    });
+
     it('should return error if tag parsing throws unexpected error', () => {
       const badTags = {
         get DateTimeOriginal() {
