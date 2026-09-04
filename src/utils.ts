@@ -298,9 +298,11 @@ export async function calculateFileHash(
 
 // Helper function to parse various date formats from ExifTool
 function parseExifDate(
-  value: string | ExifDateTime | ExifDate | undefined,
+  value: string | number | ExifDateTime | ExifDate | undefined,
 ): Date | undefined {
   if (!value) return undefined;
+  // 35.x Tags.CreateDate includes number; keep prior runtime (undefined).
+  if (typeof value === 'number') return undefined;
   if (typeof value === 'string') {
     // Try parsing common string formats, adjust as needed
     const date = new Date(value.replace(/(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3')); // Handle YYYY:MM:DD
