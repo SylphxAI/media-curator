@@ -55,8 +55,8 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@changesets/cli": "^2.29.7",
-    "@commitlint/cli": "^19.3.0",
-    "@commitlint/config-conventional": "^19.2.2",
+    "@commitlint/cli": "^21.0.0",
+    "@commitlint/config-conventional": "^21.0.0",
     "@datastructures-js/heap": "^4.3.3",
     "@eslint/js": "^9.9.0",
     "@topcli/spinner": "^2.1.2",
