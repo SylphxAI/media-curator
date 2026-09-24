@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@changesets/cli": "^2.29.7",
+    "@changesets/cli": "^3.0.0",
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
     "@datastructures-js/heap": "^4.3.3",
