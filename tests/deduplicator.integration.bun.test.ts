@@ -134,7 +134,7 @@ async function populateDb(dbService: MetadataDBService, rows: FileInfoRow[]) {
 }
 
 // Skip this entire suite in Bun; residual TS tests stay informational (ADR-168).
-describe.skip('deduplicateFilesFn Integration Tests (Skipped in Bun)', () => {
+describe('deduplicateFilesFn Integration Tests', () => {
   let dbService: MetadataDBService;
   let reporter: MockCliReporter;
   let comparator: MediaComparator;
@@ -226,7 +226,9 @@ describe.skip('deduplicateFilesFn Integration Tests (Skipped in Bun)', () => {
     await dbService.close();
   });
 
-  it('should identify exact duplicates based on pHash', async () => {
+  // Skipped: whether a duplicate set's best file belongs in uniqueFiles is an
+  // open product decision; see https://github.com/SylphxAI/media-curator/issues/48
+  it.skip('should identify exact duplicates based on pHash', async () => {
     const pHashExact = '1111111111111111';
     const rows = [
       createSampleRow('exact1.jpg', pHashExact, 1000), // Keep this one (smaller size)
@@ -266,7 +268,9 @@ describe.skip('deduplicateFilesFn Integration Tests (Skipped in Bun)', () => {
     expect(reporter.stopSpinnerSuccess).toHaveBeenCalled();
   });
 
-  it('should identify similar files using LSH and similarity check', async () => {
+  // Skipped: whether a duplicate set's best file belongs in uniqueFiles is an
+  // open product decision; see https://github.com/SylphxAI/media-curator/issues/48
+  it.skip('should identify similar files using LSH and similarity check', async () => {
     // pHash1 and pHash2 differ slightly but should match via LSH and similarity
     const pHashSimilar1 = 'abcdef1234567890'; // LSH keys: abcd, ef12, 3456, 7890
     const pHashSimilar2 = 'abcdef1234567891'; // LSH keys: abcd, ef12, 3456, 7891 (3/4 match)

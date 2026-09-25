@@ -1,5 +1,3 @@
-# Removed deprecated husky lines
-
-bunx vitest run --exclude tests/comparatorUtils.test.ts --exclude tests/discovery.test.ts --exclude tests/services/MetadataDBService.integration.test.ts --exclude tests/deduplicator.integration.test.ts --exclude tests/gatherer.integration.test.ts
-# bunx eslint . # Temporarily disabled to allow commit
+# Fast local checks; the full test suite (which needs the Rust CLI) gates CI.
 bunx prettier --check .
+bun run lint

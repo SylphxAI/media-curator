@@ -46,12 +46,13 @@ describe('native media-curator-cli shipped in npm pack (adversarial)', () => {
     expect(r.stdout).toContain('PASS');
   });
 
-  it('check-no-ts-file-stats-backend passes', () => {
-    const r = spawnSync('bash', ['scripts/check-no-ts-file-stats-backend.sh'], {
-      cwd: repoRoot,
-      encoding: 'utf8',
-    });
-    expect(r.status).toBe(0);
-    expect(r.stdout).toContain('PASS');
+  // The TS opt-out backend and its check script were removed by the native
+  // core cutover (a3a51de); what remains to guard is that production file-stats
+  // and discovery still route through the Rust bridge.
+  it('production file-stats and discovery route through the Rust CLI', () => {
+    const read = (rel: string) =>
+      readFileSync(path.join(repoRoot, rel), 'utf8');
+    expect(read('src/jobs/fileStats.ts')).toContain('fileStatsViaRust(');
+    expect(read('src/discovery.ts')).toContain('discoverViaRust(');
   });
 });

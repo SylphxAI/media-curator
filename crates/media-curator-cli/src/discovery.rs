@@ -97,7 +97,6 @@ impl Drop for SemaphoreGuard<'_> {
 
 struct ScanState {
     all_files: Vec<PathBuf>,
-    file_count: u64,
     dir_count: u64,
 }
 
@@ -109,12 +108,21 @@ pub fn discover_files(options: DiscoverOptions) -> Result<DiscoveryMap, Discover
     let semaphore = Arc::new(Semaphore::new(options.concurrency.max(1)));
     let state = Arc::new(Mutex::new(ScanState {
         all_files: Vec::new(),
-        file_count: 0,
         dir_count: 0,
     }));
 
     let mut workers = Vec::new();
     for source_dir in options.source_dirs {
+        // A source may be a single file (README: "Source directories or files").
+        if fs::metadata(&source_dir).is_ok_and(|meta| meta.is_file()) {
+            if extension_of(&source_dir).is_some_and(|ext| supported.contains(ext.as_str())) {
+                let mut locked = state
+                    .lock()
+                    .unwrap_or_else(|poisoned| poisoned.into_inner());
+                locked.all_files.push(source_dir);
+            }
+            continue;
+        }
         let semaphore = Arc::clone(&semaphore);
         let state = Arc::clone(&state);
         let supported = supported.clone();
@@ -129,12 +137,16 @@ pub fn discover_files(options: DiscoverOptions) -> Result<DiscoveryMap, Discover
         }
     }
 
-    let locked = state
+    let mut locked = state
         .lock()
         .unwrap_or_else(|poisoned| poisoned.into_inner());
+    // A file named directly and also found under a named directory counts once.
+    locked.all_files.sort();
+    locked.all_files.dedup();
+    let file_count = locked.all_files.len() as u64;
     Ok(group_by_extension(
         &locked.all_files,
-        locked.file_count,
+        file_count,
         locked.dir_count,
     ))
 }
@@ -212,7 +224,6 @@ fn scan_directory(
                 .lock()
                 .unwrap_or_else(|poisoned| poisoned.into_inner());
             locked.all_files.push(entry_path);
-            locked.file_count += 1;
         }
 
         child_dirs
@@ -279,5 +290,37 @@ mod tests {
         assert_eq!(map.stats.dir_count, 2);
         assert_eq!(map.by_extension.len(), 1);
         assert!(map.by_extension.contains_key("jpg"));
+    }
+
+    #[test]
+    fn accepts_files_as_sources_and_counts_each_file_once() {
+        let root = fixture_root();
+        let direct = discover_files(DiscoverOptions {
+            source_dirs: vec![root.clone()],
+            concurrency: 1,
+        })
+        .expect("fixture discovery must succeed");
+        let first = PathBuf::from(&direct.by_extension["jpg"][0]);
+
+        let map = discover_files(DiscoverOptions {
+            source_dirs: vec![first.clone(), root, first.clone()],
+            concurrency: 1,
+        })
+        .expect("mixed discovery must succeed");
+
+        assert_eq!(map.stats.file_count, 2, "a file named twice counts once");
+        assert_eq!(map.by_extension["jpg"].len(), 2);
+
+        let only_file = discover_files(DiscoverOptions {
+            source_dirs: vec![first.clone()],
+            concurrency: 1,
+        })
+        .expect("file source must succeed");
+        assert_eq!(only_file.stats.file_count, 1);
+        assert_eq!(only_file.stats.dir_count, 0);
+        assert_eq!(
+            only_file.by_extension["jpg"],
+            vec![first.to_string_lossy().into_owned()]
+        );
     }
 }

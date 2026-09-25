@@ -66,7 +66,7 @@ describe('LmdbCache Integration Tests', () => {
     expect(result._unsafeUnwrap().data).toBeUndefined();
   });
 
-  it.skip('should set and get simple data (Skipped due to timeout)', async () => {
+  it('should set and get simple data', async () => {
     const jobName = 'simpleDataJob';
     const key = 'simpleKey';
     const data = { message: 'hello', count: 123 };
@@ -84,7 +84,7 @@ describe('LmdbCache Integration Tests', () => {
     expect(cacheData.data).toEqual(data);
   });
 
-  it.skip('should set and get data containing SharedArrayBuffer (Skipped due to timeout)', async () => {
+  it('should set and get data containing SharedArrayBuffer', async () => {
     const jobName = 'sabDataJob';
     const key = 'sabKey';
     const buffer = Buffer.from('sab test');
@@ -106,7 +106,7 @@ describe('LmdbCache Integration Tests', () => {
     expect(sharedArrayBufferToBuffer(cacheData.data!.hash)).toEqual(buffer);
   });
 
-  it.skip('should set and get data containing Date (Skipped due to timeout)', async () => {
+  it('should set and get data containing Date', async () => {
     const jobName = 'dateDataJob';
     const key = 'dateKey';
     const date = new Date();
@@ -128,7 +128,7 @@ describe('LmdbCache Integration Tests', () => {
     expect(cacheData.data?.timestamp.getTime()).toBeCloseTo(date.getTime());
   });
 
-  it.skip('should return invalid config if config is different (Skipped due to timeout)', async () => {
+  it('should return invalid config if config is different', async () => {
     const jobName = 'configCheckJob';
     const key = 'configKey';
     const data = 'some data';
@@ -146,7 +146,7 @@ describe('LmdbCache Integration Tests', () => {
     expect(checkData.cachedConfig).toBeUndefined(); // Should not return cached config if invalid
   });
 
-  it.skip('should return valid config and cached config if config matches (Skipped due to timeout)', async () => {
+  it('should return valid config and cached config if config matches', async () => {
     const jobName = 'configCheckJob';
     const key = 'configKeyMatch'; // Use different key
     const data = 'matching data';
@@ -163,7 +163,7 @@ describe('LmdbCache Integration Tests', () => {
     expect(checkData.cachedConfig).toEqual(config);
   });
 
-  it.skip('should overwrite existing data and config on setCache (Skipped due to timeout)', async () => {
+  it('should overwrite existing data and config on setCache', async () => {
     const jobName = 'overwriteJob';
     const key = 'overwriteKey';
     const data1 = 'data v1';
@@ -203,7 +203,7 @@ describe('LmdbCache Integration Tests', () => {
     expect(cacheData2.data).toEqual(data2);
   });
 
-  it.skip('should fail operations after close (Skipped due to timeout)', async () => {
+  it('should fail operations after close', async () => {
     const separateDbDir = '.test-cache-db-close-test';
     const separateDbPath = join(separateDbDir, 'close-test-cache.lmdb');
 

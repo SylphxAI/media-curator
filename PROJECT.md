@@ -48,11 +48,17 @@ filesystem paths outside user-supplied arguments.
 
 ## Delivery
 
-Pull requests currently use the legacy `Validate Code & Run Tests` GitHub
-Actions context on Sylphx self-hosted runners. Package release intent is present
-through Changesets and the central reusable release workflow, but the older
-tag-driven publish path remains an adoption gap until release ownership is
-fully consolidated.
+Pull requests run the `Validate Code & Run Tests` GitHub Actions context on
+GitHub-hosted runners (a public repository). The whole test suite gates it:
+Vitest suites plus the `*.bun.test.ts` suites that need `bun:sqlite`
+(`bun run test`). A test that cannot pass is skipped individually with a reason
+and a linked issue, never by making the step non-failing.
+
+`release.yml` is the one npm publish path: a `v*.*.*` tag matching
+`package.json` runs the tests, then `npm publish --provenance` over npm trusted
+publishing (GitHub OIDC). Version bumps are Changesets intent (`bun run
+version-packages`) merged through the queue before the tag. `NPM_TOKEN` is a
+fallback until trusted publishing is configured for the package on npmjs.com.
 
 Docs-only boundary changes do not alter runtime behavior, filesystem mutation,
 external tools, package output, or npm publication. Runtime changes need focused

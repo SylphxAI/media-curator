@@ -71,7 +71,7 @@ describe('discoverFiles Integration Tests', () => {
     expect(filePaths).not.toContain(join(sourceDir, 'document.txt'));
   });
 
-  it.skip('should find media files recursively in nested directories (Skipped due to hang)', async () => {
+  it('should find media files recursively in nested directories', async () => {
     const sourceDir = join(TEST_DISCOVERY_DIR, 'currentTest', 'nested');
     const subDir1 = join(sourceDir, 'subdir1');
     const subDir2 = join(subDir1, 'subdir2');
@@ -95,7 +95,7 @@ describe('discoverFiles Integration Tests', () => {
     expect(filePaths).not.toContain(join(subDir1, 'notes.md'));
   });
 
-  it.skip('should handle multiple source directories (Skipped due to hang)', async () => {
+  it('should handle multiple source directories', async () => {
     const sourceDir1 = join(TEST_DISCOVERY_DIR, 'currentTest', 'multi1');
     const sourceDir2 = join(TEST_DISCOVERY_DIR, 'currentTest', 'multi2');
     mkdirSync(sourceDir1);
@@ -119,7 +119,7 @@ describe('discoverFiles Integration Tests', () => {
     expect(filePaths).not.toContain(join(sourceDir1, 'config.yml'));
   });
 
-  it.skip('should handle source paths being individual files (Skipped due to hang)', async () => {
+  it('should handle source paths being individual files', async () => {
     const sourceDir = join(TEST_DISCOVERY_DIR, 'currentTest', 'files');
     mkdirSync(sourceDir);
     const file1Path = join(sourceDir, 'image_direct.jpg');
@@ -143,7 +143,7 @@ describe('discoverFiles Integration Tests', () => {
     expect(filePaths).not.toContain(nonMediaPath);
   });
 
-  it.skip('should handle mixed sources (directories and files) (Skipped due to hang)', async () => {
+  it('should handle mixed sources (directories and files)', async () => {
     const sourceDir = join(TEST_DISCOVERY_DIR, 'currentTest', 'mixed');
     const subDir = join(sourceDir, 'subdir');
     mkdirSync(sourceDir);
@@ -171,7 +171,7 @@ describe('discoverFiles Integration Tests', () => {
     expect(uniquePaths).not.toContain(join(sourceDir, 'another.txt'));
   });
 
-  it.skip('should return an empty array if no media files are found (Skipped due to hang)', async () => {
+  it('should return an empty array if no media files are found', async () => {
     const sourceDir = join(TEST_DISCOVERY_DIR, 'currentTest', 'empty');
     mkdirSync(sourceDir);
     writeFileSync(join(sourceDir, 'readme.txt'), 'dummy content');
@@ -184,7 +184,7 @@ describe('discoverFiles Integration Tests', () => {
     expect(filePaths).toHaveLength(0);
   });
 
-  it.skip('should return an empty array for non-existent source directories (Skipped due to hang)', async () => {
+  it('should return an empty array for non-existent source directories', async () => {
     const nonExistentDir = join(
       TEST_DISCOVERY_DIR,
       'currentTest',

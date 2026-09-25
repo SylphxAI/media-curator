@@ -1,7 +1,7 @@
 import { ExifTool } from 'exiftool-vendored';
 // import { injectable } from "inversify"; // Removed unused 'inject' - REMOVED INVERSIFY
 import { mkdir, copyFile, rename, unlink } from 'fs/promises';
-import { join, basename, dirname, extname, parse, normalize } from 'path'; // Added normalize
+import { basename, dirname, extname, parse, normalize } from 'path';
 import { existsSync } from 'fs';
 import crypto from 'crypto';
 import chalk from 'chalk';
@@ -17,6 +17,7 @@ import { processSingleFile } from '../fileProcessor';
 import { AppResult } from '../errors'; // Import AppResult for return type handling
 import { LmdbCache } from '../caching/LmdbCache';
 import { WorkerPool } from '../contexts/types';
+import { resolveInside, sanitizePathSegment } from './safeTargetPath';
 
 // @injectable() // REMOVED INVERSIFY
 export class FileTransferService {
@@ -98,12 +99,18 @@ export class FileTransferService {
           const bestFile = duplicateSet.bestFile;
           // Create a subfolder named after the best file's base name
           const duplicateFolderName = basename(bestFile, extname(bestFile));
-          const duplicateSetFolder = join(duplicateDir, duplicateFolderName);
+          const duplicateSetFolder = resolveInside(
+            duplicateDir,
+            sanitizePathSegment(duplicateFolderName),
+          );
 
           for (const duplicatePath of duplicateSet.duplicates) {
             await this.transferOrCopyFile(
               duplicatePath,
-              join(duplicateSetFolder, basename(duplicatePath)),
+              resolveInside(
+                duplicateSetFolder,
+                sanitizePathSegment(basename(duplicatePath)),
+              ),
               !shouldMove, // Always copy/move duplicates based on flag
             );
             duplicateBar.increment();
@@ -173,7 +180,10 @@ export class FileTransferService {
         { phase: 'Error   ' },
       );
       for (const errorFilePath of gatherFileInfoResult.errorFiles) {
-        const targetPath = join(errorDir, basename(errorFilePath));
+        const targetPath = resolveInside(
+          errorDir,
+          sanitizePathSegment(basename(errorFilePath)),
+        );
         // Use copy for error files regardless of move flag? Or follow flag? Following flag for now.
         await this.transferOrCopyFile(errorFilePath, targetPath, !shouldMove);
         errorBar.increment();
@@ -349,10 +359,11 @@ export class FileTransferService {
       } else {
         replacement = data[key] || ''; // Get value from data object for other keys
       }
-      // Sanitize the replacement value (important for NAME, CAM etc.)
+      // A placeholder value (CAM comes from untrusted EXIF) fills one path
+      // segment at most: it can never add a separator or a `..`.
       // Don't sanitize the extension itself here.
-      if (key !== 'EXT') {
-        replacement = replacement.replace(/[<>:"|?*]/g, '_');
+      if (key !== 'EXT' && replacement !== '') {
+        replacement = sanitizePathSegment(replacement);
       }
       return replacement;
     });
@@ -363,7 +374,8 @@ export class FileTransferService {
     formattedPath = formattedPath
       .split(/[/\\]+/)
       .filter(Boolean)
-      .join('/'); // Removed unnecessary escape for /
+      .map(sanitizePathSegment)
+      .join('/');
 
     if (!formattedPath) {
       formattedPath = 'NoDate'; // Default folder if format string results in empty path
@@ -395,9 +407,9 @@ export class FileTransferService {
     let finalFilename = `${finalFilenameBase}${finalFilenameExt}`;
 
     // Sanitize filename part as well
-    finalFilename = finalFilename.replace(/[<>:"/\\|?*]/g, '_');
+    finalFilename = sanitizePathSegment(finalFilename);
 
-    let fullPath = join(targetDir, directory, finalFilename); // Already correct here, but included for context
+    let fullPath = resolveInside(targetDir, directory, finalFilename);
 
     // Handle potential filename conflicts
     let counter = 1;
@@ -414,7 +426,7 @@ export class FileTransferService {
       // Option 2: Append random ID (as was done before, but maybe only on conflict)
       finalFilename = `${baseNameForConflict}_${this.generateRandomId()}${extensionForConflict}`; // Call as a method
 
-      fullPath = join(targetDir, directory, finalFilename); // Already correct here, but included for context
+      fullPath = resolveInside(targetDir, directory, finalFilename);
       // Safety break to prevent infinite loops in weird edge cases
       if (counter > 100) {
         console.error(

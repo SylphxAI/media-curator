@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
@@ -6,6 +6,9 @@ export default defineConfig({
     environment: 'node', // Specify the test environment
     // Enable setup file (assuming tests/jest.setup.ts contains relevant setup)
     setupFiles: ['./tests/jest.setup.ts'],
+    // `*.bun.test.ts` suites open the metadata database through `bun:sqlite`,
+    // which only the Bun runtime provides; `bun run test:bun` runs them.
+    exclude: [...configDefaults.exclude, '**/*.bun.test.ts'],
     // Configure coverage for 100% target
     coverage: {
       provider: 'v8', // Use v8 provider

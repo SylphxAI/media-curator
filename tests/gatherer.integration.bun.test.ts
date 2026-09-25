@@ -25,7 +25,7 @@ import {
 
 // --- Mocking Dependencies ---
 // Mock processSingleFile using vi.mock
-vi.mock('../src/fileProcessor');
+vi.mock('../src/fileProcessor', () => ({ processSingleFile: vi.fn() }));
 const mockProcessSingleFile = processSingleFile as MockedFunction<
   typeof processSingleFile
 >; // Use MockedFunction directly
@@ -102,7 +102,7 @@ const sampleFileInfo: FileInfo = {
 };
 
 // Skip this entire suite in Bun; residual TS tests stay informational (ADR-168).
-describe.skip('gatherFileInfoFn Integration Tests (Skipped in Bun)', () => {
+describe('gatherFileInfoFn Integration Tests', () => {
   let cache: LmdbCache;
   let dbService: MetadataDBService;
   let reporter: MockCliReporter;

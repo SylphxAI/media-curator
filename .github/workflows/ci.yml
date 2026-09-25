@@ -4,10 +4,12 @@ on:
   merge_group:
   push:
     branches: [main]
-    tags: ['v*.*.*'] # Trigger on version tags
   pull_request:
     branches: [main]
   workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: read
 
 concurrency:
   # Fast Trunk: supersede obsolete runs for the same PR or branch tip.
@@ -57,7 +59,6 @@ jobs:
         shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
-          REF_TYPE: ${{ github.ref_type }}
           PUSH_BEFORE: ${{ github.event.before }}
           CURRENT_SHA: ${{ github.sha }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
@@ -67,7 +68,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [[ "$REF_TYPE" == "tag" || "$EVENT_NAME" == "workflow_dispatch" ]]; then
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
             echo "product_changed=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -145,83 +146,7 @@ jobs:
         if: needs.changed-files.outputs.product_changed == 'true'
         run: bun run lint
 
-      - name: Run residual TypeScript tests (informational)
+      - name: Run tests
         if: needs.changed-files.outputs.product_changed == 'true'
-        # Product authority is the Rust CLI job above (ADR-168). The historical
-        # TS suite still contains ESM mock breakage and 100% coverage residual after
-        # the native cutover; keep it visible but do not fail tip product CI.
-        continue-on-error: true
+        # Vitest suites, then the `*.bun.test.ts` suites that need `bun:sqlite`.
         run: bun run test
-
-      # Optional: Upload coverage report (e.g., to Codecov)
-      # - name: Upload coverage reports to Codecov
-      #   uses: codecov/codecov-action@v4
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }} # Store token in GitHub secrets
-      #     files: ./coverage/lcov.info # Path to lcov report
-
-  publish:
-    name: Publish to npm
-    needs: validate # Run only if validate job succeeds
-    if: startsWith(github.ref, 'refs/tags/v') # Run only on tag push
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.4.0
-
-      - name: Assert Bun 1.4.0
-        run: test "$(bun --version)" = "1.4.0"
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Build project
-        run: bun run build # Assumes build script handles everything
-
-      - name: Setup Node.js for npm publish
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*' # Use LTS Node.js version
-          registry-url: 'https://registry.npmjs.org' # Point to npm registry
-
-      - name: Publish to npm
-        run: npm publish --access public # Publish the package
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} # Store token in GitHub secrets
-
-      # Optional: Build and push Docker image if applicable
-      # - name: Build and push Docker image
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     push: true
-      #     tags: your-dockerhub-username/media-curator:${{ github.ref_name }} # Example tag
-
-  release:
-    name: Create GitHub Release
-    needs: publish # Run only if publish job succeeds
-    if: startsWith(github.ref, 'refs/tags/v') # Run only on tag push
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: write # Needed to create releases
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetch all history for release notes generation
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          generate_release_notes: true # Auto-generate release notes from Conventional Commits
-          # Optional: Upload build artifacts to the release
-          # files: |
-          #   dist/*
