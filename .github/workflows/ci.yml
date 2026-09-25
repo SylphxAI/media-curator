@@ -129,7 +129,11 @@ jobs:
 
       - name: Build Rust CLI for npm bridge tests
         if: needs.changed-files.outputs.product_changed == 'true'
-        run: cargo build -p media-curator-cli
+        # Stage the fresh build over the committed bin/native binary, which the
+        # bridge prefers, so the tests exercise this revision's Rust code.
+        run: |
+          cargo build -p media-curator-cli
+          bun scripts/stage-rust-cli.ts
 
       - name: Install dependencies
         if: needs.changed-files.outputs.product_changed == 'true'

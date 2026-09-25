@@ -47,8 +47,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Build Rust CLI for bridge tests
-        run: cargo build -p media-curator-cli
+      - name: Build and stage the Rust CLI
+        # Release build staged into bin/native, which the tests and the package use.
+        run: bun run build:rust
 
       - name: Run tests
         run: bun run test
