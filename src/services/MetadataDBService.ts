@@ -178,10 +178,8 @@ export class MetadataDBService {
       fileStats: {
         // Use optional chaining and nullish coalescing for hash reconstruction
         hash: row.contentHash
-          ? bufferToSharedArrayBuffer(
-              Buffer.from(row.contentHash, 'hex'),
-            )._unsafeUnwrap()
-          : undefined, // Unwrap AppResult
+          ? bufferToSharedArrayBuffer(Buffer.from(row.contentHash, 'hex'))
+          : undefined,
         size: row.size ?? 0,
         createdAt: row.createdAt ? new Date(row.createdAt) : new Date(0),
         modifiedAt: row.modifiedAt ? new Date(row.modifiedAt) : new Date(0),
@@ -200,10 +198,10 @@ export class MetadataDBService {
         frames: pHashBuffer
           ? [
               {
-                hash: bufferToSharedArrayBuffer(pHashBuffer)._unsafeUnwrap(),
+                hash: bufferToSharedArrayBuffer(pHashBuffer),
                 timestamp: 0,
               },
-            ] // Unwrap AppResult
+            ]
           : [],
       },
     };

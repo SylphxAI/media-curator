@@ -308,6 +308,14 @@ export async function deduplicateFilesFn(
 
   // Add files without pHash back to unique list (as they weren't clustered)
   filesWithoutPHash.forEach((file) => uniqueFiles.add(file));
+  // A file that joined no cluster has no duplicate: it is unique. Without this
+  // it would reach neither uniqueFiles nor duplicateSets and never be transferred.
+  const clusteredFiles = new Set(
+    allClusters.flatMap((cluster) => [...cluster]),
+  );
+  potentiallySimilarFiles.forEach((file) => {
+    if (!clusteredFiles.has(file)) uniqueFiles.add(file);
+  });
 
   // Log results
   const duplicateCount = duplicateSets.reduce(

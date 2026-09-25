@@ -30,15 +30,7 @@ import {
 import { hexToSharedArrayBuffer } from '../src/utils';
 import { AppResult, ok, err, AppError, ValidationError } from '../src/errors';
 import * as comparatorUtils from '../src/comparatorUtils';
-import {
-  vi,
-  describe,
-  it,
-  expect,
-  beforeEach,
-  afterEach,
-  SpyInstance,
-} from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { Buffer } from 'buffer'; // Ensure Buffer is imported
 import { Tags } from 'exiftool-vendored'; // Import Tags type
 
@@ -609,18 +601,6 @@ describe('Comparator Utilities', () => {
       ).toBeCloseTo(0);
     });
 
-    let imageSimilaritySpy: SpyInstance;
-    beforeEach(() => {
-      // Spy on calculateImageSimilarity before each test in this suite
-      imageSimilaritySpy = vi.spyOn(
-        comparatorUtils,
-        'calculateImageSimilarity',
-      );
-    });
-    afterEach(() => {
-      imageSimilaritySpy.mockRestore(); // Clean up the spy
-    });
-
     it('should handle early exit when similarity exceeds threshold', () => {
       // Modify videoMedia to have the best match first
       const videoMediaEarlyExit: MediaInfo = {
@@ -635,10 +615,9 @@ describe('Comparator Utilities', () => {
         wasmExports,
       );
 
+      // The perfect first frame wins; later, weaker frames cannot lower it.
+      // (The early exit itself is an intra-module call a spy cannot observe.)
       expect(result).toBeCloseTo(1.0);
-      // Since the first frame (videoFrame3) has similarity 1.0, which is >= threshold 0.8,
-      // it should exit early and only call calculateImageSimilarity once.
-      expect(imageSimilaritySpy).toHaveBeenCalledTimes(1);
     });
 
     it('should handle single frame video', () => {
@@ -999,54 +978,37 @@ describe('Comparator Utilities', () => {
       frames: seq8_with_missing,
     };
     const media_empty: MediaInfo = { duration: 0, frames: seq_empty };
-    const seq8_filtered: FrameInfo[] = [frameA, frameC]; // Expected result after getFramesInTimeRange filters noHash
 
-    // Mock calculateSequenceSimilarityDTW using vi.fn and assignment
-    let dtwMock: import('vitest').Mock<
-      [FrameInfo[], FrameInfo[], WasmExports | null],
-      number
-    >;
-    let originalDtwFn: typeof comparatorUtils.calculateSequenceSimilarityDTW;
-
-    beforeEach(() => {
-      // Store original function
-      originalDtwFn = comparatorUtils.calculateSequenceSimilarityDTW;
-      // Create mock function
-      dtwMock = vi.fn();
-      // Assign mock to the exported function
-      comparatorUtils.calculateSequenceSimilarityDTW = dtwMock;
-    });
-    afterEach(() => {
-      // Restore original function
-      comparatorUtils.calculateSequenceSimilarityDTW = originalDtwFn;
-      vi.restoreAllMocks(); // Also restore any other spies/mocks if needed
-    });
-
-    it('should call calculateSequenceSimilarityDTW with correct frames', () => {
-      dtwMock.mockReturnValue(0.9); // Mock return value
-      comparatorUtils.calculateVideoSimilarity(
-        media1,
-        media2_identical,
-        config,
+    // calculateVideoSimilarity calls calculateSequenceSimilarityDTW inside the
+    // same ES module, so a spy cannot intercept it. These tests assert the
+    // observable result against the real DTW over the same window instead.
+    const dtwOverFirstWindow = (longer: MediaInfo, shorter: MediaInfo) =>
+      comparatorUtils.calculateSequenceSimilarityDTW(
+        comparatorUtils.getFramesInTimeRange(longer, 0, shorter.duration),
+        shorter.frames,
         wasmExports,
       );
-      expect(dtwMock).toHaveBeenCalledWith(seq1, seq2_identical, wasmExports);
+
+    it('should score identical videos as a perfect match', () => {
+      expect(
+        comparatorUtils.calculateVideoSimilarity(
+          media1,
+          media2_identical,
+          config,
+          wasmExports,
+        ),
+      ).toBeCloseTo(1.0);
     });
 
-    // Removed redundant test: "should call calculateSequenceSimilarityDTW with correct frames"
-    // Removed redundant test: "should handle identical videos (via mocked DTW)"
-
-    it('should return the result from calculateSequenceSimilarityDTW', () => {
-      dtwMock.mockReturnValue(0.85);
+    it('should return the DTW similarity of the best window', () => {
       const result = comparatorUtils.calculateVideoSimilarity(
         media1,
         media4_partial,
         config,
         wasmExports,
       );
-      expect(result).toBe(0.85);
-      // Correct order: longerSubseq (seq4_partial), shorterSubseq (seq1)
-      expect(dtwMock).toHaveBeenCalledWith(seq4_partial, seq1, wasmExports); // Check arguments
+      expect(result).toBeCloseTo(dtwOverFirstWindow(media4_partial, media1));
+      expect(result).toBeLessThan(1);
     });
 
     it('should return 0 if either media has no frames', () => {
@@ -1066,7 +1028,6 @@ describe('Comparator Utilities', () => {
           wasmExports,
         ),
       ).toBe(0);
-      expect(dtwMock).not.toHaveBeenCalled(); // DTW shouldn't be called
     });
 
     it('should return 1 if both media have no frames', () => {
@@ -1078,51 +1039,39 @@ describe('Comparator Utilities', () => {
           wasmExports,
         ),
       ).toBe(1);
-      expect(dtwMock).not.toHaveBeenCalled(); // DTW shouldn't be called
     });
 
-    // Add more specific scenarios if needed, but the core logic relies on DTW
-    it('should handle identical videos (via mocked DTW)', () => {
-      dtwMock.mockReturnValue(1.0);
-      expect(
+    it('should score different videos lower than identical ones', () => {
+      const different = comparatorUtils.calculateVideoSimilarity(
+        media1,
+        media3_different,
+        config,
+        wasmExports,
+      );
+      expect(different).toBeCloseTo(
+        dtwOverFirstWindow(media3_different, media1),
+      );
+      expect(different).toBeLessThan(
         comparatorUtils.calculateVideoSimilarity(
           media1,
           media2_identical,
           config,
           wasmExports,
         ),
-      ).toBe(1.0);
-      expect(dtwMock).toHaveBeenCalledWith(seq1, seq2_identical, wasmExports);
+      );
     });
 
-    it('should handle different videos (via mocked DTW)', () => {
-      dtwMock.mockClear(); // Clear mock before setting return value for this test
-      dtwMock.mockReturnValue(0.1); // Assume low similarity from DTW
-      expect(
-        comparatorUtils.calculateVideoSimilarity(
-          media1,
-          media3_different,
-          config,
-          wasmExports,
-        ),
-      ).toBe(0.1);
-      // Correct order: longerSubseq (seq3_different), shorterSubseq (seq1)
-      expect(dtwMock).toHaveBeenCalledWith(seq3_different, seq1, wasmExports); // Check arguments
-    });
-
-    it('should handle videos with missing frames (via mocked DTW)', () => {
-      // Let the mocked DTW handle the filtering logic implicitly
-      dtwMock.mockReturnValue(0.95); // Assume DTW returns high similarity after filtering
-      expect(
-        comparatorUtils.calculateVideoSimilarity(
-          media1,
-          media8_with_missing,
-          config,
-          wasmExports,
-        ),
-      ).toBe(0.95);
-      // Correct order: longerSubseq (filtered seq8), shorterSubseq (seq1)
-      expect(dtwMock).toHaveBeenCalledWith(seq8_filtered, seq1, wasmExports);
+    it('should handle videos with missing frame hashes', () => {
+      const result = comparatorUtils.calculateVideoSimilarity(
+        media1,
+        media8_with_missing,
+        config,
+        wasmExports,
+      );
+      expect(Number.isFinite(result)).toBe(true);
+      expect(result).toBeCloseTo(
+        dtwOverFirstWindow(media8_with_missing, media1),
+      );
     });
   }); // End of calculateVideoSimilarity describe block
 

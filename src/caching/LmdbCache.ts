@@ -13,6 +13,19 @@ import {
   safeTryAsync,
 } from '../errors'; // Removed unused UnknownError
 
+// MessagePack has no SharedArrayBuffer type and would encode a nested one as an
+// empty map, silently dropping hashes inside cached objects. Carry it as an
+// application extension instead.
+const SHARED_ARRAY_BUFFER_EXT = 1;
+const extensionCodec = new msgpack.ExtensionCodec();
+extensionCodec.register({
+  type: SHARED_ARRAY_BUFFER_EXT,
+  encode: (input: unknown): Uint8Array | null =>
+    input instanceof SharedArrayBuffer ? new Uint8Array(input) : null,
+  decode: (data: Uint8Array): SharedArrayBuffer =>
+    bufferToSharedArrayBuffer(Buffer.from(data)),
+});
+
 // Define interfaces for cache results
 export interface CacheResult<T> {
   hit: boolean;
@@ -130,7 +143,7 @@ export class LmdbCache {
     // Default: Use MessagePack (Marker: 0)
     // Wrap msgpack.encode in safeTry
     const encodeResult = safeTry(
-      () => msgpack.encode(data),
+      () => msgpack.encode(data, { extensionCodec }),
       (error) =>
         new DatabaseError(
           `Failed to serialize data with msgpack: ${error instanceof Error ? error.message : String(error)}`,
@@ -175,14 +188,14 @@ export class LmdbCache {
 
         // Default: MessagePack (Marker: 0)
         if (typeMarker === 0) {
-          return msgpack.decode(dataBuffer);
+          return msgpack.decode(dataBuffer, { extensionCodec });
         }
 
         // Fallback for potentially old data without markers (treat as msgpack)
         console.warn(
           'Cache data missing type marker, attempting msgpack decode.',
         );
-        return msgpack.decode(buffer); // This might still throw if buffer is not valid msgpack
+        return msgpack.decode(buffer, { extensionCodec }); // This might still throw if buffer is not valid msgpack
       },
       (error) => {
         console.error(
@@ -227,7 +240,7 @@ export class LmdbCache {
 
       // Default: MessagePack (Marker: 0)
       if (typeMarker === 0) {
-        return msgpack.decode(dataBuffer);
+        return msgpack.decode(dataBuffer, { extensionCodec });
       }
 
       // Fallback for potentially old data without markers (treat as msgpack)
