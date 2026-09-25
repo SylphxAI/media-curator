@@ -8,6 +8,7 @@ on:
     branches: [main]
   workflow_dispatch: # Allow manual trigger
 
+# Least privilege: jobs that need more request it explicitly.
 permissions:
   contents: read
 
@@ -15,10 +16,6 @@ concurrency:
   # Fast Trunk: supersede obsolete runs for the same PR or branch tip.
   group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}
   cancel-in-progress: true
-
-# Least privilege: jobs that need more request it explicitly.
-permissions:
-  contents: read
 
 jobs:
   rust:
@@ -132,7 +129,11 @@ jobs:
 
       - name: Build Rust CLI for npm bridge tests
         if: needs.changed-files.outputs.product_changed == 'true'
-        run: cargo build -p media-curator-cli
+        # Stage the fresh build over the committed bin/native binary, which the
+        # bridge prefers, so the tests exercise this revision's Rust code.
+        run: |
+          cargo build -p media-curator-cli
+          bun scripts/stage-rust-cli.ts
 
       - name: Install dependencies
         if: needs.changed-files.outputs.product_changed == 'true'
