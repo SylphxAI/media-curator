@@ -1,3 +1,5 @@
+> **Archived (2026-09-25).** Media Curator is no longer maintained. For local photo/video de-duplication we recommend [czkawka](https://github.com/qarmin/czkawka) or [Immich](https://github.com/immich-app/immich). Sylphx's open-source tools now live at [anymd](https://github.com/SylphxAI/anymd), [repomap](https://github.com/SylphxAI/repomap), [lockdocs](https://github.com/SylphxAI/lockdocs) and [readme-mark](https://github.com/SylphxAI/readme-mark).
+
 <div align="center">
 
 # Media Curator 📸
